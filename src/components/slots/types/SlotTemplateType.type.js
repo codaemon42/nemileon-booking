@@ -14,7 +14,7 @@ export class SlotTemplateType{
         this.key = data?.id;
         const date = new Date()
         this.name = data?.name || `Name-${date.toISOString().split('T')[0]}`
-        this.template = typeof data?.template == 'string' ?  new Slot(JSON.parse(data?.template)) : data?.template;
+        this.template = typeof data?.template == 'string' ?  new Slot(JSON.parse(data?.template)) : new Slot(data?.template);
     }
 
 

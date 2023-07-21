@@ -23,9 +23,10 @@ class SlotTemplates
     {
         try {
             $body = $request->get_json_params();
+            $name = $body["name"];
             $template = $body["template"];
             $slot_template = new \ONSBKS_Slots\Includes\Admin\SlotTemplates();
-            wp_send_json(prepare_result($slot_template->create($template)));
+            wp_send_json(prepare_result($slot_template->create($template, $name)));
         } catch (\Error $error) {
             wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
         }

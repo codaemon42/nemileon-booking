@@ -61,9 +61,10 @@ class SlotTemplates
     }
 
 
-    public function create($template) {
+    public function create($template, $name) {
         // Prepare data for insertion
         $data = array(
+            'name' => $name,
             'template' => wp_json_encode($template), // Encode the data as JSON before inserting
         );
 

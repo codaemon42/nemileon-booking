@@ -1,20 +1,25 @@
-import { CheckOutlined, DeleteOutlined, EditOutlined, MonitorOutlined } from '@ant-design/icons';
+import { CopyOutlined, DeleteOutlined, EditOutlined, MonitorOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Divider, Space, Table, Tooltip } from 'antd';
 import {useEffect, useState} from 'react';
-import { Slot } from './components/slots/types/Slot.type';
 import { SlotTemplateType } from './components/slots/types/SlotTemplateType.type';
+import { alphabeticSort } from './helper/alphabeticSort';
+import { countAvailableSlots } from './helper/countAvailableSlots';
 import { SlotTemplateApi } from './http/SlotTemplateApi';
 
 
 const SlotTemplate = (props) => {
 
     const [Templates, setTemplates] = useState(SlotTemplateType.List([]));
+    const [TableLoading, setTableLoading] = useState(false);
 
     useEffect(() => {
+      setTableLoading(true);
       SlotTemplateApi.getSlotTemplates().then(slots => {
           console.log({slots});
           if(slots.success) setTemplates(slots.result);
-      }).catch(err => console.log({err}))
+      })
+      .catch(err => console.log({err}))
+      .finally(()=> setTableLoading(false))
     
     }, [])
     
@@ -27,7 +32,7 @@ const SlotTemplate = (props) => {
     }
     const columns = [
         {
-            title: "Name",
+            title: "Name of the Template",
             dataIndex: "name",
             key: "name",
             filters: nameFilterRender(Templates),
@@ -42,6 +47,7 @@ const SlotTemplate = (props) => {
           render: (_, record, index) => (
               <div> {record.template.allowedBookingPerPerson}</div>
           ),
+          sorter: (a, b) => a.key - b.key
         },
         {
           title: "Available Slots",
@@ -49,6 +55,7 @@ const SlotTemplate = (props) => {
           render: (_, record, index) => (
               <div> {countAvailableSlots(record)}</div>
           ),
+          sorter: (a, b) => countAvailableSlots(a) - countAvailableSlots(b)
         },
         {
           title: "Dimension",
@@ -68,6 +75,9 @@ const SlotTemplate = (props) => {
                 <Tooltip placement="bottom" title='Edit'>
                   <Button onClick={() => handleAction(record, index)} type="default" icon={<EditOutlined />}></Button>
                 </Tooltip>
+                <Tooltip placement="bottom" title='Duplicate'>
+                  <Button  onClick={() => handleDuplicate(record, index)} type="default" icon={<CopyOutlined />}></Button>
+                </Tooltip>
                 <Tooltip placement="rightBottom" title='Delete'>
                   <Button  onClick={() => handleAction(record, index)} type="default" icon={<DeleteOutlined />}></Button>
                 </Tooltip>
@@ -80,29 +90,33 @@ const SlotTemplate = (props) => {
       console.log({record, index})
     }
 
-    const countAvailableSlots = (slotTemplate=new SlotTemplateType()) => {
-      let availableSlots = 0;
-      slotTemplate.template.rows.forEach(row => {
-        row.cols.forEach(col => {
-          if(col.show){
-            availableSlots += col.available_slots;
-          }
-        })
-      })
-      return availableSlots;
+    // DUPLICATE BUTTON
+    const handleDuplicate = async (record = new SlotTemplateType(), index) => {
+      setTableLoading(true);
+      const data = {...record};
+      data.name = `${data.name}-copy`;
+      console.log({data})
+      const newSlotTemplateRes = await SlotTemplateApi.createSlotTemplate(data);
+      console.log({newSlotTemplateRes})
+      if(newSlotTemplateRes.success) setTemplates(prev => [newSlotTemplateRes.result, ...prev]);
+      setTableLoading(false);
     }
     
   return (
     <div {...props}>
         <Divider orientation="left" plain>
-          <h3>Saved Slot Templates</h3> 
+          <Space>
+            <h3>Saved Slot Templates</h3> 
+            <Button type='primary' size='small' style={{fontSize: 11}} icon={<PlusOutlined />}>ADD NEW</Button>
+          </Space> 
         </Divider>
         <Table
+            loading={TableLoading}
             columns={columns}
             dataSource={Templates}
-            pagination={{ pageSize: 2 }}
+            pagination={{ pageSize: 6 }}
         />
-    </div>
+     </div>
   )
 }
 
