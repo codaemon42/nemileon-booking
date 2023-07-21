@@ -1,0 +1,87 @@
+#ONSBKS_BOOKING_SECTION {
+    .app-title {
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-bottom: 1em;
+    }
+} 
+
+.ONSBKS_product_table_img_wrapper{
+    img{
+        border-radius: 5px;
+    }
+}
+
+.events {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .events .ant-badge-status {
+    width: 100%;
+    overflow: hidden;
+    font-size: 12px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .notes-month {
+    font-size: 28px;
+    text-align: center;
+  }
+  .notes-month section {
+    font-size: 28px;
+  }
+
+
+  .playground_div{
+    width: 100%;
+    height: 120px;
+    font-size: 14px;
+    line-height: 20px;
+    background: #0092ff;
+    border-radius: 4px;
+    min-height: 30px;
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .playground_header{
+    width: 90%;
+    height: 120px;
+    font-size: 14px;
+    line-height: 120px;
+    background: #0092ff05;
+    min-height: 30px;
+    color: #131313;
+    text-align: center;
+    border-left: 3px solid #0092ff;
+  }
+
+  .hidden-slot{
+    visibility: hidden;
+  }
+
+  .not-available-slot{
+    background: #85accb;
+    cursor: not-allowed;
+  }
+
+  .slot-booking-menu button:hover {
+    border-radius: 10px;
+  }
+
+  .onsbks_counter{
+    width: 100% !important;
+  }
+
+  .onsbks-success{
+    background-color: #2dd36f;
+
+    &:hover{
+      background-color: #28ba62 !important;
+    }
+  }
