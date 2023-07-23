@@ -22,6 +22,11 @@ class Router
         Router::REQUEST('POST', $route_ref, $controller_ref, $perm_ref);
     }
 
+    public static function DELETE($route_ref, $controller_ref, $perm_ref): void
+    {
+        Router::REQUEST('DELETE', $route_ref, $controller_ref, $perm_ref);
+    }
+
 
     public static function REQUEST( $method, $route_ref, $controller_ref, $perm_ref ): void
     {

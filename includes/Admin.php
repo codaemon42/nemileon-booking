@@ -2,7 +2,6 @@
 
 namespace ONSBKS_Slots\Includes;
 
-use ONSBKS_Slots\Includes\Admin\SlotTemplates;
 
 /**
  * Class Admin
@@ -18,7 +17,6 @@ class Admin {
        */
       function __construct() {
           new Admin\Requirements();
-          new SlotTemplates();
           new Admin\Menu();
           $addBookings = new Admin\AddBookings();
             add_action( 'admin_init', [$addBookings, 'add_new_booking'] );

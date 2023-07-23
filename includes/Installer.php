@@ -2,6 +2,8 @@
 
 namespace ONSBKS_Slots\Includes;
 
+use ONSBKS_Slots\Includes\Admin\SlotTemplates;
+
 /**
  * Class Installer
  * @package ONSBKS_Slots\Includes
@@ -18,6 +20,7 @@ class Installer {
     public function run() {
         $this->add_version();
         $this->create_page('Booking Slots', do_shortcode("[booking_shortcode]"));
+        $this->init_db();
     }
 
     /**
@@ -60,5 +63,10 @@ class Installer {
                 'post_parent'    =>  $parent_id
             )
         );
+    }
+
+    public function init_db(): void
+    {
+        new SlotTemplates();
     }
 }

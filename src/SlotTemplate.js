@@ -1,5 +1,5 @@
 import { CopyOutlined, DeleteOutlined, EditOutlined, MonitorOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Space, Table, Tooltip } from 'antd';
+import { Button, Divider, Popconfirm, Space, Table, Tooltip } from 'antd';
 import {useEffect, useState} from 'react';
 import { SlotTemplateType } from './components/slots/types/SlotTemplateType.type';
 import { alphabeticSort } from './helper/alphabeticSort';
@@ -79,12 +79,32 @@ const SlotTemplate = (props) => {
                   <Button  onClick={() => handleDuplicate(record, index)} type="default" icon={<CopyOutlined />}></Button>
                 </Tooltip>
                 <Tooltip placement="rightBottom" title='Delete'>
-                  <Button  onClick={() => handleAction(record, index)} type="default" icon={<DeleteOutlined />}></Button>
+                  <Popconfirm
+                    placement='topLeft' 
+                    title="Delete the template"
+                    description="Are you sure to delete this template ?"
+                    okText="DELETE"
+                    cancelText="CANCEL"
+                    okButtonProps={{danger: true}}
+                    onConfirm={() => handleDelete(record, index)}
+                  >
+                    <Button type="default" icon={<DeleteOutlined />}></Button>
+                  </Popconfirm>
                 </Tooltip>
               </Space>
             ),
         },
     ];
+
+    const handleDelete = async (record, index) => {
+      console.log({record, index})
+      setTableLoading(true);
+      const slotTemplateDeleteRes = await SlotTemplateApi.deleteSlotTemplates(record.id);
+      setTableLoading(false);
+      if(slotTemplateDeleteRes.success && slotTemplateDeleteRes.result) {
+        setTemplates(prev => prev.filter(t => t.id !== record.id));
+      }
+    }
 
     const handleAction = (record, index) => {
       console.log({record, index})

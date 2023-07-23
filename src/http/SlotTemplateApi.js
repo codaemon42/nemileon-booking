@@ -19,6 +19,11 @@ class SlotTemplateApi {
         slotTemplateCreateRes.data.result = $data;
         return new SingleSlotTemplateResponseData(slotTemplateCreateRes.data);
     }
+
+    static async deleteSlotTemplates(id){
+        const slots = await http.delete(prepareUrl(`/templates?id=${id}`));
+        return new HttpResponseData(slots.data);
+    }
 }
 
 

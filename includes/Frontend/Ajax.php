@@ -15,7 +15,7 @@ class Ajax {
      *
      * @since 1.0.0
      */
-    public $date_time;
+    public $date_time = '';
 
     /**
      * @var array date_time_collector

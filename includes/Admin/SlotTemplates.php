@@ -7,13 +7,15 @@ class SlotTemplates
     private $_wpdb;
     private $table_name = "";
 
-    public function __construct()
+    public function __construct($db_init = true)
     {
         global $wpdb;
         $this->_wpdb = $wpdb;
         $this->table_name = $this->_wpdb->prefix . "nemileon_slot_templates";
 
-        $this->db_init();
+        if($db_init){
+            $this->db_init();
+        }
 
     }
 
@@ -95,5 +97,16 @@ class SlotTemplates
         return $this->_wpdb->rows_affected;
     }
 
+
+    public function delete($id) {
+        // Prepare the WHERE clause to identify the row to update
+        $where = array('id' => $id);
+
+        // Update the data in the table
+        $this->_wpdb->delete($this->table_name, $where);
+
+        // Return the number of rows affected (optional - useful for checking if the update was successful)
+        return $this->_wpdb->rows_affected;
+    }
 
 }
