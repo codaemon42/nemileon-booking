@@ -3,22 +3,24 @@ import { Col, FloatButton, Row, Badge, message } from "antd";
 import { Slot } from './types/Slot.type';
 import { SlotCol } from './types/SlotCol.type';
 import { SlotRow } from './types/SlotRow.type';
-import { CommentOutlined, CustomerServiceOutlined, EllipsisOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { EllipsisOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 
 
-const SlotPlotter = ({style}) => {
+const SlotPlotter = ({style, defaultSlot = new Slot()}) => {
 
     // const [gutter, setGutter] = useState(8);
     // const [vgutter, setVgutter] = useState(8);
     // const [cols, setCols] = useState([]);
     // const [rows, setRows] = useState([]);
 
-    const [slot, setSlot] = useState(new Slot())
+    const [slot, setSlot] = useState(defaultSlot)
 
 
     useEffect(() => {
-        initializer();
-    }, [])
+        if(slot.rows.length <= 0){
+            initializer();
+        }
+    }, [slot])
 
     const initializer = () => {
 

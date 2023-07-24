@@ -1,6 +1,7 @@
 import { CopyOutlined, DeleteOutlined, EditOutlined, MonitorOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Popconfirm, Space, Table, Tooltip } from 'antd';
+import { Button, Divider, Modal, Popconfirm, Space, Table, Tooltip } from 'antd';
 import {useEffect, useState} from 'react';
+import SlotPlotter from './components/slots/SlotPlotter';
 import { SlotTemplateType } from './components/slots/types/SlotTemplateType.type';
 import { alphabeticSort } from './helper/alphabeticSort';
 import { countAvailableSlots } from './helper/countAvailableSlots';
@@ -10,7 +11,9 @@ import { SlotTemplateApi } from './http/SlotTemplateApi';
 const SlotTemplate = (props) => {
 
     const [Templates, setTemplates] = useState(SlotTemplateType.List([]));
+    const [SelectedTemplate, setSelectedTemplate] = useState(new SlotTemplateType());
     const [TableLoading, setTableLoading] = useState(false);
+    const [OpenPreviewModal, setOpenPreviewModal] = useState(false);
 
     useEffect(() => {
       setTableLoading(true);
@@ -70,7 +73,7 @@ const SlotTemplate = (props) => {
             render: (_, record, index) => (
               <Space>
                 <Tooltip placement="leftBottom" title='View'>
-                  <Button onClick={() => handleAction(record, index)} type="default" icon={<MonitorOutlined />}></Button>
+                  <Button onClick={() => handlePreview(record, index)} type="default" icon={<MonitorOutlined />}></Button>
                 </Tooltip>
                 <Tooltip placement="bottom" title='Edit'>
                   <Button onClick={() => handleAction(record, index)} type="default" icon={<EditOutlined />}></Button>
@@ -106,6 +109,12 @@ const SlotTemplate = (props) => {
       }
     }
 
+    const handlePreview = (record, index) => {
+      console.log({record, index});
+      setOpenPreviewModal(true);
+      setSelectedTemplate(record);
+    }
+
     const handleAction = (record, index) => {
       console.log({record, index})
     }
@@ -136,6 +145,16 @@ const SlotTemplate = (props) => {
             dataSource={Templates}
             pagination={{ pageSize: 6 }}
         />
+        <Modal 
+          title={`Preview Template : ${SelectedTemplate.name}`}
+          open={OpenPreviewModal} 
+          onOk={()=>setOpenPreviewModal(false)} 
+          onCancel={()=>setOpenPreviewModal(false)} 
+          width={window.innerWidth*0.6}
+          >
+            <Divider orientation="left" plain></Divider>
+          <SlotPlotter key={SelectedTemplate.key} defaultSlot={SelectedTemplate.template} />
+        </Modal>
      </div>
   )
 }
