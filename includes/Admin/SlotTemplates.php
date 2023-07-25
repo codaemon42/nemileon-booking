@@ -80,10 +80,11 @@ class SlotTemplates
         return $this->_wpdb->insert_id;
     }
 
-    public function update($id, $template) {
+    public function update($id, $name, $template) {
 
         // Prepare data for update
         $data = array(
+            'name' => $name,
             'template' => wp_json_encode($template),
         );
 

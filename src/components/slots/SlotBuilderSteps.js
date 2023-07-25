@@ -25,6 +25,11 @@ const SlotBuilderSteps = () => {
     setSlot(slotChanged);
   }
 
+  const onNameChange = (name) => {
+    console.log({name})
+    setName(name);
+  }
+
   const [products, setProducts] = useState(Product.List([]));
   const [pInd, setPInd] = useState(null);
 
@@ -54,7 +59,7 @@ const SlotBuilderSteps = () => {
     },
     {
       title: 'Configure Slots',
-      content: <SlotBuilder key={3} onSlotChange={onSlotChange} />,
+      content: <SlotBuilder key={3} onSlotChange={onSlotChange} onNameChange={onNameChange} />,
     },
   ];
 
@@ -67,6 +72,7 @@ const SlotBuilderSteps = () => {
   const [selectedDate, setSelectedDate] = useState(dateNow.toISOString().split('T')[0]);
 
   const [slot, setSlot] = useState(null);
+  const [name, setName] = useState('');
 
 
 
@@ -85,7 +91,7 @@ const SlotBuilderSteps = () => {
 
 
   const submitHandler = ({selectedProduct, selectedDate, slot}) => {
-    console.log({selectedProduct, selectedDate, slot});
+    console.log({selectedProduct, selectedDate, slot, name});
     // call api to save the product meta
   }
 

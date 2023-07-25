@@ -2,7 +2,7 @@ import { Slot } from "./Slot.type";
 
 export class SlotTemplateType{
     #default = {
-        id: "",
+        id: 0,
         key: 0,
         name: "",
         template: new Slot()

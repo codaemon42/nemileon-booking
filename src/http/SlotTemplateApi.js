@@ -20,6 +20,12 @@ class SlotTemplateApi {
         return new SingleSlotTemplateResponseData(slotTemplateCreateRes.data);
     }
 
+    static async updateSlotTemplate($data = new SlotTemplateType()){
+        const slotTemplateCreateRes = await http.put(prepareUrl('/templates'), $data);
+        slotTemplateCreateRes.data.result = $data;
+        return new SingleSlotTemplateResponseData(slotTemplateCreateRes.data);
+    }
+
     static async deleteSlotTemplates(id){
         const slots = await http.delete(prepareUrl(`/templates?id=${id}`));
         return new HttpResponseData(slots.data);

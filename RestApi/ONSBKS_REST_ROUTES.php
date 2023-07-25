@@ -15,4 +15,5 @@ Router::POST('/options', array('ONSBKS_Slots\RestApi\Controllers\Options', 'set_
 
 Router::GET('/templates', ['\ONSBKS_Slots\RestApi\Controllers\SlotTemplates', 'find_all'], Router::$AUTH['Anonymous']);
 Router::POST('/templates', ['\ONSBKS_Slots\RestApi\Controllers\SlotTemplates', 'create'], Router::$AUTH['Anonymous']);
+Router::PUT('/templates', ['\ONSBKS_Slots\RestApi\Controllers\SlotTemplates', 'update'], Router::$AUTH['Anonymous']);
 Router::DELETE('/templates', ['\ONSBKS_Slots\RestApi\Controllers\SlotTemplates', 'delete'], Router::$AUTH['Anonymous']);

@@ -7,6 +7,7 @@ import { SlotCol } from './types/SlotCol.type';
 import { SlotRow } from './types/SlotRow.type';
 import EditInput from '../form-feilds/EditInput';
 import SlotElementEditorDrawer from './SlotElementEditorDrawer';
+import { SlotTemplateType } from './types/SlotTemplateType.type';
 
 
 const gutters = {};
@@ -27,25 +28,32 @@ const rowCounts = {};
     rowCounts[i] = value;
 });
 
-const SlotBuilder = ({onSlotChange}) => {
+const SlotBuilder = ({initialTemplate = new SlotTemplateType(), onSlotChange, onNameChange}) => {
 
   const [gutterKey, setGutterKey] = useState(1);
   const [vgutterKey, setVgutterKey] = useState(1);
   const [colCountKey, setColCountKey] = useState(2);
   const [rowCountKey, setRowCountKey] = useState(1);
 
-  const [slot, setSlot] = useState(new Slot());
+  const [slot, setSlot] = useState(initialTemplate.template);
+  const [Name, setName] = useState(initialTemplate.name)
 
   const [openSlotElDrawer, setopenSlotElDrawer] = useState(false);
 
 
   useEffect(() => {
-    initializer();
+    if(initialTemplate.template.rows.length <= 0){
+      initializer();
+    }
   }, [])
 
   useEffect(() => {
     onSlotChange(slot);
   }, [slot])
+
+  useEffect(() => {
+    onNameChange(Name);
+  }, [Name])
 
   const initializer = () => {
 
@@ -288,10 +296,29 @@ const SlotBuilder = ({onSlotChange}) => {
     setSlot(newSlot);
   }
 
+  const onNameInputChange = (event) => {
+    onNameChange(event.target.value);
+    setName(event.target.value)
+  }
+
   return (
     <>
       <Row >
         <Col span={10} xs={24} xl={10} >
+          <span>Name of the template: </span>
+          <div
+            style={{
+              width: '90%',
+              marginTop: 5,
+              marginBottom: 15,
+            }}
+          >
+            <Input
+              placeholder='Enter the Name'
+              onChange={onNameInputChange}
+              value={Name}
+            />
+          </div>
           <span>Horizontal Gutter (px): </span>
           <div
             style={{

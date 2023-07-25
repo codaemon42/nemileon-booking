@@ -1,6 +1,7 @@
-import { CopyOutlined, DeleteOutlined, EditOutlined, MonitorOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Modal, Popconfirm, Space, Table, Tooltip } from 'antd';
+import { ArrowLeftOutlined, CloudUploadOutlined, CopyOutlined, DeleteOutlined, EditOutlined, MonitorOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Divider, message, Modal, Popconfirm, Space, Table, Tooltip } from 'antd';
 import {useEffect, useState} from 'react';
+import SlotBuilder from './components/slots/SlotBuilder';
 import SlotPlotter from './components/slots/SlotPlotter';
 import { SlotTemplateType } from './components/slots/types/SlotTemplateType.type';
 import { alphabeticSort } from './helper/alphabeticSort';
@@ -8,12 +9,17 @@ import { countAvailableSlots } from './helper/countAvailableSlots';
 import { SlotTemplateApi } from './http/SlotTemplateApi';
 
 
-const SlotTemplate = (props) => {
+const SlotTemplate = ({...props}) => {
 
     const [Templates, setTemplates] = useState(SlotTemplateType.List([]));
     const [SelectedTemplate, setSelectedTemplate] = useState(new SlotTemplateType());
     const [TableLoading, setTableLoading] = useState(false);
     const [OpenPreviewModal, setOpenPreviewModal] = useState(false);
+    const [OpenEditModal, setOpenEditModal] = useState(false);
+    const [LoadingEditModal, setLoadingEditModal] = useState(false);
+    const [OpenAddScreen, setOpenAddScreen] = useState(false);
+    const [LoadingAddScreen, setLoadingAddScreen] = useState(false);
+    message.config({top: 50});
 
     useEffect(() => {
       setTableLoading(true);
@@ -76,7 +82,7 @@ const SlotTemplate = (props) => {
                   <Button onClick={() => handlePreview(record, index)} type="default" icon={<MonitorOutlined />}></Button>
                 </Tooltip>
                 <Tooltip placement="bottom" title='Edit'>
-                  <Button onClick={() => handleAction(record, index)} type="default" icon={<EditOutlined />}></Button>
+                  <Button onClick={() => handleEdit(record, index)} type="default" icon={<EditOutlined />}></Button>
                 </Tooltip>
                 <Tooltip placement="bottom" title='Duplicate'>
                   <Button  onClick={() => handleDuplicate(record, index)} type="default" icon={<CopyOutlined />}></Button>
@@ -111,12 +117,14 @@ const SlotTemplate = (props) => {
 
     const handlePreview = (record, index) => {
       console.log({record, index});
-      setOpenPreviewModal(true);
       setSelectedTemplate(record);
+      setOpenPreviewModal(true);
     }
 
-    const handleAction = (record, index) => {
+    const handleEdit = (record, index) => {
       console.log({record, index})
+      setSelectedTemplate(record);
+      setOpenEditModal(true);
     }
 
     // DUPLICATE BUTTON
@@ -130,31 +138,105 @@ const SlotTemplate = (props) => {
       if(newSlotTemplateRes.success) setTemplates(prev => [newSlotTemplateRes.result, ...prev]);
       setTableLoading(false);
     }
+
+    const onSlotChange = (slot) => {
+      console.log({slot});
+      const newSelectedTemplate = {...SelectedTemplate}
+      newSelectedTemplate.template = slot;
+      setSelectedTemplate(newSelectedTemplate);
+    }
+
+    const onNameChange = (name) => {
+      console.log({name});
+      const newSelectedTemplate = {...SelectedTemplate}
+      newSelectedTemplate.name = name;
+      setSelectedTemplate(newSelectedTemplate);
+    }
+
+    const saveEditData = async () => {
+      setLoadingEditModal(true);
+      message.loading('saving template...');
+      const slotTemplateRes = await SlotTemplateApi.updateSlotTemplate(SelectedTemplate);
+      message.destroy();
+      setLoadingEditModal(false);
+      if(slotTemplateRes.success){
+        message.success('Successfully updated');
+        const temInd = Templates.findIndex(t => t.id === SelectedTemplate.id);
+        const newTemplates = [...Templates];
+        newTemplates[temInd] = {...SelectedTemplate};
+        setTemplates(newTemplates);
+      } else {
+        message.error('Something went wrong');
+      }
+    }
+
+    const saveAddData = async () => {
+      setLoadingAddScreen(true);
+      message.loading('saving template...');
+      const slotTemplateRes = await SlotTemplateApi.createSlotTemplate(SelectedTemplate);
+      message.destroy();
+      setLoadingAddScreen(false);
+      if(slotTemplateRes.success){
+        message.success('Successfully created');
+        const newTemplates = [slotTemplateRes.result, ...Templates];
+        setTemplates(newTemplates);
+      } else {
+        message.error('Something went wrong');
+      }
+    }
     
   return (
     <div {...props}>
-        <Divider orientation="left" plain>
-          <Space>
-            <h3>Saved Slot Templates</h3> 
-            <Button type='primary' size='small' style={{fontSize: 11}} icon={<PlusOutlined />}>ADD NEW</Button>
-          </Space> 
-        </Divider>
-        <Table
-            loading={TableLoading}
-            columns={columns}
-            dataSource={Templates}
-            pagination={{ pageSize: 6 }}
-        />
-        <Modal 
-          title={`Preview Template : ${SelectedTemplate.name}`}
-          open={OpenPreviewModal} 
-          onOk={()=>setOpenPreviewModal(false)} 
-          onCancel={()=>setOpenPreviewModal(false)} 
-          width={window.innerWidth*0.6}
-          >
-            <Divider orientation="left" plain></Divider>
-          <SlotPlotter key={SelectedTemplate.key} defaultSlot={SelectedTemplate.template} />
-        </Modal>
+        <div style={{display: OpenAddScreen ? 'none' : 'block'}}>
+          <div style={{display: OpenEditModal ? 'none' : 'block'}}>
+            <Divider orientation="left" plain>
+              <Space>
+                <h3>Saved Slot Templates</h3> 
+                <Button onClick={()=> setOpenAddScreen(true)} type='primary' size='small' style={{fontSize: 11}} icon={<PlusOutlined />}>ADD NEW</Button>
+              </Space> 
+            </Divider>
+            <Table
+                loading={TableLoading}
+                columns={columns}
+                dataSource={Templates}
+                pagination={{ pageSize: 6 }}
+            />
+            <Modal 
+              title={`Preview Template : ${SelectedTemplate.name}`}
+              open={OpenPreviewModal} 
+              onOk={()=>setOpenPreviewModal(false)} 
+              onCancel={()=>setOpenPreviewModal(false)} 
+              width={window.innerWidth*0.6}
+              >
+              <Divider orientation="left" plain></Divider>
+              <SlotPlotter key={SelectedTemplate.key} defaultSlot={SelectedTemplate.template} />
+            </Modal>
+          </div>
+          <div style={{display: OpenEditModal ? 'block' : 'none'}} key={SelectedTemplate?.id || 0}>
+            <Divider orientation="left" plain>
+              <Space>
+                <Button onClick={()=> setOpenEditModal(false)} type='primary' size='small' style={{fontSize: 11}} icon={<ArrowLeftOutlined />}>BACK</Button>
+                <h3> SLOT TEMPLATE: {SelectedTemplate.name}</h3> 
+              </Space> 
+            </Divider>
+            <SlotBuilder key={3} initialTemplate={SelectedTemplate} onSlotChange={onSlotChange} onNameChange={onNameChange} />
+            <Divider orientation="right" plain>
+              <Button loading={LoadingEditModal} onClick={()=> saveEditData()} className='onsbks-success' type='primary' icon={<CloudUploadOutlined />}>SAVE</Button>
+            </Divider>
+          </div>
+        </div>
+        <div style={{display: OpenAddScreen ? 'block' : 'none'}}>
+            <Divider orientation="left" plain>
+              <Space>
+              <Button onClick={()=> setOpenAddScreen(false)} type='primary' size='small' style={{fontSize: 11}} icon={<ArrowLeftOutlined />}>BACK</Button>
+                <h3> Add New Template</h3>
+              </Space> 
+            </Divider>
+            <SlotBuilder key={3} initialTemplate={SelectedTemplate} onSlotChange={onSlotChange} onNameChange={onNameChange} />
+            <Divider orientation="right" plain>
+              <Button loading={LoadingAddScreen} onClick={()=> saveAddData()} className='onsbks-success' type='primary' icon={<CloudUploadOutlined />}>SAVE</Button>
+            </Divider>
+        </div>
      </div>
   )
 }
