@@ -42,6 +42,7 @@ const SlotBuilder = ({initialTemplate = new SlotTemplateType(), onSlotChange, on
 
 
   useEffect(() => {
+    console.log({initialTemplate})
     if(initialTemplate.template.rows.length <= 0){
       initializer();
     }
@@ -304,7 +305,7 @@ const SlotBuilder = ({initialTemplate = new SlotTemplateType(), onSlotChange, on
   return (
     <>
       <Row >
-        <Col span={10} xs={24} xl={10} >
+        <Col span={8} xs={24} xl={8} >
           <span>Name of the template: </span>
           <div
             style={{
@@ -395,7 +396,7 @@ const SlotBuilder = ({initialTemplate = new SlotTemplateType(), onSlotChange, on
             />
           </div>
         </Col>
-        <Col span={12} xs={22} xl={12} offset={1}>
+        <Col span={16} xs={22} xl={16} >
           <Row gutter={[slot.gutter, slot.vGutter]} >
                 {slot.rows.map((rowData, rowInd) => (
                     <>

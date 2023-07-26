@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Affix, Button, message, Result, Steps, theme } from 'antd';
+import { Affix, Button, Divider, message, Result, Steps, theme } from 'antd';
 import BoxCalendar from '../calendar/BoxCalendar';
 import SlotBuilder from './SlotBuilder';
 import ProductsTable from '../products/ProductsTable';
 import { CaretLeftOutlined, CheckOutlined, LeftOutlined, LeftSquareOutlined, RightOutlined } from '@ant-design/icons';
 import { Product } from '../products/Product.type';
 import { ProductApi } from '../../http/ProductApi';
+import SlotTemplateSelector from './SlotTemplateSelector';
+import { SlotTemplateType } from './types/SlotTemplateType.type';
 
 const SlotBuilderSteps = () => {
+
+  message.config({top: 50});
   const onSelectProduct = (product, index) => {
     console.log({product})
     setSelectedProduct(product);
@@ -18,16 +22,6 @@ const SlotBuilderSteps = () => {
     console.log({date});
 
     setSelectedDate(date);
-  }
-
-  const onSlotChange = (slotChanged) => {
-    console.log({slotChanged})
-    setSlot(slotChanged);
-  }
-
-  const onNameChange = (name) => {
-    console.log({name})
-    setName(name);
   }
 
   const [products, setProducts] = useState(Product.List([]));
@@ -44,11 +38,14 @@ const SlotBuilderSteps = () => {
   };
 
 
+  const [SelectedSlotTemplate, setSelectedSlotTemplate] = useState(new SlotTemplateType());
+
+  const handleSelectSlotTemplate = (selectedSlotTemplate) => {
+    setSelectedSlotTemplate(selectedSlotTemplate)
+  }
+
+
   const steps = [
-    // {
-    //     title: 'Configure Slots',
-    //     content: <SlotBuilder />,
-    //   },
     {
       title: 'Choose Product',
       content: <ProductsTable key={1} products={products} selectedIndex={pInd} type='select' buttonText='SELECT' onSelect={onSelectProduct} />,
@@ -58,8 +55,8 @@ const SlotBuilderSteps = () => {
       content: <BoxCalendar key={2} onSelect={onSelectDate} />,
     },
     {
-      title: 'Configure Slots',
-      content: <SlotBuilder key={3} onSlotChange={onSlotChange} onNameChange={onNameChange} />,
+      title: 'Choose Template',
+      content: <SlotTemplateSelector key={3} onSelectSlotTemplate={handleSelectSlotTemplate} />,
     },
   ];
 
@@ -70,10 +67,6 @@ const SlotBuilderSteps = () => {
 
   const dateNow = new Date();
   const [selectedDate, setSelectedDate] = useState(dateNow.toISOString().split('T')[0]);
-
-  const [slot, setSlot] = useState(null);
-  const [name, setName] = useState('');
-
 
 
   const next = () => {
@@ -90,9 +83,10 @@ const SlotBuilderSteps = () => {
 
 
 
-  const submitHandler = ({selectedProduct, selectedDate, slot}) => {
-    console.log({selectedProduct, selectedDate, slot, name});
+  const submitHandler = () => {
+    console.log({selectedProduct, selectedDate, SelectedSlotTemplate});
     // call api to save the product meta
+    if(!SelectedSlotTemplate.id) message.error('please Select a Template')
   }
 
 
@@ -101,6 +95,9 @@ const SlotBuilderSteps = () => {
       <div >
         <Steps current={current} items={items} />
       </div>
+      <Divider orientation='left' plain>
+        <h3>{steps[current].title}</h3>
+      </Divider>
       <div style={{marginRight: 20}} >{steps[current].content}</div>
       <div
         style={{
@@ -119,7 +116,7 @@ const SlotBuilderSteps = () => {
           </Button>
           {current === steps.length-1 
           ? 
-          <Button className='onsbks-success' icon={<CheckOutlined />} type="primary" onClick={() => submitHandler({selectedProduct, selectedDate, slot})}>
+          <Button className='onsbks-success' icon={<CheckOutlined />} type="primary" onClick={() => submitHandler()}>
               PUBLISH 
           </Button>
           :
