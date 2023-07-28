@@ -9,9 +9,9 @@ import SlotPlotter from './components/slots/SlotPlotter';
 const Frontend = () => {
   return (
     <div>
-        <h2 className='app-title'>React Booking Section</h2>
+        {/* <h2 className='app-title'>React Booking Section</h2>
         <hr />
-        {/* <ProductsTable /> */}
+        <ProductsTable /> */}
         
         <Row>
             <Col span={8} xs={22} xl={6} offset={1}>

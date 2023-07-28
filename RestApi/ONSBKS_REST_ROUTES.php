@@ -7,7 +7,8 @@ Router::GET('/info', array('ONSBKS_Slots\RestApi\Controllers\Info', 'check_info'
 
 Router::GET('/products', array('ONSBKS_Slots\RestApi\Controllers\Product', 'get_products'), Router::$AUTH['Anonymous']);
 Router::GET('/products/meta', array('ONSBKS_Slots\RestApi\Controllers\Product', 'get_products_meta'), Router::$AUTH['Anonymous']);
-Router::POST('/products/meta', array('ONSBKS_Slots\RestApi\Controllers\Product', 'set_products_meta'), Router::$AUTH['Anonymous']);
+Router::POST('/products/template', array('ONSBKS_Slots\RestApi\Controllers\Product', 'set_booking_template'), Router::$AUTH['Anonymous']);
+Router::GET('/products/templates', array('ONSBKS_Slots\RestApi\Controllers\Product', 'get_booking_templates'), Router::$AUTH['Anonymous']);
 
 
 Router::GET('/options', array('ONSBKS_Slots\RestApi\Controllers\Options', 'get_option'), Router::$AUTH['Anonymous']);

@@ -17,6 +17,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.1.4",
     "antd": "^5.5.2",
-    "axios": "^1.4.0"
+    "axios": "^1.4.0",
+    "dayjs": "^1.11.9"
   }
 }

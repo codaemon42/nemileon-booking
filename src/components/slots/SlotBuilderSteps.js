@@ -52,7 +52,7 @@ const SlotBuilderSteps = () => {
     },
     {
       title: 'Choose Date',
-      content: <BoxCalendar key={2} onSelect={onSelectDate} />,
+      content: <BoxCalendar key={2} isFrontend={false} onSelect={onSelectDate} />,
     },
     {
       title: 'Choose Template',
