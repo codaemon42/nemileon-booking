@@ -5,10 +5,16 @@ import { useState, useEffect } from "react";
 import { ProductApi } from "../../http/ProductApi";
 import { Product } from "./Product.type";
 import { CheckOutlined } from "@ant-design/icons";
+import { ProductTemplateType } from "./ProductTemplate.type";
 
-const ProductsTable = ({ products, selectedIndex = null, type = "booking", buttonText = "book", onSelect }) => {
+const ProductsTable = ({ loading = false, products, selectedIndex = null, type = "booking", buttonText = "book", onSelect=(record, index)=> {} }) => {
 
   const [pInd, setPInd] = useState(selectedIndex);
+  const [Loading, setLoading] = useState(false);
+
+  useEffect(()=>{
+    setLoading(loading);
+  }, [loading])
 
 
     const nameFilterRender = (data=[]) => {
@@ -54,19 +60,6 @@ const ProductsTable = ({ products, selectedIndex = null, type = "booking", butto
             title: "Short Description",
             dataIndex: "short_description",
             key: "short_description",
-            // filters: [
-            //     {
-            //         text: "London",
-            //         value: "London",
-            //     },
-            //     {
-            //         text: "New York",
-            //         value: "New York",
-            //     },
-            // ],
-            // onFilter: (value, record) => record.address.indexOf(value) === 0,
-            // filterSearch: true,
-            // sorter: (a, b) => alphabeticSort(a, b, "name"),
         },
         {
           title: "Rating",
@@ -93,11 +86,14 @@ const ProductsTable = ({ products, selectedIndex = null, type = "booking", butto
     ];
 
     const handleAction = (record, index) => {
-      console.log({ record });
       if(type === 'booking'){
+        // on select send record
+        setPInd(index)
+        onSelect(record, index);
       // add to cart with cart item meta data added
       }
       else if(type === 'select'){
+        setPInd(index)
         onSelect(record, index);
       }
     };
@@ -106,12 +102,13 @@ const ProductsTable = ({ products, selectedIndex = null, type = "booking", butto
 
       return {
         onClick: (event) => {
-          setPInd(index);
+          // setPInd(index);
         }
       }
     }
     return (
         <Table
+            loading={Loading}
             columns={columns}
             dataSource={products}
             pagination={{ pageSize: 2 }}

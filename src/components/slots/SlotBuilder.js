@@ -7,6 +7,7 @@ import { SlotCol } from './types/SlotCol.type';
 import { SlotRow } from './types/SlotRow.type';
 import EditInput from '../form-feilds/EditInput';
 import SlotElementEditorDrawer from './SlotElementEditorDrawer';
+import { SlotTemplateType } from './types/SlotTemplateType.type';
 
 
 const gutters = {};
@@ -27,25 +28,33 @@ const rowCounts = {};
     rowCounts[i] = value;
 });
 
-const SlotBuilder = ({onSlotChange}) => {
+const SlotBuilder = ({initialTemplate = new SlotTemplateType(), onSlotChange, onNameChange}) => {
 
   const [gutterKey, setGutterKey] = useState(1);
   const [vgutterKey, setVgutterKey] = useState(1);
   const [colCountKey, setColCountKey] = useState(2);
   const [rowCountKey, setRowCountKey] = useState(1);
 
-  const [slot, setSlot] = useState(new Slot());
+  const [slot, setSlot] = useState(initialTemplate.template);
+  const [Name, setName] = useState(initialTemplate.name)
 
   const [openSlotElDrawer, setopenSlotElDrawer] = useState(false);
 
 
   useEffect(() => {
-    initializer();
+    console.log({initialTemplate})
+    if(initialTemplate.template.rows.length <= 0){
+      initializer();
+    }
   }, [])
 
   useEffect(() => {
     onSlotChange(slot);
   }, [slot])
+
+  useEffect(() => {
+    onNameChange(Name);
+  }, [Name])
 
   const initializer = () => {
 
@@ -288,10 +297,29 @@ const SlotBuilder = ({onSlotChange}) => {
     setSlot(newSlot);
   }
 
+  const onNameInputChange = (event) => {
+    onNameChange(event.target.value);
+    setName(event.target.value)
+  }
+
   return (
     <>
       <Row >
-        <Col span={10} xs={24} xl={10} >
+        <Col span={8} xs={24} xl={8} >
+          <span>Name of the template: </span>
+          <div
+            style={{
+              width: '90%',
+              marginTop: 5,
+              marginBottom: 15,
+            }}
+          >
+            <Input
+              placeholder='Enter the Name'
+              onChange={onNameInputChange}
+              value={Name}
+            />
+          </div>
           <span>Horizontal Gutter (px): </span>
           <div
             style={{
@@ -368,7 +396,7 @@ const SlotBuilder = ({onSlotChange}) => {
             />
           </div>
         </Col>
-        <Col span={12} xs={22} xl={12} offset={1}>
+        <Col span={16} xs={22} xl={16} >
           <Row gutter={[slot.gutter, slot.vGutter]} >
                 {slot.rows.map((rowData, rowInd) => (
                     <>
@@ -434,129 +462,3 @@ const SlotBuilder = ({onSlotChange}) => {
   );
 };
 export default SlotBuilder;
-
-  // const [gutterKey, setGutterKey] = useState(1);
-  // const [vgutterKey, setVgutterKey] = useState(1);
-  // const [colCountKey, setColCountKey] = useState(2);
-  // const [rowCountKey, setRowCountKey] = useState(2);
-  // const cols = [];
-  // const rows = [];
-  // const colCount = colCounts[colCountKey];
-  // const rowCount = rowCounts[rowCountKey];
-
-
-
-  // let colCode = '';
-  // for (let i = 0; i < colCount; i++) {
-  //   cols.push(
-  //     <Col key={i.toString()} span={24 / colCount}>
-  //       <div class='playground_div'>Column</div>
-  //     </Col>,
-  //   );
-  //   colCode += `  <Col span={${24 / colCount}} />\n`;
-  // }
-
-  // for (let i = 0; i < rowCount; i++) {
-  //   rows.push(
-  //       <>
-  //       {cols}
-  //     </>,
-  //   );
-  // }
-
-
-
-  // {console.log({gutters, vgutters, rows, cols})}
-  // <Row gutter={[gutters[gutterKey], vgutters[vgutterKey]]}>
-  //   {rows.map((_, rowInd) => (
-  //     <>
-  //       <Col key={`${rowInd}`} span={24 / (colCount+1)} >
-  //           <div className={'playground_header'} >header</div>
-  //       </Col>
-  //       {cols.map((__, colInd) =>(
-  //           <Col key={`${rowInd}__${colInd}`} className={`${rowInd}__${colInd}`} span={24 / (colCount+1)} onClick={()=> console.log({rowInd, colInd})}>
-  //               <div class='playground_div'>Column</div>
-  //           </Col>
-  //       ))}
-  //     </>
-  //   ))}
-  // </Row>,
-
-  // const newSlot = 
-//   {
-//     "gutter": 12,
-//     "vGutter": 12,
-//     "product_id": "1",
-//     "allowedBookingPerPerson": 4,
-//     "total": 0,
-//     "rows": [
-//         {
-//             "header": "9 - 10 AM",
-//             "description": "some description",
-//             "showToolTip": false,
-//             "cols": [
-//                 {
-//                     "product_id": '1',
-//                     "content": "Content",
-//                     "show": true,
-//                     "available_slots": 2,
-//                     "checked": false,
-//                     "booked": 0,
-//                     "expires_in": null
-//                 },
-//                 {
-//                   "product_id": '1',
-//                   "content": "Content",
-//                   "show": true,
-//                   "available_slots": 2,
-//                   "checked": false,
-//                   "booked": 0,
-//                   "expires_in": null
-//               },
-//               {
-//                 "product_id": '1',
-//                 "content": "Content",
-//                 "show": true,
-//                 "available_slots": 2,
-//                 "checked": false,
-//                 "booked": 0,
-//                 "expires_in": null
-//             }
-//             ]
-//         },
-//         {
-//           "header": "10 - 11 AM",
-//           "description": "some description",
-//           "showToolTip": false,
-//             "cols": [
-//               {
-//                 "product_id": '1',
-//                 "content": "Content",
-//                 "show": true,
-//                 "available_slots": 2,
-//                 "checked": false,
-//                 "booked": 0,
-//                 "expires_in": null
-//               },
-//               {
-//                 "product_id": '1',
-//                 "content": "Content",
-//                 "show": true,
-//                 "available_slots": 2,
-//                 "checked": false,
-//                 "booked": 0,
-//                 "expires_in": null
-//               },
-//               {
-//                 "product_id": '1',
-//                 "content": "Content",
-//                 "show": true,
-//                 "available_slots": 2,
-//                 "checked": false,
-//                 "booked": 0,
-//                 "expires_in": null
-//               }
-//             ]
-//         }
-//     ]
-// };

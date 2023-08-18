@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:   Sports Booking Slot
+ * Plugin Name:   Sports BookingsEntity Slot
  * Description:   This plugin allow users to book different available slots of sports venues.
  * Plugin URI:    https://woopearl.com/
  * Author:        Naim-Ul-Hassan
@@ -67,9 +67,9 @@ final class ONSBKS_Slots {
        * @return void
        */
       public function init_plugin() {
-            new ONSBKS_Slots\Includes\Orders();
-            new ONSBKS_Slots\Includes\Assets();
-            new ONSBKS_Slots\Includes\Ajax();
+          new ONSBKS_Slots\Includes\Orders();
+          new ONSBKS_Slots\Includes\Assets();
+          new ONSBKS_Slots\Includes\Ajax();
 
           new ONSBKS_Slots\Includes\WooCommerce();
           if( is_admin() ) {

@@ -1,10 +1,5 @@
-import { Col, Divider, Row } from 'antd';
 import React from 'react';
 import Admin from './Admin';
-import BoxCalendar from './components/calendar/BoxCalendar';
-import ProductsTable from './components/products/ProductsTable';
-import SlotBuilder from './components/slots/SlotBuilder';
-import SlotPlotter from './components/slots/SlotPlotter';
 import Frontend from './Frontend';
 import SlotTemplate from './SlotTemplate';
 
@@ -14,7 +9,7 @@ const App = () => {
     
     return (
         reactObj.is_admin 
-        ? reactObj.action === 'new' ? <Admin /> 
+        ? reactObj.action === 'new' ? <Admin style={{paddingTop: 35}} /> 
             : reactObj.action === 'templates' ? <SlotTemplate style={{marginTop: '35px', marginRight: 5}} />
             : <></>
         : <Frontend />

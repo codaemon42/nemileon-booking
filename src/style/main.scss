@@ -85,3 +85,60 @@
       background-color: #28ba62 !important;
     }
   }
+
+  input[type="checkbox"]:focus, 
+  input[type="color"]:focus, 
+  input[type="date"]:focus, 
+  input[type="datetime-local"]:focus, 
+  input[type="datetime"]:focus, 
+  input[type="email"]:focus, 
+  input[type="month"]:focus, 
+  input[type="number"]:focus, 
+  input[type="password"]:focus, 
+  input[type="radio"]:focus, 
+  input[type="search"]:focus, 
+  input[type="tel"]:focus, 
+  input[type="text"]:focus, 
+  input[type="time"]:focus, 
+  input[type="url"]:focus, 
+  input[type="week"]:focus, 
+  select:focus, 
+  textarea:focus{
+    box-shadow: none;
+  }
+
+  .onsbks-round-box{
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px 1px rgba(51, 51, 51, 0.0666666667);
+  }
+
+  .onsbks-checkbox{
+    background: rgba(0, 100, 255, 0.01);
+    padding: 15px 30px;
+    margin-right: 4px;
+    border-left: 4px solid #0059ff8a;
+
+    &:hover{
+      background: rgba(1, 121, 250, 0.07);
+      // border-radius: 4px;
+    }
+  }
+
+
+
+  @media screen and (max-width: 420px){
+    .onsbks-round-box{
+      padding: 5px;
+    }
+    .ant-picker-calendar-full .ant-picker-panel {
+      text-align: start;
+    }
+    .ant-picker-calendar .ant-picker-panel{
+      text-align: start;
+    }
+    .ant-picker-calendar .ant-picker-date-panel .ant-picker-content th{
+      width: 0;
+    }
+  }

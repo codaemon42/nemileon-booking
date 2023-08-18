@@ -1,0 +1,15 @@
+.ant-picker-calendar-date-content{
+    height: 45px !important;
+}
+.ant-picker-calendar-mode-switch{
+    display: none !important;
+}
+
+
+.ant-picker-calendar-date-content{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    // min-width: 360px;
+}
