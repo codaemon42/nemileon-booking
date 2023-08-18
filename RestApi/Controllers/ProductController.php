@@ -7,10 +7,11 @@ use ONSBKS_Slots\Includes\WooCommerce\BookingSlotProduct;
 use ONSBKS_Slots\RestApi\Validator;
 use WP_REST_Request;
 
-class Product
+class ProductController
 {
 
-    public static function get_products(WP_REST_Request $request){
+    public static function get_products(WP_REST_Request $request): void
+    {
         try {
             $products_array_object = onsbks_get_products();
             $products = [];
@@ -22,7 +23,7 @@ class Product
                 foreach ($p['gallery_image_ids'] as $gallery_image_id){
                     $p['gallery_images'][] = wp_get_attachment_image_url($gallery_image_id);
                 }
-                array_push($products, $p);
+                $products[] = $p;
             }
             wp_send_json(prepare_result($products));
         } catch (\Error $error) {
@@ -42,6 +43,28 @@ class Product
         }
     }
 
+    public static function get_booking_templates(WP_REST_Request $request){
+        try{
+            $query_params = $request->get_query_params();
+
+            Validator::validate_query_parmas($query_params, ['product_id']);
+
+            $product_id = $query_params['product_id'];
+            $product = new BookingSlotProduct($product_id);
+            $results = $product->get_booking_templates();
+//            $ns = $results;
+//            foreach ($results as $result) {
+//                $n = $result;
+//                $n['template'] = unserialize($result['template']);
+//                array_push($ns, $n);
+//            }
+
+            wp_send_json(prepare_result($results));
+        } catch (\Error $error) {
+            wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
+        }
+    }
+
 
     /**
      * @param WP_REST_Request
@@ -53,35 +76,20 @@ class Product
         try{
             $query_params = $request->get_json_params();
 
-            Validator::validate_query_parmas($query_params, ['product_id', 'key', 'value']);
+            Validator::validate_query_parmas($query_params, ['product_id', 'key', 'template']);
 
             $product_id = $query_params['product_id'];
             $keys = $query_params['key'];
-            $value = $query_params['value'];
+            $value = $query_params['template'];
             $exploded_key = explode(",", $keys);
 
             $product = new BookingSlotProduct($product_id);
 
+            $result = [];
             foreach ($exploded_key as $key){
-                $product->set_booking_template($key, $value);
+                $savedTemplate = $product->set_booking_template($key, $value);
+                $result[$key] = $savedTemplate;
             }
-            $result = true;
-
-            wp_send_json(prepare_result($result));
-        } catch (\Error $error) {
-            wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
-        }
-    }
-
-    public static function get_booking_templates(WP_REST_Request $request){
-        try{
-            $query_params = $request->get_query_params();
-
-            Validator::validate_query_parmas($query_params, ['product_id']);
-
-            $product_id = $query_params['product_id'];
-            $product = new BookingSlotProduct($product_id);
-            $result = $product->get_booking_templates();
 
             wp_send_json(prepare_result($result));
         } catch (\Error $error) {

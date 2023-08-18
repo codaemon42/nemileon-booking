@@ -79,20 +79,3 @@ function onsbks_verify_jwt($token): bool
 
     return true;
 }
-
-add_action('woocommerce_product_query', 'hide_specific_product_type_from_shop_page');
-
-function hide_specific_product_type_from_shop_page(WP_Query $q) {
-    // Define the product type you want to hide (e.g., 'simple', 'variable', 'grouped', etc.)
-    $product_type_to_hide = 'booking_slot'; // Replace 'booking_slot' with the product type to be hidden
-
-    // Modify the query to exclude products of the specified type
-    $tax_query = $q->get('tax_query');
-    $tax_query[] = array(
-        'taxonomy' => 'product_type',
-        'field' => 'slug',
-        'terms' => $product_type_to_hide,
-        'operator' => 'NOT IN',
-    );
-    $q->set('tax_query', $tax_query);
-}

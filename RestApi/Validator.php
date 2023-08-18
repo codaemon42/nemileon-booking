@@ -11,7 +11,7 @@ class Validator
             if (isset($params[$key]) && ($params[$key] !== '') && (trim($params[$key]) !== '' || $params[$key] === 0)) {
 
             } else {
-                array_push($result, "$key field is required in query params");
+                array_push($result, "$key field is required");
             }
         }
         if(count($result) > 0) {

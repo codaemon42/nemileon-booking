@@ -37,14 +37,19 @@ class BookingSlotProduct extends WC_Product_Simple
     public function get_booking_templates(){
         global $wpdb;
 
-        // Prepare the SQL query
         $sql_query = $wpdb->prepare(
-            "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_key LIKE %s",
-            $this->meta_prefix . '%'
+            "SELECT meta_id as id, post_id as product_id, meta_key as `key`, meta_value as template FROM {$wpdb->postmeta} WHERE post_id = %s AND meta_key LIKE %s",
+            $this->get_id(), $this->meta_prefix . '%'
         );
+        $results = $wpdb->get_results($sql_query, ARRAY_A);
 
-        // Run  the query
-        return $wpdb->get_results($sql_query, ARRAY_A);
+        if (!empty($results)) {
+            foreach ($results as $key => $result) {
+                $results[$key]['template'] = maybe_unserialize($result['template']);
+            }
+        }
+
+        return $results;
     }
 
 
@@ -54,7 +59,8 @@ class BookingSlotProduct extends WC_Product_Simple
             // NML_ prefix is not set from the frontend, safety purpose
             $meta_key = $this->meta_prefix . $meta_key;
         }
-        return $this->update_meta_data($meta_key, $meta_value);
+
+        return update_post_meta($this->get_id(), $meta_key, $meta_value);
     }
 
     /**

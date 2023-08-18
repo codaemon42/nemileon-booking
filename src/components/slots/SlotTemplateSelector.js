@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { SlotTemplateApi } from '../../http/SlotTemplateApi'
 import SlotBuilder from './SlotBuilder'
 import SlotPlotter from './SlotPlotter'
+import { Slot } from './types/Slot.type'
 import { SlotTemplateType } from './types/SlotTemplateType.type'
 
 
@@ -42,17 +43,17 @@ const SlotTemplateSelector = ({onSelectSlotTemplate}) => {
     }
 
     const onChange = (value) => {
-        console.log(`selected ${value}`);
+        // console.log(`selected ${value}`);
         setSelectedSlotTemplate(SlotTemplates.find(st => st.id == value))
     };
 
     const onSearch = (value) => {
-        console.log('search:', value);
+        // console.log('search:', value);
     };
 
     
     const onNameChange = (name) => {
-        console.log('name:', name);
+        // console.log('name:', name);
         const newSelectedSlotTemplate = {...SelectedSlotTemplate};
         newSelectedSlotTemplate.name = name;
         setSelectedSlotTemplate(newSelectedSlotTemplate);
@@ -61,8 +62,8 @@ const SlotTemplateSelector = ({onSelectSlotTemplate}) => {
     const onSlotChange = (slot) => {
         console.log('slot:', slot);
         const newSelectedSlotTemplate = {...SelectedSlotTemplate};
-        newSelectedSlotTemplate.template = slot;
-        setSelectedSlotTemplate(newSelectedSlotTemplate);
+        newSelectedSlotTemplate.template = new Slot(slot);
+        setSelectedSlotTemplate(new SlotTemplateType(newSelectedSlotTemplate));
     };
 
 

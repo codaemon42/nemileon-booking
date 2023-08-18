@@ -8,10 +8,12 @@ import { Product } from '../products/Product.type';
 import { ProductApi } from '../../http/ProductApi';
 import SlotTemplateSelector from './SlotTemplateSelector';
 import { SlotTemplateType } from './types/SlotTemplateType.type';
+import { ProductTemplateType } from '../products/ProductTemplate.type';
 
-const SlotBuilderSteps = () => {
-
+const SlotBuilderSteps = ({stepStyle}) => {
   message.config({top: 50});
+  const [LoadingPublish, setLoadingPublish] = useState(false);
+
   const onSelectProduct = (product, index) => {
     console.log({product})
     setSelectedProduct(product);
@@ -41,6 +43,7 @@ const SlotBuilderSteps = () => {
   const [SelectedSlotTemplate, setSelectedSlotTemplate] = useState(new SlotTemplateType());
 
   const handleSelectSlotTemplate = (selectedSlotTemplate) => {
+    console.log({selectedSlotTemplate})
     setSelectedSlotTemplate(selectedSlotTemplate)
   }
 
@@ -65,8 +68,7 @@ const SlotBuilderSteps = () => {
   const [current, setCurrent] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState(new Product());
 
-  const dateNow = new Date();
-  const [selectedDate, setSelectedDate] = useState(dateNow.toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(null);
 
 
   const next = () => {
@@ -83,16 +85,36 @@ const SlotBuilderSteps = () => {
 
 
 
-  const submitHandler = () => {
+  const submitHandler = async () => {
     console.log({selectedProduct, selectedDate, SelectedSlotTemplate});
+    // validation
+    if(!SelectedSlotTemplate.id) return message.error('please Select a Template')
+    if(!selectedProduct.id) return message.error('please Select a product')
+    if(!selectedDate) return message.error('please Select a date');
+
+    // process product meta => booking slot template for the particular product
+    const newProductTemplate = new ProductTemplateType();
+    newProductTemplate.product_id = selectedProduct.id;
+    newProductTemplate.key = selectedDate.date;
+    newProductTemplate.template = SelectedSlotTemplate.template;
+    
+    console.log({meta: {...newProductTemplate}})
     // call api to save the product meta
-    if(!SelectedSlotTemplate.id) message.error('please Select a Template')
+    setLoadingPublish(true);
+    const productTemplateRes = await ProductApi.saveProductTemplates(newProductTemplate);
+    setLoadingPublish(false);
+    if(productTemplateRes.success){
+      message.success(productTemplateRes.message)
+    } else{
+      message.error(productTemplateRes.message);
+    }
+
   }
 
 
   return (
     <>
-      <div >
+      <div style={stepStyle}>
         <Steps current={current} items={items} />
       </div>
       <Divider orientation='left' plain>
@@ -116,7 +138,7 @@ const SlotBuilderSteps = () => {
           </Button>
           {current === steps.length-1 
           ? 
-          <Button className='onsbks-success' icon={<CheckOutlined />} type="primary" onClick={() => submitHandler()}>
+          <Button loading={LoadingPublish} className='onsbks-success' icon={<CheckOutlined />} type="primary" onClick={() => submitHandler()}>
               PUBLISH 
           </Button>
           :

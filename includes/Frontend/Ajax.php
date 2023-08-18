@@ -33,9 +33,48 @@ class Ajax {
         add_action( 'wp_ajax_sbks_select_action', [ $this, 'sbks_select_action' ] );
         add_action( 'wp_ajax_nopriv_sbks_select_action', [ $this, 'sbks_select_action' ] );
 
+        add_action( 'wp_ajax_onsbks_cart_action', [ $this, 'onsbks_cart_action' ] );
+        add_action( 'wp_ajax_nopriv_onsbks_cart_action', [ $this, 'onsbks_cart_action' ] );
+        add_filter( 'woocommerce_add_cart_item_data', [ $this, 'add_booked_slots'], 1, 3 );
+
         add_filter( 'woocommerce_add_cart_item_data', [ $this, 'sbks_add_cart_item_data'], 1, 3 );
         add_filter( 'woocommerce_get_item_data', [ $this, 'sbks_get_item_data'], 1, 3 );
         add_action( 'woocommerce_checkout_create_order_line_item', [ $this, 'sbks_checkout_create_order_line_item'], 10, 4 );
+    }
+
+
+    /**
+     * adds cart-items and cart-itemmeta by ajax
+     *
+     * @author Naim-Ul-Hassan
+     *
+     * @since 1.4.1
+     */
+    public function onsbks_cart_action() {
+        if( ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'onsbks_react_nonce' ) ) {
+            wp_send_json(prepare_result(null, "nonce verification failed", false));
+        }
+        wp_send_json(prepare_result(['url' => wc_get_cart_url()], "slots are saved for cart successfully"));
+    }
+
+
+    /**
+     * add meta data to cart item
+     *
+     * @author Naim-Ul-Hassan
+     *
+     * @since 1.1.1
+     *
+     * @param $cart_item_data
+     * @param $product_id
+     * @param $variation_id
+     *
+     * @return array cart_item_data
+     */
+    public function add_booked_slots( $cart_item_data, $product_id, $variation_id ): array {
+        $value = $this->get_date_time();
+        $cart_item_data['date_time'] =  $value;
+        return $cart_item_data;
     }
 
     /**

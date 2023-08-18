@@ -1,20 +1,32 @@
 <?php
 use ONSBKS_Slots\RestApi\Router;
 
+use ONSBKS_Slots\RestApi\Controllers\BookingController;
+use ONSBKS_Slots\RestApi\Controllers\SlotTemplates;
+use ONSBKS_Slots\RestApi\Controllers\Options;
+use ONSBKS_Slots\RestApi\Controllers\ProductController;
+use ONSBKS_Slots\RestApi\Controllers\Info;
 
+$ROUTER = new Router();
 
-Router::GET('/info', array('ONSBKS_Slots\RestApi\Controllers\Info', 'check_info'), array('ONSBKS_Slots\RestApi\Middleware', 'Anonymous'));
+$infoController = new Info();
+$ROUTER->GET('/info', array($infoController, 'check_info'), array('ONSBKS_Slots\RestApi\Middleware', 'Anonymous'));
 
-Router::GET('/products', array('ONSBKS_Slots\RestApi\Controllers\Product', 'get_products'), Router::$AUTH['Anonymous']);
-Router::GET('/products/meta', array('ONSBKS_Slots\RestApi\Controllers\Product', 'get_products_meta'), Router::$AUTH['Anonymous']);
-Router::POST('/products/template', array('ONSBKS_Slots\RestApi\Controllers\Product', 'set_booking_template'), Router::$AUTH['Anonymous']);
-Router::GET('/products/templates', array('ONSBKS_Slots\RestApi\Controllers\Product', 'get_booking_templates'), Router::$AUTH['Anonymous']);
+$productController = new ProductController();
+$ROUTER->GET('/products', array($productController, 'get_products'), $ROUTER->AUTH['Anonymous']);
+$ROUTER->GET('/products/meta', array($productController, 'get_products_meta'), $ROUTER->AUTH['Anonymous']);
+$ROUTER->POST('/products/template', array($productController, 'set_booking_template'), $ROUTER->AUTH['Anonymous']);
+$ROUTER->GET('/products/templates', array($productController, 'get_booking_templates'), $ROUTER->AUTH['Anonymous']);
 
+$optionsController = new Options();
+$ROUTER->GET('/options', array($optionsController, 'get_option'), $ROUTER->AUTH['Anonymous']);
+$ROUTER->POST('/options', array($optionsController, 'set_option'), $ROUTER->AUTH['Anonymous']);
 
-Router::GET('/options', array('ONSBKS_Slots\RestApi\Controllers\Options', 'get_option'), Router::$AUTH['Anonymous']);
-Router::POST('/options', array('ONSBKS_Slots\RestApi\Controllers\Options', 'set_option'), Router::$AUTH['Anonymous']);
+$slotTemplateController = new SlotTemplates();
+$ROUTER->GET('/templates', [$slotTemplateController, 'find_all'], $ROUTER->AUTH['Anonymous']);
+$ROUTER->POST('/templates', [$slotTemplateController, 'create'], $ROUTER->AUTH['Anonymous']);
+$ROUTER->PUT('/templates', [$slotTemplateController, 'update'], $ROUTER->AUTH['Anonymous']);
+$ROUTER->DELETE('/templates', [$slotTemplateController, 'delete'], $ROUTER->AUTH['Anonymous']);
 
-Router::GET('/templates', ['\ONSBKS_Slots\RestApi\Controllers\SlotTemplates', 'find_all'], Router::$AUTH['Anonymous']);
-Router::POST('/templates', ['\ONSBKS_Slots\RestApi\Controllers\SlotTemplates', 'create'], Router::$AUTH['Anonymous']);
-Router::PUT('/templates', ['\ONSBKS_Slots\RestApi\Controllers\SlotTemplates', 'update'], Router::$AUTH['Anonymous']);
-Router::DELETE('/templates', ['\ONSBKS_Slots\RestApi\Controllers\SlotTemplates', 'delete'], Router::$AUTH['Anonymous']);
+$bookingController = new BookingController();
+$ROUTER->GET('/bookings', [$bookingController, 'createBooking'] ,$ROUTER->AUTH['Test']);

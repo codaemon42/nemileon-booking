@@ -110,7 +110,7 @@ class Assets {
 
         wp_localize_script( 'sbks-frontend-react-script', 'reactObj', array(
             'ajax_url'  => admin_url( 'admin-ajax.php' ),
-            'nonce'     => wp_create_nonce( 'sbks_react_nonce' ),
+            'nonce'     => wp_create_nonce( 'onsbks_react_nonce' ),
             'jwt'       => onsbks_create_jwt(),
             'select'    => 'successfully selected...',
             'approve'   => 'successfully approved...',

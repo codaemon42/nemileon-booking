@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Checkbox, Col, Row } from 'antd';
 
-const WeekPicker = ({onSelect = (checkedElements)=>{}}) => {
+const WeekPicker = ({onSelect = (checkedElements=[])=>{}}) => {
 
     const onChange = (checkedValues) => {
         console.log('checked = ', checkedValues);

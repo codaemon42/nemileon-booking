@@ -125,3 +125,20 @@
       // border-radius: 4px;
     }
   }
+
+
+
+  @media screen and (max-width: 420px){
+    .onsbks-round-box{
+      padding: 5px;
+    }
+    .ant-picker-calendar-full .ant-picker-panel {
+      text-align: start;
+    }
+    .ant-picker-calendar .ant-picker-panel{
+      text-align: start;
+    }
+    .ant-picker-calendar .ant-picker-date-panel .ant-picker-content th{
+      width: 0;
+    }
+  }

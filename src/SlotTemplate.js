@@ -3,6 +3,8 @@ import { Button, Divider, message, Modal, Popconfirm, Space, Table, Tooltip } fr
 import {useEffect, useState} from 'react';
 import SlotBuilder from './components/slots/SlotBuilder';
 import SlotPlotter from './components/slots/SlotPlotter';
+import { Slot } from './components/slots/types/Slot.type';
+import { SlotCol } from './components/slots/types/SlotCol.type';
 import { SlotTemplateType } from './components/slots/types/SlotTemplateType.type';
 import { alphabeticSort } from './helper/alphabeticSort';
 import { countAvailableSlots } from './helper/countAvailableSlots';
@@ -51,7 +53,7 @@ const SlotTemplate = ({...props}) => {
             sorter: (a, b) => alphabeticSort(a, b, "name"),
         },
         {
-          title: "Max Booking",
+          title: "Max BookingsEntity",
           key: "allowedBookingPerPerson",
           render: (_, record, index) => (
               <div> {record.template.allowedBookingPerPerson}</div>
@@ -140,9 +142,10 @@ const SlotTemplate = ({...props}) => {
     }
 
     const onSlotChange = (slot) => {
-      console.log({slot});
+      // console.log({slot});
       const newSelectedTemplate = {...SelectedTemplate}
-      newSelectedTemplate.template = slot;
+      newSelectedTemplate.template = new Slot(slot);
+      newSelectedTemplate.template.rows[0] && console.log({newSelectedTemplates: new SlotCol(newSelectedTemplate.template.rows[0].cols[0])})
       setSelectedTemplate(newSelectedTemplate);
     }
 

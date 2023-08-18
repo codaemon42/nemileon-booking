@@ -14,6 +14,8 @@ class WooInitializer
         add_filter( 'woocommerce_product_data_tabs', [$this, 'booking_slot_product_tabs'] );
         add_action( 'woocommerce_product_data_panels', [$this, 'booking_slot_product_tab_content'] );
         add_action('woocommerce_process_product_meta_booking_slot', [$this, 'wc_save_booking_slot_custom_fields']);
+
+        add_action('woocommerce_product_query', [$this, 'hide_specific_product_type_from_shop_page']);
     }
 
     /**
@@ -37,19 +39,19 @@ class WooInitializer
      * @return mixed
      */
     public function add_booking_slot_product_type( $types ){
-        $types['booking_slot'] = 'Booking Slot Product';
+        $types['booking_slot'] = 'BookingsEntity Slot Product';
         return $types;
     }
 
 
     /**
-     * Add a Booking Slot tab for BookingSlot products.
+     * Add a BookingsEntity Slot tab for BookingSlot products.
      */
     public function booking_slot_product_tabs( $tabs )
     {
 
         $tabs['booking_slot'] = array(
-            'label'		=> __( 'Booking Slot', 'woocommerce' ),
+            'label'		=> __( 'BookingsEntity Slot', 'woocommerce' ),
             'target'	=> 'booking_slot_options',
             'class'		=> array( 'show_if_booking_slot' ),
             'priority'  => 5
@@ -145,6 +147,23 @@ class WooInitializer
 
         update_post_meta($post_id, '_sale_price_dates_from', $sale_price_dates_from);
         update_post_meta($post_id, '_sale_price_dates_to', $sale_price_dates_to);
+    }
+
+
+
+    function hide_specific_product_type_from_shop_page(\WP_Query $q) {
+        // Define the product type you want to hide (e.g., 'simple', 'variable', 'grouped', etc.)
+        $product_type_to_hide = 'booking_slot'; // Replace 'booking_slot' with the product type to be hidden
+
+        // Modify the query to exclude products of the specified type
+        $tax_query = $q->get('tax_query');
+        $tax_query[] = array(
+            'taxonomy' => 'product_type',
+            'field' => 'slug',
+            'terms' => $product_type_to_hide,
+            'operator' => 'NOT IN',
+        );
+        $q->set('tax_query', $tax_query);
     }
 
 }

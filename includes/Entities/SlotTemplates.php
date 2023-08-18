@@ -1,8 +1,8 @@
 <?php
 
-namespace ONSBKS_Slots\Includes\Admin;
+namespace ONSBKS_Slots\Includes\Entities;
 
-class SlotTemplates
+class SlotTemplates implements IEntities
 {
     private $_wpdb;
     private $table_name = "";
@@ -19,7 +19,7 @@ class SlotTemplates
 
     }
 
-    public function db_init()
+    public function db_init(): void
     {
         $sql = "CREATE TABLE IF NOT EXISTS $this->table_name (
             id INT NOT NULL AUTO_INCREMENT,
@@ -28,11 +28,12 @@ class SlotTemplates
             PRIMARY KEY (id)
         );";
 
-        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta( $sql );
     }
 
-    public function find_all($per_page = 100, $paged = 1) {
+    public function find_all($per_page = 100, $paged = 1): array|null|object
+    {
         // Calculate the offset for pagination
         $offset = ($paged - 1) * $per_page;
 
@@ -47,7 +48,8 @@ class SlotTemplates
         return $results;
     }
 
-    public function find_one($id) {
+    public function find_one(string $id): mixed
+    {
         // Prepare the query to retrieve the entry by ID
         $query = $this->_wpdb->prepare("SELECT * FROM $this->table_name WHERE id = %d", $id);
 
@@ -71,7 +73,7 @@ class SlotTemplates
         );
 
         // Format data types for safe insertion
-//        $data_formats = array('%s');
+        // $data_formats = array('%s');
 
         // Insert data into the table
         $this->_wpdb->insert($this->table_name, $data);
@@ -99,7 +101,8 @@ class SlotTemplates
     }
 
 
-    public function delete($id) {
+    public function delete(string $id): int
+    {
         // Prepare the WHERE clause to identify the row to update
         $where = array('id' => $id);
 

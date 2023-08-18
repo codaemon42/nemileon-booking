@@ -28,8 +28,8 @@ class Menu {
             $parent_slug = 'sports-booking-slot';
             $capability = 'manage_options';
 
-            add_menu_page( 'booking slot page', 'Sports Booking', $capability, $parent_slug, [ $this, 'slotbook_page' ], 'dashicons-buddicons-groups', 71 );
-            add_submenu_page( $parent_slug, 'Booking Slot Lists', 'Booking Slot Lists', $capability, $parent_slug, [ $this, 'slotbook_page' ], 10 );
+            add_menu_page( 'booking slot page', 'Sports BookingsEntity', $capability, $parent_slug, [ $this, 'slotbook_page' ], 'dashicons-buddicons-groups', 71 );
+            add_submenu_page( $parent_slug, 'BookingsEntity Slot Lists', 'BookingsEntity Slot Lists', $capability, $parent_slug, [ $this, 'slotbook_page' ], 10 );
             add_submenu_page( $parent_slug, 'Add New Slot', 'Add New Slot', $capability, "{$parent_slug}&action=new", [ $this, 'add_new_slot_page' ], 10 );
             add_submenu_page( $parent_slug, 'Slot Templates', 'Slot Templates', $capability, "{$parent_slug}&action=templates", [ $this, 'add_new_slot_page' ], 15 );
       }

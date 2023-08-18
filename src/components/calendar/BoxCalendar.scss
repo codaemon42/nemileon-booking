@@ -4,3 +4,12 @@
 .ant-picker-calendar-mode-switch{
     display: none !important;
 }
+
+
+.ant-picker-calendar-date-content{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    // min-width: 360px;
+}
