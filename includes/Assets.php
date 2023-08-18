@@ -109,6 +109,7 @@ class Assets {
         ) );
 
         wp_localize_script( 'sbks-frontend-react-script', 'reactObj', array(
+            'base_url'  => site_url(),
             'ajax_url'  => admin_url( 'admin-ajax.php' ),
             'nonce'     => wp_create_nonce( 'onsbks_react_nonce' ),
             'jwt'       => onsbks_create_jwt(),

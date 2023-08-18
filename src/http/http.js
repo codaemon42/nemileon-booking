@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = "http://localhost/sports/wp-json";
+const baseURL = `${reactObj.base_url}/wp-json`;
 const sUrl = "/onsbks/v2";
 
 const prepareUrl = (params) =>  sUrl + params;

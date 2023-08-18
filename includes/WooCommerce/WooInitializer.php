@@ -39,19 +39,19 @@ class WooInitializer
      * @return mixed
      */
     public function add_booking_slot_product_type( $types ){
-        $types['booking_slot'] = 'BookingsEntity Slot Product';
+        $types['booking_slot'] = 'Booking Slot Product';
         return $types;
     }
 
 
     /**
-     * Add a BookingsEntity Slot tab for BookingSlot products.
+     * Add a Booking Slot tab for BookingSlot products.
      */
     public function booking_slot_product_tabs( $tabs )
     {
 
         $tabs['booking_slot'] = array(
-            'label'		=> __( 'BookingsEntity Slot', 'woocommerce' ),
+            'label'		=> __( 'Booking Slot', 'woocommerce' ),
             'target'	=> 'booking_slot_options',
             'class'		=> array( 'show_if_booking_slot' ),
             'priority'  => 5

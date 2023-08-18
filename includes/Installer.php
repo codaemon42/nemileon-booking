@@ -17,7 +17,7 @@ class Installer {
      */
     public function run() {
         $this->add_version();
-        $this->create_page('BookingsEntity Slots', do_shortcode("[booking_shortcode]"));
+        $this->create_page('Booking Slots', do_shortcode("[booking_shortcode]"));
         $this->init_db();
     }
 
