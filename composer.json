@@ -5,7 +5,9 @@
     "license": "GPLv2",
     "minimum-stability": "dev",
     "require": {
-        "firebase/php-jwt": "dev-main"
+        "firebase/php-jwt": "dev-main",
+        "phpunit/phpunit": "^7",
+        "myclabs/deep-copy": "1.x-dev"
     },
     "autoload": {
         "psr-4": {
@@ -16,5 +18,11 @@
             "includes/functions.php",
             "RestApi/ONSBKS_REST_ROUTES.php"
         ]
+    },
+    "scripts": {
+        "phpunit": "WP_RUN_CORE_TESTS=true phpunit"
+    },
+    "require-dev":{
+        "yoast/phpunit-polyfills" : "1.0.3"
     }
 }

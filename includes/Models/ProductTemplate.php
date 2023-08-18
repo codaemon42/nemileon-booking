@@ -19,12 +19,18 @@ class ProductTemplate
             'key' => '',
             'template' => new Slot()
         ]);
-
-        if($data == null) $data = $this->data;
-        $this->setId( $data['id'] );
-        $this->setProductId( $data['product_id'] );
-        $this->setKey( $data['key'] );
-        $this->setTemplate( new Slot($data['template']) );
+        if($data instanceof self){
+            $this->setId( $data->getId() );
+            $this->setProductId( $data->getProductId() );
+            $this->setKey( $data->getKey() );
+            $this->setTemplate( $data->getData()['template'] );
+        } else {
+            if($data == null) $data = $this->data;
+            $this->setId( $data['id'] );
+            $this->setProductId( $data['product_id'] );
+            $this->setKey( $data['key'] );
+            $this->setTemplate( $data['template'] );
+        }
     }
 
 
@@ -38,7 +44,7 @@ class ProductTemplate
         array_shift($arr);
         if(count($initialValue)){
             foreach ($initialValue as $iv){
-                array_push($arr, new self($iv));
+                $arr[] = new self($iv);
             }
         }
         return $arr;
@@ -57,6 +63,7 @@ class ProductTemplate
      */
     public function setId(int $id): void
     {
+        $this->data['id'] = $id;
         $this->id = $id;
     }
 
@@ -73,6 +80,7 @@ class ProductTemplate
      */
     public function setProductId(int $product_id): void
     {
+        $this->data['product_id'] = $product_id;
         $this->product_id = $product_id;
     }
 
@@ -89,6 +97,7 @@ class ProductTemplate
      */
     public function setKey(string $key): void
     {
+        $this->data['key'] = $key;
         $this->key = $key;
     }
 
@@ -101,11 +110,12 @@ class ProductTemplate
     }
 
     /**
-     * @param Slot $template
+     * @param $template
      */
-    public function setTemplate(Slot $template): void
+    public function setTemplate($template): void
     {
-        $this->template = $template;
+        $this->data['template'] = $template;
+        $this->template = new Slot($template);
     }
 
     /**

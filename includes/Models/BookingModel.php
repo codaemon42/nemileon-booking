@@ -3,9 +3,7 @@
 namespace ONSBKS_Slots\Includes\Models;
 
 
-use ONSBKS_Slots\Includes\Models;
-
-class BookingModel extends Models
+class BookingModel
 {
     private int $id;
     private string $user_id;
@@ -35,15 +33,31 @@ class BookingModel extends Models
             'template' => new Slot()
         ]);
 
-        if($data == null) $data = $this->data;
-        $this->setId( $data['id'] );
-        $this->setUserId( $data['user_id'] );
-        $this->setName( $data['name'] );
-        $this->setSeats( $data['seats'] );
-        $this->setProductId( $data['product_id'] );
-        $this->setHeaders( $data['headers'] );
-        $this->setTopHeader( $data['top_header'] );
-        $this->setTemplate( new Slot($data['template']) );
+        if($data instanceof self){
+            $this->setId( $data->getId() );
+            $this->setUserId( $data->getUserId() );
+            $this->setName( $data->getName() );
+            $this->setBookingDate( $data->getBookingDate() );
+            $this->setSeats( $data->getSeats() );
+            $this->setProductId( $data->getProductId() );
+            $this->setHeaders( $data->getHeaders() );
+            $this->setTopHeader( $data->getTopHeader() );
+            $this->setTotalPrice( $data->getTotalPrice() );
+            $this->setTemplate( $data->getData()['template'] );
+        }
+        else{
+            if($data == null) $data = $this->data;
+            $this->setId( $data['id'] );
+            $this->setUserId( $data['user_id'] );
+            $this->setName( $data['name'] );
+            $this->setBookingDate( $data['booking_date'] );
+            $this->setSeats( $data['seats'] );
+            $this->setProductId( $data['product_id'] );
+            $this->setHeaders( $data['headers'] );
+            $this->setTopHeader( $data['top_header'] );
+            $this->setTotalPrice( $data['total_price'] );
+            $this->setTemplate( $data['template'] );
+        }
     }
 
 
@@ -225,12 +239,12 @@ class BookingModel extends Models
     }
 
     /**
-     * @param Slot $template
+     * @param mixed $template
      */
-    public function setTemplate(Slot $template): void
+    public function setTemplate($template): void
     {
-        $this->data['template'] = wp_json_encode($template);
-        $this->template = $template;
+        $this->data['template'] = $template instanceof Slot ? $template->getData() : $template;
+        $this->template = new Slot($template);
     }
 
     /**

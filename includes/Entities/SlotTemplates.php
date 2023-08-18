@@ -32,7 +32,7 @@ class SlotTemplates implements IEntities
         dbDelta( $sql );
     }
 
-    public function find_all($per_page = 100, $paged = 1): array|null|object
+    public function find_all($per_page = 100, $paged = 1): array
     {
         // Calculate the offset for pagination
         $offset = ($paged - 1) * $per_page;

@@ -9,7 +9,7 @@ class SlotRow
     private bool $showToolTip;
     private array $cols;
 
-    private array $data = [];
+    private array $data = [] ;
 
     public function __construct( $data = null )
     {
@@ -20,11 +20,22 @@ class SlotRow
             'cols' => SlotCol::List()
         ]);
 
-        if($data == null) $data = $this->data;
-        $this->setHeader( $data['header'] );
-        $this->setDescription( $data['description'] );
-        $this->setShowToolTip( $data['showToolTip'] );
-        $this->setCols( SlotCol::List($data['cols']) );
+        if($data instanceof self){
+//            echo "HEADER OBJECT : " . $data->getHeader();
+//            var_dump($data);
+            $this->setHeader( $data->getHeader() );
+            $this->setDescription( $data->getDescription() );
+            $this->setShowToolTip( $data->isShowToolTip() );
+            $this->setCols( $data->getData()['cols'] );
+        } else {
+            if($data == null) $data = $this->data;
+//            echo "HEADER ARRAY : " . $data['header'];
+//            var_dump($data);
+            $this->setHeader( $data['header'] );
+            $this->setDescription( $data['description'] );
+            $this->setShowToolTip( $data['showToolTip'] );
+            $this->setCols( $data['cols'] );
+        }
     }
 
 
@@ -38,6 +49,7 @@ class SlotRow
         array_shift($arr);
         if(count($initialValue)){
             foreach ($initialValue as $iv){
+//                $arr[] = new self($iv);
                 array_push($arr, new self($iv));
             }
         }
@@ -57,6 +69,7 @@ class SlotRow
      */
     public function setHeader(string $header): void
     {
+        $this->data['header'] = $header;
         $this->header = $header;
     }
 
@@ -73,6 +86,7 @@ class SlotRow
      */
     public function setDescription(string $description): void
     {
+        $this->data['description'] = $description;
         $this->description = $description;
     }
 
@@ -89,6 +103,7 @@ class SlotRow
      */
     public function setShowToolTip(bool $showToolTip): void
     {
+        $this->data['showToolTip'] = $showToolTip;
         $this->showToolTip = $showToolTip;
     }
 
@@ -101,11 +116,12 @@ class SlotRow
     }
 
     /**
-     * @param array $cols
+     * @param SlotCol[] $cols
      */
     public function setCols(array $cols): void
     {
-        $this->cols = $cols;
+        $this->data['cols'] = $cols;
+        $this->cols = SlotCol::List($cols);
     }
 
     /**

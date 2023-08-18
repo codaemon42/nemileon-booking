@@ -20,7 +20,7 @@ class ProductTemplateConverter
         $seats = 0;
         $totalPrice = 0;
         $bookedHeaders = [];
-        $product = new BookingSlotProduct($productTemplate->getProductId());
+        $product = $this->getProduct($productTemplate->getProductId());
 
         foreach ($productTemplate->getTemplate()->getRows() as $row) {
             foreach ($row->getCols() as $col) {
@@ -44,8 +44,14 @@ class ProductTemplateConverter
         $bookingModel->setBookingDate($productTemplate->getKey());
         $bookingModel->setHeaders($uniqueBookedHeadersStr);
         $bookingModel->setTopHeader($topHeader);
+        $bookingModel->setTotalPrice($totalPrice);
         $bookingModel->setTemplate($productTemplate->getTemplate());
 
         return $bookingModel;
+    }
+
+    public function getProduct($productId): BookingSlotProduct
+    {
+        return new BookingSlotProduct($productId);
     }
 }

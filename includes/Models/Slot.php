@@ -22,15 +22,48 @@ class Slot
             'total' => 0
         ]);
 
-        if($data == null) $data = $this->data;
-        $this->setGutter( $data['gutter'] );
-        $this->setVGutter( $data['vGutter'] );
-        $this->setRows( SlotRow::List( $data['rows'] ) );
-        $this->setAllowedBookingPerPerson( $data['allowedBookingPerPerson'] );
-        $this->setTotal( $data['total'] );
+        if($data instanceof self){
+            $this->setGutter( $data->getGutter() );
+            $this->setVGutter( $data->getVGutter() );
+            $this->setRows( $data->getData()['rows'] );
+            $this->setAllowedBookingPerPerson( $data->getAllowedBookingPerPerson() );
+            $this->setTotal( $data->getTotal() );
+        } else {
+
+            if($data == null) $data = $this->data;
+            $this->setGutter( $data['gutter'] );
+            $this->setVGutter( $data['vGutter'] );
+            $this->setRows( $data['rows'] );
+            $this->setAllowedBookingPerPerson( $data['allowedBookingPerPerson'] );
+            $this->setTotal( $data['total'] );
+        }
+    }
+    public function hydrateFromObject(self $otherPerson) {
+        $reflection = new \ReflectionClass($otherPerson);
+        $properties = $reflection->getProperties(\ReflectionProperty::IS_PRIVATE);
+
+        foreach ($properties as $property) {
+            $propertyName = $property->getName();
+            $getter = 'get' . ucfirst($propertyName);
+
+            if (method_exists($otherPerson, $getter)) {
+                $value = $otherPerson->$getter();
+                $setter = 'set' . ucfirst($propertyName);
+
+                if (method_exists($this, $setter)) {
+                    $this->$setter($value);
+                }
+            }
+        }
     }
 
-
+//    public function hydrate($data){
+//        $this->setGutter( $data->getGutter() );
+//        $this->setVGutter( $data->getVGutter() );
+//        $this->setRows( SlotRow::List( $data->getRows() ) );
+//        $this->setAllowedBookingPerPerson( $data->getAllowedBookingPerPerson() );
+//        $this->setTotal( $data->getTotal() );
+//    }
     /**
      * @param array $initialValue
      * @return Slot[]
@@ -41,7 +74,8 @@ class Slot
         array_shift($arr);
         if(count($initialValue)){
             foreach ($initialValue as $iv){
-                array_push($arr, new self($iv));
+//                $arr[] = new self($iv);
+                $arr[] = new self($iv);
             }
         }
         return $arr;
@@ -60,6 +94,7 @@ class Slot
      */
     public function setGutter(string $gutter): void
     {
+        $this->data['gutter'] = $gutter;
         $this->gutter = $gutter;
     }
 
@@ -76,6 +111,7 @@ class Slot
      */
     public function setVGutter(string $vGutter): void
     {
+        $this->data['vGutter'] = $vGutter;
         $this->vGutter = $vGutter;
     }
 
@@ -92,6 +128,7 @@ class Slot
      */
     public function setRows(array $rows): void
     {
+        $this->data['rows'] = $rows;
         $this->rows = SlotRow::List($rows);
     }
 
@@ -108,6 +145,7 @@ class Slot
      */
     public function setAllowedBookingPerPerson(int $allowedBookingPerPerson): void
     {
+        $this->data['allowedBookingPerPerson'] = $allowedBookingPerPerson;
         $this->allowedBookingPerPerson = $allowedBookingPerPerson;
     }
 
@@ -124,6 +162,7 @@ class Slot
      */
     public function setTotal(int $total): void
     {
+        $this->data['total'] = $total;
         $this->total = $total;
     }
 

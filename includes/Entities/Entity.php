@@ -19,7 +19,7 @@ class Entity
     /**
      * @return \QM_DB|\wpdb
      */
-    public function getWpdb(): \wpdb|\QM_DB
+    public function getWpdb(): \wpdb
     {
         return $this->_wpdb;
     }

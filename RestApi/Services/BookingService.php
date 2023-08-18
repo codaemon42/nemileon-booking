@@ -66,7 +66,7 @@ class BookingService
         return $insertId;
     }
 
-    private function totalBooked(Slot $template): int
+    public function totalBooked(Slot $template): int
     {
         $totalBooked = 0;
         foreach ( $template->getRows() as $row )
@@ -141,7 +141,7 @@ class BookingService
     /**
      * @throws NotValidBookingTemplate
      */
-    private function isValidTemplate(ProductTemplate $productTemplate, bool $throwable = false): bool
+    public function isValidTemplate(ProductTemplate $productTemplate, bool $throwable = false): bool
     {
         if($productTemplate->getId()) return true;
 

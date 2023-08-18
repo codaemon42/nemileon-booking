@@ -37,13 +37,15 @@ class Router
     public function REQUEST( $method, $route_ref, $controller_ref, $perm_ref ): void
     {
         if($perm_ref == null) $perm_ref = $this->AUTH['Test'];
-        add_action( 'rest_api_init',  function () use ($method, $route_ref, $controller_ref, $perm_ref) {
-            register_rest_route( $this->base_namespace, $route_ref, array(
-                'methods' => $method,
-                'callback' => $controller_ref,
-                'permission_callback' => $perm_ref
-            ) );
-        });
+        if(function_exists('add_action')) {
+            add_action( 'rest_api_init',  function () use ($method, $route_ref, $controller_ref, $perm_ref) {
+                register_rest_route( $this->base_namespace, $route_ref, array(
+                    'methods' => $method,
+                    'callback' => $controller_ref,
+                    'permission_callback' => $perm_ref
+                ) );
+            });
+        }
     }
 
 }

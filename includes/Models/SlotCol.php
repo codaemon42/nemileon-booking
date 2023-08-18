@@ -28,15 +28,27 @@ class SlotCol
 
     public function __construct( $data = null )
     {
-        if($data == null) $data = $this->data;
-        $this->setProductId( $data['product_id'] );
-        $this->setContent( $data['content'] );
-        $this->setShow( $data['show'] );
-        $this->setAvailableSlots( $data['available_slots'] );
-        $this->setChecked( $data['checked'] );
-        $this->setBooked( $data['booked'] );
-        $this->setExpiresIn( $data['expires_in'] );
-        $this->setBook( $data['book'] );
+        if($data instanceof self){
+            $this->setProductId( $data->getProductId() );
+            $this->setContent( $data->getContent() );
+            $this->setShow( $data->getShow() );
+            $this->setAvailableSlots( $data->getAvailableSlots() );
+            $this->setChecked( $data->getChecked() );
+            $this->setBooked( $data->getBooked() );
+            $this->setExpiresIn( $data->getExpiresIn() );
+            $this->setBook( $data->getBook() );
+        }
+        else {
+            if($data == null) $data = $this->data;
+            $this->setProductId( $data['product_id'] );
+            $this->setContent( $data['content'] );
+            $this->setShow( $data['show'] );
+            $this->setAvailableSlots( $data['available_slots'] );
+            $this->setChecked( $data['checked'] );
+            $this->setBooked( $data['booked'] );
+            $this->setExpiresIn( $data['expires_in'] );
+            $this->setBook( $data['book'] );
+        }
 
     }
 
@@ -51,7 +63,7 @@ class SlotCol
         array_shift($arr);
         if(count($initialValue)){
             foreach ($initialValue as $iv){
-                array_push($arr, new self($iv));
+                $arr[] = new self($iv);
             }
         }
         return $arr;
@@ -70,6 +82,7 @@ class SlotCol
      */
     public function setProductId(string $product_id): void
     {
+        $this->data['product_id'] = $product_id;
         $this->product_id = $product_id;
     }
 
@@ -86,6 +99,7 @@ class SlotCol
      */
     public function setContent(string $content): void
     {
+        $this->data['content'] = $content;
         $this->content = $content;
     }
 
@@ -102,6 +116,7 @@ class SlotCol
      */
     public function setShow(bool $show): void
     {
+        $this->data['show'] = $show;
         $this->show = $show;
     }
 
@@ -118,6 +133,7 @@ class SlotCol
      */
     public function setAvailableSlots(int $available_slots): void
     {
+        $this->data['available_slots'] = $available_slots;
         $this->available_slots = $available_slots;
     }
 
@@ -134,6 +150,7 @@ class SlotCol
      */
     public function setChecked(bool $checked): void
     {
+        $this->data['checked'] = $checked;
         $this->checked = $checked;
     }
 
@@ -150,6 +167,7 @@ class SlotCol
      */
     public function setBooked(int $booked): void
     {
+        $this->data['booked'] = $booked;
         $this->booked = $booked;
     }
 
@@ -166,6 +184,7 @@ class SlotCol
      */
     public function setExpiresIn(string $expires_in): void
     {
+        $this->data['expires_in'] = $expires_in;
         $this->expires_in = $expires_in;
     }
 
@@ -182,6 +201,7 @@ class SlotCol
      */
     public function setBook(int $book): void
     {
+        $this->data['book'] = $book;
         $this->book = $book;
     }
 

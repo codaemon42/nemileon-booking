@@ -2,7 +2,7 @@
 
 namespace ONSBKS_Slots\RestApi\Exceptions;
 
-class BookingFailedException extends \WpOrg\Requests\Exception
+class BookingFailedException extends \Exception
 {
     public function __construct($message)
     {
