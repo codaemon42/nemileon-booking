@@ -17,9 +17,9 @@ use ONSBKS_Slots\RestApi\Repositories\ProductRepository;
 class BookingService
 {
 
-    private BookingRepository $bookingRepository;
-    private ProductRepository $productRepository;
-    private ProductTemplateConverter $productTemplateConverter;
+    public BookingRepository $bookingRepository;
+    public ProductRepository $productRepository;
+    public ProductTemplateConverter $productTemplateConverter;
 
     public function __construct()
     {
@@ -27,6 +27,7 @@ class BookingService
         $this->productRepository        = new ProductRepository();
         $this->productTemplateConverter = new ProductTemplateConverter();
     }
+
 
     /**
      * @throws NotBookableException
@@ -60,8 +61,8 @@ class BookingService
         $this->updateProductSlot($updatedProductTemplate, true);
 
         // create booking
-        $bookingModel = $this->productTemplateConverter->toBookingModel($updatedProductTemplate);
-        $insertId = $this->bookingRepository->createBooking($bookingModel);
+        $bookingModel = $this->productTemplateToBookingModel($updatedProductTemplate);
+        $insertId = $this->createBookingInDB($bookingModel);
 
         return $insertId;
     }
@@ -86,9 +87,9 @@ class BookingService
      * @return bool
      * @throws BookingNotAllowedException
      */
-    private function isAllowedBooking(Slot $template, $booked, bool $throwable = false): bool
+    public function isAllowedBooking(Slot $template, $booked, bool $throwable = false): bool
     {
-        if( $template->getAllowedBookingPerPerson() <= $booked ) return true;
+        if( $template->getAllowedBookingPerPerson() >= $booked ) return true;
 
         if($throwable) throw new BookingNotAllowedException("Booking is not allowed, exceeded maximum booking");
 
@@ -107,14 +108,15 @@ class BookingService
      * @return bool
      * @throws NotBookableException
      */
-    private function isPastDate(string $bookingDate, bool $throwable = false): bool
+    public function isPastDate(string $bookingDate, bool $throwable = false): bool
     {
         $bookingDateTimestamp = strtotime($bookingDate);
-        $currentTimestamp = current_time( 'timestamp', 1 );
+        $today = current_time( 'Y-m-d', 1 );
+		$startingTime = strtotime($today);
 
         // we can first check that if it is before today or not
-        if($currentTimestamp > $bookingDateTimestamp && !$throwable) return false;
-        if($currentTimestamp > $bookingDateTimestamp) throw new NotBookableException("Not Bookable, as the Date is not valid");
+        if($startingTime > $bookingDateTimestamp && !$throwable) return false;
+        if($startingTime > $bookingDateTimestamp) throw new NotBookableException("Not Bookable, as the Date is not valid");
 
         return true;
     }
@@ -127,7 +129,7 @@ class BookingService
     {
         $bookingDate = $productTemplate->getKey();
         // then isValid then we cross verify by fetching the product_meta of the day that the template is referring
-        $realProductSlot= $this->productRepository->get_product_slot( $productTemplate->getProductId(), $bookingDate );
+        $realProductSlot = $this->productRepository->get_product_slot( $productTemplate->getProductId(), $bookingDate );
 
         if(!$realProductSlot && !$throwable) return false;
         if(!$realProductSlot) throw new NotBookableException("Not Bookable, as the Date is not valid");
@@ -150,13 +152,14 @@ class BookingService
         return false;
     }
 
-    private function processAndModifyTemplate(ProductTemplate $bookingProductTemplate, bool $throwable = false): ProductTemplate
+    public function processAndModifyTemplate(ProductTemplate $productTemplate, bool $throwable = false): ProductTemplate
     {
-        $bookingDate = $bookingProductTemplate->getKey();
+        $bookingDate = $productTemplate->getKey();
 
         // we cross verify by fetching the product_meta of the day that the template is referring
-        $realProductSlot = $this->productRepository->get_product_slot( $bookingProductTemplate->getProductId(), $bookingDate );
+        $realProductSlot = $this->productRepository->get_product_slot( $productTemplate->getProductId(), $bookingDate );
 
+		$bookingProductTemplate = new ProductTemplate($productTemplate);
         // loop upto iterate the cols, identify the rowIndex and the colIndex
         foreach ( $bookingProductTemplate->getTemplate()->getRows() as $rowKey => $row )
         {
@@ -164,17 +167,19 @@ class BookingService
             {
                 $availableSlots = $realProductSlot->getRows()[$rowKey]->getCols()[$colKey]->getAvailableSlots();
                 $totalBooked = $realProductSlot->getRows()[$rowKey]->getCols()[$colKey]->getBooked();
-                if( !$col->getBook() ){
+				$totalBook = $col->getBook();
+                if( $totalBook > 0 ){
                     $col->setChecked(true);
-                    if($col->getBook() > $availableSlots ){
-                        $totalBooked = $totalBooked + $availableSlots;
-                        $availableSlots = 0;
+                    if($totalBook > $availableSlots ){
+	                    $totalBook = $availableSlots;
+	                    $availableSlots = 0;
                     } else {
-                        $totalBooked = $totalBooked + $col->getBook();
-                        $availableSlots = $totalBooked - $col->getBook();
+                        $availableSlots = $availableSlots - $totalBook;
                     }
+	                $totalBooked = $totalBooked + $totalBook;
 
                     // set all new values
+	                $col->setBook( $totalBook );
                     $col->setBooked( $totalBooked );
                     $col->setAvailableSlots( $availableSlots );
                 }
@@ -193,7 +198,7 @@ class BookingService
     /**
      * @throws BookingFailedException
      */
-    private function updateProductSlot(ProductTemplate $updatedProductTemplate, bool $throwable = false): bool
+    public function updateProductSlot(ProductTemplate $updatedProductTemplate, bool $throwable = false): bool
     {
         $productId = $updatedProductTemplate->getProductId();
         $dateOrDate = $updatedProductTemplate->getKey();
@@ -217,4 +222,28 @@ class BookingService
 
         return $success;
     }
+
+	/**
+	 * convert the product template to BookingModel
+	 *
+	 * @param ProductTemplate $updatedProductTemplate
+	 *
+	 * @return BookingModel
+	 */
+	public function productTemplateToBookingModel( ProductTemplate $updatedProductTemplate ): BookingModel
+	{
+		return $this->productTemplateConverter->toBookingModel($updatedProductTemplate);
+	}
+
+	/**
+	 * Insert booking in the database
+	 *
+	 * @param BookingModel $bookingModel
+	 *
+	 * @return int
+	 */
+	public function createBookingInDB(BookingModel $bookingModel): int
+	{
+		return $this->bookingRepository->createBooking($bookingModel);
+	}
 }
