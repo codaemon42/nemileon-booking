@@ -8,6 +8,7 @@ use ONSBKS_Slots\Includes\Models\ProductTemplate;
 use ONSBKS_Slots\Includes\Models\Slot;
 use ONSBKS_Slots\RestApi\Exceptions\BookingFailedException;
 use ONSBKS_Slots\RestApi\Exceptions\BookingNotAllowedException;
+use ONSBKS_Slots\RestApi\Exceptions\BookingNotFound;
 use ONSBKS_Slots\RestApi\Exceptions\NotBookableException;
 use ONSBKS_Slots\RestApi\Exceptions\NotValidBookingTemplate;
 use ONSBKS_Slots\RestApi\Repositories\BookingRepository;
@@ -27,6 +28,47 @@ class BookingService
         $this->productRepository        = new ProductRepository();
         $this->productTemplateConverter = new ProductTemplateConverter();
     }
+
+
+    /**
+     * @param array $query [per_page, paged]
+     * @return array
+     */
+    public function findAll(array $query): array
+    {
+        $per_page = $query['per_page'] || 10;
+        $paged = $query['paged'] || 1;
+        return $this->bookingRepository->findAll($per_page, $paged);
+    }
+
+
+    /**
+     * @param int $booking_id
+     * @param $throwable
+     * @return BookingModel|null
+     * @throws BookingNotFound
+     */
+    public function findBookingByBookingId(int $booking_id, $throwable = false): ?BookingModel
+    {
+        $booking = $this->bookingRepository->findById($booking_id);
+
+        if($throwable) throw new BookingNotFound();
+
+        return $booking;
+    }
+
+
+    /**
+     * @throws BookingNotFound
+     */
+    public function updateBookingByBookingId(mixed $bookingId, array $data)
+    {
+        $booking = $this->findBookingByBookingId($bookingId, true);
+        $modifyBooking = array_merge($booking->getData(), $data);
+
+        //  make possibilities to change the booking from here
+    }
+
 
     /**
      * @throws NotBookableException

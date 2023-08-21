@@ -5,6 +5,7 @@ namespace ONSBKS_Slots\Includes\Models;
 
 class BookingModel
 {
+    // changing the properties needs attention to the BookingsEntity
     private int $id;
     private string $user_id;
     private string $name; // productName
@@ -14,6 +15,7 @@ class BookingModel
     private string $headers;
     private string $top_header;
     private int $total_price;
+    private string $status; // pending-payment | active | completed | cancelled
     private Slot $template;
 
     private array $data = [];

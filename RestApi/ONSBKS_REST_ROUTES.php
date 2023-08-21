@@ -29,4 +29,7 @@ use ONSBKS_Slots\RestApi\Controllers\Info;
  $ROUTER->DELETE('/templates', [$slotTemplateController, 'delete'], $ROUTER->AUTH['Anonymous']);
 
  $bookingController = new BookingController();
- $ROUTER->GET('/bookings', [$bookingController, 'createBooking'] ,$ROUTER->AUTH['Test']);
+ $ROUTER->GET('/bookings', [$bookingController, 'findAllBookings'] ,$ROUTER->AUTH['Test']);
+ $ROUTER->POST('/bookings', [$bookingController, 'createBooking'] ,$ROUTER->AUTH['Test']);
+ $ROUTER->PUT('/bookings/(?P<id>\d+)', [$bookingController, 'createBooking'] ,$ROUTER->AUTH['Test']);
+ $ROUTER->GET('/bookings/(?P<id>\d+)', [$bookingController, 'findBookingByBookingId'] ,$ROUTER->AUTH['Test']);

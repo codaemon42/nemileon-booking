@@ -5,7 +5,7 @@ namespace ONSBKS_Slots\Includes\Entities;
 class Entity
 {
     private $_wpdb;
-    private $table_name = "";
+    public string $table_name = "";
 
     public function __construct($table_name)
     {

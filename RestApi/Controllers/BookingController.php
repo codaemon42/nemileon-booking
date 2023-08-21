@@ -21,21 +21,54 @@ class BookingController
         $this->bookingService = new BookingService();
     }
 
+    public function findAllBookings(WP_REST_Request $req): void
+    {
+        try{
+            $query = $req->get_query_params();
+            $bookings = $this->bookingService->findAll($query);
+            wp_send_json_success(prepare_result($bookings));
+        }
+        catch (\Exception $e) {
+            wp_send_json(prepare_result(false, $e->getMessage(), false), 500);
+        }
+    }
+
+    public function findBookingByBookingId(WP_REST_Request $req): void
+    {
+        try{
+            $bookingId = $req->get_param("id");
+            $booking = $this->bookingService->findBookingByBookingId($bookingId, true);
+            wp_send_json_success(prepare_result($booking->getData()));
+        }
+        catch (\Exception $e) {
+            wp_send_json(prepare_result(false, $e->getMessage(), false), 500);
+        }
+    }
 
     public function createBooking(WP_REST_Request $req): void
     {
         try {
             $productTemplate = new ProductTemplate( $req->get_json_params() );
 
-            $this->bookingService->createBooking( $productTemplate );
-            wp_send_json(prepare_result([]));
-        }
-        catch (NotBookableException $e) {
-            wp_send_json($e->getData(), $e->getCode());
+            $booking_id = $this->bookingService->createBooking( $productTemplate );
+            $booking = $this->bookingService->findBookingByBookingId($booking_id);
+            wp_send_json(prepare_result($booking));
         }
         catch (\Exception $e) {
-            wp_send_json(prepare_result(false, 'Something went wrong', false), 500);
+            wp_send_json(prepare_result(false, $e->getMessage(), false), 500);
         }
+    }
 
+    public function updateBookingByBookingId(WP_REST_Request $req): void
+    {
+        try{
+            $bookingId = $req->get_param("id");
+            $data = $req->get_body_params();
+            $booking = $this->bookingService->updateBookingByBookingId($bookingId, $data);
+            wp_send_json_success(prepare_result($booking->getData()));
+        }
+        catch (\Exception $e) {
+            wp_send_json(prepare_result(false, $e->getMessage(), false), 500);
+        }
     }
 }
