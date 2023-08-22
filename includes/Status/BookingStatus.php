@@ -2,6 +2,8 @@
 
 namespace ONSBKS_Slots\Includes\Status;
 
+use ONSBKS_Slots\RestApi\Exceptions\InvalidBookingStatusException;
+
 class BookingStatus
 {
     const PENDING_PAYMENT = "PENDING_PAYMENT";
@@ -9,11 +11,16 @@ class BookingStatus
     const COMPLETED = "COMPLETED";
     const CANCELLED = "CANCELLED";
 
-    public static function isValid(string $status): bool
+
+    /**
+     * @throws InvalidBookingStatusException
+     */
+    public static function parse(string $status): string
     {
         $reflectionClass = new \ReflectionClass(__CLASS__);
         $constants = $reflectionClass->getConstants();
+        if(!in_array($status, $constants)) throw new InvalidBookingStatusException();
 
-        return in_array($status, $constants);
+        return $reflectionClass->getConstant($status);
     }
 }

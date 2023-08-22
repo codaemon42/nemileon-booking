@@ -3,6 +3,8 @@
 namespace ONSBKS_Slots\Includes\Models;
 
 
+use ONSBKS_Slots\Includes\Status\BookingStatus;
+
 class BookingModel
 {
     // changing the properties needs attention to the BookingsEntity
@@ -32,6 +34,7 @@ class BookingModel
             'headers' => '',
             'top_header' => '',
             'total_price' => 0,
+            'status' => BookingStatus::PENDING_PAYMENT,
             'template' => new Slot()
         ]);
 
@@ -45,6 +48,7 @@ class BookingModel
             $this->setHeaders( $data->getHeaders() );
             $this->setTopHeader( $data->getTopHeader() );
             $this->setTotalPrice( $data->getTotalPrice() );
+            // $this->se
             $this->setTemplate( $data->getData()['template'] );
         }
         else{
@@ -231,6 +235,25 @@ class BookingModel
         $this->data['total_price'] = $total_price;
         $this->total_price = $total_price;
     }
+
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param string $status
+     * @throws \ONSBKS_Slots\RestApi\Exceptions\InvalidBookingStatusException
+     */
+    public function setStatus(string $status): void
+    {
+        $this->data['status'] = BookingStatus::parse($status);
+        $this->status = BookingStatus::parse($status);
+    }
+
 
     /**
      * @return Slot

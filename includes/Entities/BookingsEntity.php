@@ -30,6 +30,7 @@ class BookingsEntity extends Entity
             product_id VARCHAR(100),
             headers LONGTEXT,
             top_header VARCHAR(255),
+            status VARCHAR(255),
             template LONGTEXT,
             PRIMARY KEY (id)
         );";
