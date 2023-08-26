@@ -171,7 +171,7 @@ class Slot
      */
     public function getData(): array
     {
-        return $this->data;
+        return $this->data ?: [];
     }
 
     /**

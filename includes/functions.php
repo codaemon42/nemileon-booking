@@ -41,6 +41,7 @@ function onsbks_create_jwt(): string
         'exp' => time() + (60 * 60 * 24), // Token expiration time (e.g., 24 hours from now)
     );
 
+    // TODO: chnage the keyId as it is visible in the jwt.io
     $token =  JWT::encode($payload, onsbks_get_jwt_secret(), 'HS256', onsbks_get_jwt_secret());
     return $token;
 }

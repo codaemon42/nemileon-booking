@@ -4,7 +4,7 @@ namespace ONSBKS_Slots\Includes\Entities;
 
 class Entity
 {
-    private $_wpdb;
+    public $_wpdb;
     public string $table_name = "";
 
     public function __construct($table_name)
@@ -56,10 +56,10 @@ class Entity
     }
 
 
-    public function create(object $data): int
+    public function create(array $data): int
     {
         // Insert data into the table
-        $this->_wpdb->insert($this->table_name, $data->getData());
+        $this->_wpdb->insert($this->table_name, $data);
 
         // Return the ID of the inserted row (optional - useful if you need the ID later)
         return $this->_wpdb->insert_id;

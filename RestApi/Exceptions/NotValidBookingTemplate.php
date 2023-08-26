@@ -2,7 +2,7 @@
 
 namespace ONSBKS_Slots\RestApi\Exceptions;
 
-class NotValidBookingTemplate extends \Exception
+class NotValidBookingTemplate extends RestException
 {
 	public function __construct($message)
 	{

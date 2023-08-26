@@ -4,11 +4,21 @@ namespace ONSBKS_Slots\RestApi\Controllers;
 
 
 use ONSBKS_Slots\Includes\WooCommerce\BookingSlotProduct;
+use ONSBKS_Slots\RestApi\Exceptions\NoSlotFoundException;
+use ONSBKS_Slots\RestApi\Services\ProductService;
 use ONSBKS_Slots\RestApi\Validator;
+use PHPUnit\Exception;
 use WP_REST_Request;
 
 class ProductController
 {
+
+    private ProductService $productService;
+
+    public function __construct()
+    {
+        $this->productService = new ProductService();
+    }
 
     public static function get_products(WP_REST_Request $request): void
     {
@@ -31,15 +41,18 @@ class ProductController
         }
     }
 
-    public static function get_products_meta(WP_REST_Request $request){
+    public function get_products_meta(WP_REST_Request $request): void
+    {
         try{
             $query_params = $request->get_query_params();
-            $product_id = $query_params['product_id'];
+            $productId = $query_params['product_id'];
             $key = $query_params['key'];
-            $result = get_post_meta($product_id, $key, true);
-            wp_send_json(prepare_result($result));
+            $slot = $this->productService->findProductTemplate($productId, $key, true);
+            wp_send_json(prepare_result($slot->getData()));
         } catch (\Error $error) {
             wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
+        } catch (\Exception $e) {
+            wp_send_json(prepare_result(false, $e->getMessage(), false), 500);
         }
     }
 

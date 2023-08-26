@@ -8,6 +8,7 @@ use ONSBKS_Slots\RestApi\Controllers\ProductController;
 use ONSBKS_Slots\RestApi\Controllers\Info;
 
  $ROUTER = new Router();
+ $ROUTER->set_auth('Test', '__return_true');
 
  $infoController = new Info();
  $ROUTER->GET('/info', array($infoController, 'check_info'), array('ONSBKS_Slots\RestApi\Middleware', 'Anonymous'));
@@ -30,6 +31,7 @@ use ONSBKS_Slots\RestApi\Controllers\Info;
 
  $bookingController = new BookingController();
  $ROUTER->GET('/bookings', [$bookingController, 'findAllBookings'] ,$ROUTER->AUTH['Test']);
- $ROUTER->POST('/bookings', [$bookingController, 'createBooking'] ,$ROUTER->AUTH['Test']);
+ $ROUTER->GET('/bookings/users/(?P<id>\d+)', [$bookingController, 'findAllBookingsByUserIdOrFingerPrint'] ,$ROUTER->AUTH['User']);
+ $ROUTER->POST('/bookings', [$bookingController, 'createBooking'] ,$ROUTER->AUTH['Anonymous']);
  $ROUTER->PUT('/bookings/(?P<id>\d+)', [$bookingController, 'createBooking'] ,$ROUTER->AUTH['Test']);
  $ROUTER->GET('/bookings/(?P<id>\d+)', [$bookingController, 'findBookingByBookingId'] ,$ROUTER->AUTH['Test']);

@@ -3,9 +3,9 @@ namespace ONSBKS_Slots\RestApi;
 
 class Router
 {
-    public $base_namespace = "onsbks/v2";
+    public string $base_namespace = "onsbks/v2";
 
-    public $AUTH = [
+    public array $AUTH = [
         'Test' => '__return_true',
         'Anonymous' => array('ONSBKS_Slots\RestApi\Middleware', 'Anonymous'),
         'Editor' => array('ONSBKS_Slots\RestApi\Middleware', 'Editor'),
@@ -46,6 +46,11 @@ class Router
                 ) );
             });
         }
+    }
+
+    public function set_auth($key, $value): void
+    {
+        $this->AUTH[$key] = $value;
     }
 
 }

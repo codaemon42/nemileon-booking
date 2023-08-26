@@ -2,9 +2,9 @@
 
 namespace ONSBKS_Slots\RestApi\Exceptions;
 
-class BookingNotFound extends RestException
+class NoSlotFoundException extends RestException
 {
-    public function __construct($message = "Booking Not Found")
+    public function __construct($message = "No valid slot found")
     {
         parent::__construct($message, 'BOOKING', prepare_result(false, $message, false), 404);
     }

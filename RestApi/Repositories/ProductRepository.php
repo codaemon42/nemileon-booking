@@ -26,14 +26,13 @@ class ProductRepository
     public function get_product_slot(int $productId, string $date): ?Slot
     {
         // find with the date
-        $key = $this->prefix . $date;
-        $value = get_post_meta($productId, $key);
+        $key = $this->getFormattedDate($date);
+        $value = $this->getValueByProductIdAndkey($productId, $key);
 
         // if doesn't, find by day
         if(!$value) {
-            $shortDay = get_the_date('D', strtotime($date));
-            $key = $this->prefix . $shortDay;
-            $value = get_post_meta($productId, $key);
+            $key = $this->getFormattedDay($date);
+            $value = $this->getValueByProductIdAndkey($productId, $key);
         }
 
         // if doesn't exist return false
@@ -55,14 +54,13 @@ class ProductRepository
     public function get_product_key(int $productId, string $date): ?string
     {
         // find with the date
-        $key = $this->prefix . $date;
-        $value = get_post_meta($productId, $key);
+        $key = $this->getFormattedDate($date);
+        $value = $this->getValueByProductIdAndkey($productId, $key);
 
         // if doesn't, find by day
         if(!$value) {
-            $shortDay = get_the_date('D', strtotime($date));
-            $key = $this->prefix . $shortDay;
-            $value = get_post_meta($productId, $key);
+            $key = $this->getFormattedDay($date);
+            $value = $this->getValueByProductIdAndkey($productId, $key);
         }
 
         // if doesn't exist return false
@@ -91,6 +89,32 @@ class ProductRepository
         if(!$realProductKey) return false;
 
         return update_post_meta($productId, $realProductKey, $value);
+    }
+
+
+
+    public function getFormattedDate(string $date): string
+    {
+        return $this->prefix . $date;
+    }
+
+    public function getFormattedDay(string $date): string
+    {
+        $shortDay = strtoupper(date('D', strtotime($date)));
+        return $this->prefix . $shortDay;
+    }
+
+    /**
+     * @return void
+     */
+    public function getValueByProductIdAndkey($productId, $key)
+    {
+        $value = get_post_meta($productId, $key, true);
+
+        // if doesn't exist return false
+        if(!$value) return null;
+
+        return $value;
     }
 
 

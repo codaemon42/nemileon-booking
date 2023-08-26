@@ -172,20 +172,20 @@ class SlotCol
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getExpiresIn(): string
+    public function getExpiresIn(): ?string
     {
         return $this->expires_in;
     }
 
     /**
-     * @param string $expires_in
+     * @param string|null $expires_in
      */
-    public function setExpiresIn(string $expires_in): void
+    public function setExpiresIn(?string $expires_in): void
     {
-        $this->data['expires_in'] = $expires_in;
-        $this->expires_in = $expires_in;
+        $this->data['expires_in'] = $expires_in ?: '';
+        $this->expires_in = $expires_in ?: '';
     }
 
     /**

@@ -13,7 +13,21 @@ class Middleware
     {
         $token = $request->get_header('jwt');
         if($token == null) return false;
-        return onsbks_verify_jwt($token);
+
+        $result = onsbks_decode_jwt($token);
+
+        if(count($result) == 0) {
+            return false;
+        }
+
+        if($result['anonymous']) {
+            return wp_verify_nonce($result['nonce'], 'JWT_NONCE');
+        }
+
+        $request->set_header('user_id', $result['user_id']);
+        $request->set_header('anonymous', $result['anonymous']);
+
+        return true;
     }
 
 
@@ -30,6 +44,9 @@ class Middleware
         if($result['anonymous']) {
             return false;
         }
+
+        $request->set_header('user_id', $result['user_id']);
+        $request->set_header('anonymous', $result['anonymous']);
 
         return user_can($result['user_id'], 'manage_options');
     }
@@ -48,6 +65,9 @@ class Middleware
             return false;
         }
 
+        $request->set_header('user_id', $result['user_id']);
+        $request->set_header('anonymous', $result['anonymous']);
+
         return user_can($result['user_id'], 'edit_others_posts');
     }
 
@@ -64,6 +84,9 @@ class Middleware
         if($result['anonymous']) {
             return false;
         }
+
+        $request->set_header('user_id', $result['user_id']);
+        $request->set_header('anonymous', $result['anonymous']);
 
         return user_can($result['user_id'], 'edit_posts');
     }

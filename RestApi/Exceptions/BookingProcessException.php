@@ -2,9 +2,9 @@
 
 namespace ONSBKS_Slots\RestApi\Exceptions;
 
-class InvalidBookingStatusException extends RestException
+class BookingProcessException extends RestException
 {
-    public function __construct($message = "Invalid Booking Status")
+    public function __construct($message = "Error occurred while processing booking")
     {
         parent::__construct($message, 'BOOKING', prepare_result(false, $message, false), 500);
     }

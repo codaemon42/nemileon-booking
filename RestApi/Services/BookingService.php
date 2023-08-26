@@ -6,13 +6,20 @@ use ONSBKS_Slots\Includes\Converter\ProductTemplateConverter;
 use ONSBKS_Slots\Includes\Models\BookingModel;
 use ONSBKS_Slots\Includes\Models\ProductTemplate;
 use ONSBKS_Slots\Includes\Models\Slot;
+use ONSBKS_Slots\RestApi\Exceptions\BookingCreateException;
 use ONSBKS_Slots\RestApi\Exceptions\BookingFailedException;
 use ONSBKS_Slots\RestApi\Exceptions\BookingNotAllowedException;
 use ONSBKS_Slots\RestApi\Exceptions\BookingNotFound;
+use ONSBKS_Slots\RestApi\Exceptions\BookingProcessException;
+use ONSBKS_Slots\RestApi\Exceptions\ConversionException;
+use ONSBKS_Slots\RestApi\Exceptions\NoFingerPrintException;
 use ONSBKS_Slots\RestApi\Exceptions\NotBookableException;
 use ONSBKS_Slots\RestApi\Exceptions\NotValidBookingTemplate;
+use ONSBKS_Slots\RestApi\Exceptions\UnauthorizedException;
 use ONSBKS_Slots\RestApi\Repositories\BookingRepository;
 use ONSBKS_Slots\RestApi\Repositories\ProductRepository;
+use PHPUnit\Exception;
+use Prophecy\Doubler\ClassPatch\ThrowablePatch;
 
 
 class BookingService
@@ -36,23 +43,41 @@ class BookingService
      */
     public function findAll(array $query): array
     {
-        $per_page = $query['per_page'] || 10;
-        $paged = $query['paged'] || 1;
+        $per_page = $query['per_page'] ?? 10;
+        $paged = $query['paged'] ?? 1;
+
         return $this->bookingRepository->findAll($per_page, $paged);
     }
 
 
     /**
+     * @throws UnauthorizedException
+     */
+    public function findAllBookingsByUserId(bool $isAnonymousUser, string $userId): array
+    {
+        if($isAnonymousUser) throw new UnauthorizedException();
+
+        return $this->bookingRepository->findAllByUserId($userId);
+    }
+
+
+    public function findAllByUserIdOrFingerPrint(int $userId, string $fingerPrint, int $per_page, int $paged): array
+    {
+        return $this->bookingRepository->findAllByUserIdOrFingerPrint($userId, $fingerPrint, $per_page, $paged);
+    }
+
+
+    /**
      * @param int $booking_id
-     * @param $throwable
+     * @param bool $throwable
      * @return BookingModel|null
      * @throws BookingNotFound
      */
-    public function findBookingByBookingId(int $booking_id, $throwable = false): ?BookingModel
+    public function findBookingByBookingId(int $booking_id, bool $throwable = false): ?BookingModel
     {
         $booking = $this->bookingRepository->findById($booking_id);
 
-        if($throwable) throw new BookingNotFound();
+        if(!$booking && $throwable) throw new BookingNotFound();
 
         return $booking;
     }
@@ -75,12 +100,19 @@ class BookingService
      * @throws NotValidBookingTemplate
      * @throws BookingNotAllowedException
      * @throws BookingFailedException
+     * @throws NoFingerPrintException
+     * @throws BookingCreateException
+     * @throws BookingProcessException
+     * @throws ConversionException
      */
-    public function createBooking(ProductTemplate $productTemplate ): int
+    public function createBooking(ProductTemplate $productTemplate, int $userId, string $fingerPrint ): BookingModel
     {
         $insertId     = 0;
         $bookingDate  = $productTemplate->getKey();
         $productId    = $productTemplate->getProductId();
+
+        // validate finger print
+        $this->isValidFingerPrint( $fingerPrint, true );
 
         // if the product_id really exists !
         $this->isValidTemplate( $productTemplate, true );
@@ -101,11 +133,28 @@ class BookingService
         // update the product meta slot after above calculation is done.
         $this->updateProductSlot($updatedProductTemplate, true);
 
-        // create booking
+        // setting booking model properties
         $bookingModel = $this->productTemplateToBookingModel($updatedProductTemplate);
-        $insertId = $this->createBookingInDB($bookingModel);
+        $bookingModel->setUserId($userId);
+        $bookingModel->setFingerPrint($fingerPrint);
 
-        return $insertId;
+        // create booking in database
+        $insertId = $this->createBookingInDB($bookingModel);
+        $bookingModel->setId($insertId);
+
+        return $bookingModel;
+    }
+
+    /**
+     * @throws NoFingerPrintException
+     */
+    private function isValidFingerPrint(string $fingerPrint, bool $throwable = false): bool
+    {
+        if(!$fingerPrint && !$throwable) return false;
+
+        if(!$fingerPrint) throw new NoFingerPrintException();
+
+        return true;
     }
 
     public function totalBooked(Slot $template): int
@@ -173,7 +222,8 @@ class BookingService
         $realProductSlot = $this->productRepository->get_product_slot( $productTemplate->getProductId(), $bookingDate );
 
         if(!$realProductSlot && !$throwable) return false;
-        if(!$realProductSlot) throw new NotBookableException("Not Bookable, as the Date is not valid");
+
+        if(!$realProductSlot) throw new NotBookableException("Not Bookable, as the Date does not exist for booking");
 
         // return true if the date is valid;
         return true;
@@ -193,46 +243,60 @@ class BookingService
         return false;
     }
 
+    /**
+     * @throws BookingProcessException
+     */
     public function processAndModifyTemplate(ProductTemplate $productTemplate, bool $throwable = false): ProductTemplate
     {
-        $bookingDate = $productTemplate->getKey();
+        try{
+            $bookingDate = $productTemplate->getKey();
 
-        // we cross verify by fetching the product_meta of the day that the template is referring
-        $realProductSlot = $this->productRepository->get_product_slot( $productTemplate->getProductId(), $bookingDate );
+            // we cross verify by fetching the product_meta of the day that the template is referring
+            $realProductSlot = $this->productRepository->get_product_slot( $productTemplate->getProductId(), $bookingDate );
 
-		$bookingProductTemplate = new ProductTemplate($productTemplate);
-        // loop upto iterate the cols, identify the rowIndex and the colIndex
-        foreach ( $bookingProductTemplate->getTemplate()->getRows() as $rowKey => $row )
-        {
-            foreach ($row-> getCols() as $colKey => $col)
+//        $realKey = $this->productRepository->get_product_key( $productTemplate->getProductId(), $bookingDate );
+
+            $bookingProductTemplate = new ProductTemplate($productTemplate);
+//        $bookingProductTemplate->setKey($realKey);
+            // loop upto iterate the cols, identify the rowIndex and the colIndex
+            foreach ( $bookingProductTemplate->getTemplate()->getRows() as $rowKey => $row )
             {
-                $availableSlots = $realProductSlot->getRows()[$rowKey]->getCols()[$colKey]->getAvailableSlots();
-                $totalBooked = $realProductSlot->getRows()[$rowKey]->getCols()[$colKey]->getBooked();
-				$totalBook = $col->getBook();
-                if( $totalBook > 0 ){
-                    $col->setChecked(true);
-                    if($totalBook > $availableSlots ){
-	                    $totalBook = $availableSlots;
-	                    $availableSlots = 0;
-                    } else {
-                        $availableSlots = $availableSlots - $totalBook;
-                    }
-	                $totalBooked = $totalBooked + $totalBook;
+                foreach ($row->getCols() as $colKey => $col)
+                {
+                    $availableSlots = $realProductSlot->getRows()[$rowKey]->getCols()[$colKey]->getAvailableSlots();
+                    $totalBooked = $realProductSlot->getRows()[$rowKey]->getCols()[$colKey]->getBooked();
+                    $totalBook = $col->getBook();
+                    if( $totalBook > 0 ){
+                        $col->setChecked(true);
+                        if($totalBook > $availableSlots ){
+                            $totalBook = $availableSlots;
+                            $availableSlots = 0;
+                        } else {
+                            $availableSlots = $availableSlots - $totalBook;
+                        }
+                        $totalBooked = $totalBooked + $totalBook;
 
-                    // set all new values
-	                $col->setBook( $totalBook );
-                    $col->setBooked( $totalBooked );
-                    $col->setAvailableSlots( $availableSlots );
-                }
-                else {
-                    $col->setChecked(false);
+                        // set all new values
+                        $col->setBook( $totalBook );
+                        $bookingProductTemplate->getTemplate()->getRows()[$rowKey]->getCols()[$colKey]->setBook($totalBook);
+                        $col->setBooked( $totalBooked );
+                        $bookingProductTemplate->getTemplate()->getRows()[$rowKey]->getCols()[$colKey]->setBooked($totalBooked);
+                        $col->setAvailableSlots( $availableSlots );
+                        $bookingProductTemplate->getTemplate()->getRows()[$rowKey]->getCols()[$colKey]->setAvailableSlots($availableSlots);
+                    }
+                    else {
+                        $col->setChecked(false);
+                    }
                 }
             }
+            return $bookingProductTemplate;
+            // each cols: if book is present in testPT, proceed next
+            // realPT->availableSlot >= testPT->book
+            // if false, update the realPT booked with residual and update the testPT book with residual and return it.
         }
-        return $bookingProductTemplate;
-        // each cols: if book is present in testPT, proceed next
-        // realPT->availableSlot >= testPT->book
-        // if false, update the realPT booked with residual and update the testPT book with residual and return it.
+        catch (Exception $e) {
+            throw new BookingProcessException();
+        }
     }
 
 
@@ -242,49 +306,55 @@ class BookingService
     public function updateProductSlot(ProductTemplate $updatedProductTemplate, bool $throwable = false): bool
     {
         $productId = $updatedProductTemplate->getProductId();
-        $dateOrDate = $updatedProductTemplate->getKey();
+        $date = $this->productRepository->getFormattedDate( $updatedProductTemplate->getKey() );
         $updatedSlot = $updatedProductTemplate->getTemplate();
 
-        foreach ( $updatedProductTemplate->getTemplate()->getRows() as $row )
+        foreach ( $updatedProductTemplate->getTemplate()->getRows() as $rowKey => $row )
         {
-            foreach ($row-> getCols() as $col)
+            foreach ($row->getCols() as $colKey => $col )
             {
                 // prepare the template for next orders.
                 if($col->getChecked()) {
-                    $col->setChecked(false);
-                    $col->setBook(0);
+                    $updatedSlot->getRows()[$rowKey]->getCols()[$colKey]->setChecked(false);
+                    $updatedSlot->getRows()[$rowKey]->getCols()[$colKey]->setBook(0);
                 }
             }
         }
 
-        $success = update_post_meta($productId, $dateOrDate, $updatedSlot);
+        $success = update_post_meta($productId, $date, $updatedSlot->getData());
 
         if(!$success && $throwable) throw new BookingFailedException("Booking Failed, Please Contact Support");
 
         return $success;
     }
 
-	/**
-	 * convert the product template to BookingModel
-	 *
-	 * @param ProductTemplate $updatedProductTemplate
-	 *
-	 * @return BookingModel
-	 */
+    /**
+     * convert the product template to BookingModel
+     *
+     * @param ProductTemplate $updatedProductTemplate
+     *
+     * @return BookingModel
+     * @throws ConversionException
+     */
 	public function productTemplateToBookingModel( ProductTemplate $updatedProductTemplate ): BookingModel
 	{
 		return $this->productTemplateConverter->toBookingModel($updatedProductTemplate);
 	}
 
-	/**
-	 * Insert booking in the database
-	 *
-	 * @param BookingModel $bookingModel
-	 *
-	 * @return int
-	 */
+    /**
+     * Insert booking in the database
+     *
+     * @param BookingModel $bookingModel
+     *
+     * @return int
+     * @throws BookingCreateException
+     */
 	public function createBookingInDB(BookingModel $bookingModel): int
 	{
-		return $this->bookingRepository->createBooking($bookingModel);
+        try {
+            return $this->bookingRepository->createBooking($bookingModel);
+        } catch (Exception $e) {
+            throw new BookingCreateException();
+        }
 	}
 }

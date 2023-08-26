@@ -4,7 +4,8 @@
   "description": "=== Sports Booking Slot ===\r Contributors: naim42\r Donate link: https://github.com/codaemon42\r Tags: sports-booking, booking-slot, games\r Requires at least: 5.0\r Tested up to: 5.7\r Stable tag: 1.0.0\r Requires PHP: 7.0\r License: GPLv2 or later\r License URI: https://www.gnu.org/licenses/gpl-2.0.html",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:e2e": "wp-scripts test-e2e",
+    "test:unit": "wp-scripts test-unit-js",
     "build": "wp-scripts build",
     "start": "wp-scripts start"
   },
@@ -12,13 +13,19 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@wordpress/scripts": "^26.5.0"
+    "@wordpress/scripts": "^26.5.0",
+    "identity-obj-proxy": "^3.0.0"
   },
   "dependencies": {
     "@ant-design/colors": "^7.0.0",
     "@ant-design/icons": "^5.1.4",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
     "antd": "^5.5.2",
     "axios": "^1.4.0",
-    "dayjs": "^1.11.9"
+    "dayjs": "^1.11.9",
+    "get-browser-fingerprint": "^3.0.0",
+    "jest-transform-stub": "^2.0.0"
   }
 }

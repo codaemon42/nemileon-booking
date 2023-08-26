@@ -10,6 +10,7 @@ class BookingModel
     // changing the properties needs attention to the BookingsEntity
     private int $id;
     private string $user_id;
+    private string $finger_print;
     private string $name; // productName
     private string $booking_date;
     private string $seats;
@@ -27,6 +28,7 @@ class BookingModel
         $this->setData([
             'id' => 0,
             'user_id' => '',
+            'finger_print' => '',
             'name' => '',
             'booking_date' => '',
             'seats' => '',
@@ -41,6 +43,7 @@ class BookingModel
         if($data instanceof self){
             $this->setId( $data->getId() );
             $this->setUserId( $data->getUserId() );
+            $this->setFingerPrint( $data->getFingerPrint() );
             $this->setName( $data->getName() );
             $this->setBookingDate( $data->getBookingDate() );
             $this->setSeats( $data->getSeats() );
@@ -55,6 +58,7 @@ class BookingModel
             if($data == null) $data = $this->data;
             $this->setId( $data['id'] );
             $this->setUserId( $data['user_id'] );
+            $this->setFingerPrint( $data['finger_print'] );
             $this->setName( $data['name'] );
             $this->setBookingDate( $data['booking_date'] );
             $this->setSeats( $data['seats'] );
@@ -77,7 +81,7 @@ class BookingModel
         array_shift($arr);
         if(count($initialValue)){
             foreach ($initialValue as $iv){
-                array_push($arr, new self($iv));
+                $arr[] = new self($iv);
             }
         }
         return $arr;
@@ -115,6 +119,23 @@ class BookingModel
     {
         $this->data['user_id'] = $user_id;
         $this->user_id = $user_id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFingerPrint(): string
+    {
+        return $this->finger_print;
+    }
+
+    /**
+     * @param string $finger_print
+     */
+    public function setFingerPrint(string $finger_print): void
+    {
+        $this->data['finger_print'] = $finger_print;
+        $this->finger_print = $finger_print;
     }
 
     /**
