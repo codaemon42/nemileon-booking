@@ -259,9 +259,7 @@ class BookingService
             // we cross verify by fetching the product_meta of the day that the template is referring
             $realProductSlot = $this->productRepository->get_product_slot( $productTemplate->getProductId(), $bookingDate );
 
-//        $realKey = $this->productRepository->get_product_key( $productTemplate->getProductId(), $bookingDate );
-
-            $bookingProductTemplate = new ProductTemplate($productTemplate);
+            $bookingProductTemplate = $productTemplate;
 
             // loop upto iterate the cols, identify the rowIndex and the colIndex
             foreach ( $bookingProductTemplate->getTemplate()->getRows() as $rowKey => $row )
@@ -309,11 +307,13 @@ class BookingService
     /**
      * @throws BookingFailedException
      */
-    public function updateProductSlot(ProductTemplate $updatedProductTemplate, Slot $recycledSlot, bool $throwable = false): bool
+    public function updateProductSlot(ProductTemplate $updatedProductTemplate, Slot $slot, bool $throwable = false): bool
     {
         $productId = $updatedProductTemplate->getProductId();
         $date = $this->productRepository->getFormattedDate( $updatedProductTemplate->getKey() );
-
+	    $recycledSlot = $slot;
+		echo "\n slot book: ". $slot->getRows()[0]->getCols()[0]->getBook();
+		echo "\n recycledSlot book: ". $recycledSlot->getRows()[0]->getCols()[0]->getBook();
         $success = update_post_meta($productId, $date, $recycledSlot->getData());
 
         if(!$success && $throwable) throw new BookingFailedException("Booking Failed, Please Contact Support");

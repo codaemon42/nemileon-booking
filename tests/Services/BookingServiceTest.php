@@ -316,9 +316,9 @@ class BookingServiceTest extends TestCase
 		$actualFirstCol = $updatedProductTemplate->getTemplate()->getRows()[0]->getCols()[0];
 
 		self::assertTrue($actualFirstCol->getChecked());
-		self::assertEquals($expectedFirstCol->getBook(), $actualFirstCol->getBook());
-		self::assertEquals($expectedFirstCol->getBooked() + $expectedFirstCol->getBook() , $actualFirstCol->getBooked());
-		self::assertEquals($expectedFirstCol->getAvailableSlots(), $actualFirstCol->getAvailableSlots());
+		self::assertEquals(1, $actualFirstCol->getBook());
+		self::assertEquals(3 , $actualFirstCol->getBooked());
+		self::assertEquals(5, $actualFirstCol->getAvailableSlots());
 
 		// third element no book
 		self::assertEquals("NO_BOOK", $updatedProductTemplate->getTemplate()->getRows()[0]->getCols()[2]->getContent());
@@ -327,9 +327,9 @@ class BookingServiceTest extends TestCase
 		// forth col exact book
 		$expectedForthCol = $productTemplate->getTemplate()->getRows()[0]->getCols()[3];
 		$actualForthCol = $updatedProductTemplate->getTemplate()->getRows()[0]->getCols()[3];
-		self::assertEquals($expectedForthCol->getBook(), $actualForthCol->getBook());
-		self::assertEquals($expectedForthCol->getBooked() + $expectedForthCol->getBook(), $actualForthCol->getBooked());
-		self::assertEquals($expectedForthCol->getAvailableSlots(), $actualForthCol->getAvailableSlots());
+		self::assertEquals(2, $actualForthCol->getBook());
+		self::assertEquals(4, $actualForthCol->getBooked());
+		self::assertEquals(2, $actualForthCol->getAvailableSlots());
 
 		// fifth col exceed book
 		// $expectedFifthCol = $productTemplate->getTemplate()->getRows()[0]->getCols()[4];
@@ -360,17 +360,19 @@ class BookingServiceTest extends TestCase
 
 		// VERIFY
 		self::assertFalse(!$actualSlot);
-		 self::assertNotEquals($updatedProductTemplate->getTemplate(), $actualSlot);
+		self::assertNotEquals($updatedProductTemplate->getTemplate(), $actualSlot);
 		self::assertTrue($updatedProductTemplate->getTemplate()->getRows()[0]->getCols()[0]->getChecked());
 		self::assertFalse($actualSlot->getRows()[0]->getCols()[0]->getChecked());
 
-		// self::assertEquals(0, $actualSlot->getRows()[0]->getCols()[0]->getBook());
+		self::assertEquals(0, $actualSlot->getRows()[0]->getCols()[0]->getBook());
+
+		self::assertEquals(0, $actualSlot->getRows()[0]->getCols()[0]->getData()['book']);
 	}
 
-	public function updateProductSlot_success()
+	public function test_updateProductSlot_success()
 	{
 		// GIVEN
-		$productTemplate = new ProductTemplate( $this->productTemplateArg );
+		$productTemplate = new ProductTemplate($this->productTemplateArg);
 
 		$realProductSlot = new Slot($this->realSlotArg);
 
@@ -383,10 +385,15 @@ class BookingServiceTest extends TestCase
 		// THEN
 		$updatedProductTemplate = $this->bookingService->processAndModifyTemplate($productTemplate);
 
-		$success = $this->bookingService->updateProductSlot($updatedProductTemplate);
+		// THEN
+		$actualSlot = $this->bookingService->recycleSlot($updatedProductTemplate->getTemplate());
 
-			// VERIFY
-		self::assertTrue($success);
+
+		$this->bookingService->updateProductSlot($updatedProductTemplate, $actualSlot);
+
+		// VERIFY
+		self::assertEquals(0, $actualSlot->getRows()[0]->getCols()[0]->getData()['book']);
+
 	}
 
 	public function test_productTemplateToBookingModel_success()
