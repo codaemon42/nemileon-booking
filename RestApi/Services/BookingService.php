@@ -11,6 +11,7 @@ use ONSBKS_Slots\RestApi\Exceptions\BookingFailedException;
 use ONSBKS_Slots\RestApi\Exceptions\BookingNotAllowedException;
 use ONSBKS_Slots\RestApi\Exceptions\BookingNotFound;
 use ONSBKS_Slots\RestApi\Exceptions\BookingProcessException;
+use ONSBKS_Slots\RestApi\Exceptions\BookingSlotRecyclingException;
 use ONSBKS_Slots\RestApi\Exceptions\ConversionException;
 use ONSBKS_Slots\RestApi\Exceptions\NoFingerPrintException;
 use ONSBKS_Slots\RestApi\Exceptions\NotBookableException;
@@ -95,16 +96,17 @@ class BookingService
     }
 
 
-    /**
-     * @throws NotBookableException
-     * @throws NotValidBookingTemplate
-     * @throws BookingNotAllowedException
-     * @throws BookingFailedException
-     * @throws NoFingerPrintException
-     * @throws BookingCreateException
-     * @throws BookingProcessException
-     * @throws ConversionException
-     */
+	/**
+	 * @throws NotBookableException
+	 * @throws NotValidBookingTemplate
+	 * @throws BookingNotAllowedException
+	 * @throws BookingFailedException
+	 * @throws NoFingerPrintException
+	 * @throws BookingCreateException
+	 * @throws BookingProcessException
+	 * @throws ConversionException
+	 * @throws BookingSlotRecyclingException
+	 */
     public function createBooking(ProductTemplate $productTemplate, int $userId, string $fingerPrint ): BookingModel
     {
         $insertId     = 0;
@@ -130,8 +132,11 @@ class BookingService
         // cross verify by the booking slots availability
         $updatedProductTemplate = $this->processAndModifyTemplate($productTemplate, true);
 
-        // update the product meta slot after above calculation is done.
-        $this->updateProductSlot($updatedProductTemplate, true);
+		// recycle the slot so that it can be saved to the product meta for future usage
+	    $recycledSlot = $this->recycleSlot( $updatedProductTemplate->getTemplate(), true );
+
+		// update the product meta slot after above calculation is done.
+        $this->updateProductSlot($updatedProductTemplate, $recycledSlot, true);
 
         // setting booking model properties
         $bookingModel = $this->productTemplateToBookingModel($updatedProductTemplate);
@@ -267,7 +272,7 @@ class BookingService
                     $totalBooked = $realProductSlot->getRows()[$rowKey]->getCols()[$colKey]->getBooked();
                     $totalBook = $col->getBook();
                     if( $totalBook > 0 ){
-                        $col->setChecked(true);
+
                         if($totalBook > $availableSlots ){
                             $totalBook = $availableSlots;
                             $availableSlots = 0;
@@ -277,6 +282,7 @@ class BookingService
                         $totalBooked = $totalBooked + $totalBook;
 
                         // set all new values
+	                    $col->setChecked(true);
                         $col->setBook( $totalBook );
                         // $bookingProductTemplate->getTemplate()->getRows()[$rowKey]->getCols()[$colKey]->setBook($totalBook);
                         $col->setBooked( $totalBooked );
@@ -303,30 +309,42 @@ class BookingService
     /**
      * @throws BookingFailedException
      */
-    public function updateProductSlot(ProductTemplate $updatedProductTemplate, bool $throwable = false): bool
+    public function updateProductSlot(ProductTemplate $updatedProductTemplate, Slot $recycledSlot, bool $throwable = false): bool
     {
         $productId = $updatedProductTemplate->getProductId();
         $date = $this->productRepository->getFormattedDate( $updatedProductTemplate->getKey() );
-        $updatedSlot = $updatedProductTemplate->getTemplate();
 
-        foreach ( $updatedSlot->getRows() as $rowKey => $row )
-        {
-            foreach ($row->getCols() as $colKey => $col )
-            {
-                // prepare the template for next orders.
-                if($col->getChecked()) {
-                    $updatedSlot->getRows()[$rowKey]->getCols()[$colKey]->setChecked(false);
-                    $updatedSlot->getRows()[$rowKey]->getCols()[$colKey]->setBook(0);
-                }
-            }
-        }
-
-        $success = update_post_meta($productId, $date, $updatedSlot->getData());
+        $success = update_post_meta($productId, $date, $recycledSlot->getData());
 
         if(!$success && $throwable) throw new BookingFailedException("Booking Failed, Please Contact Support");
 
         return $success;
     }
+
+	/**
+	 * @throws BookingSlotRecyclingException
+	 */
+	public function recycleSlot(Slot $slot, bool $throwable = false): ?Slot {
+
+		try {
+			$recycledSlot = new Slot($slot);
+
+			foreach ( $recycledSlot->getRows() as $rowKey => $row )
+			{
+				foreach ($row->getCols() as $colKey => $col )
+				{
+					// prepare the template for next orders.
+					$col->setChecked(false);
+					$col->setBook(0);
+				}
+			}
+			return $recycledSlot;
+		}
+		catch (\Exception $e){
+			if($throwable) throw new BookingSlotRecyclingException();
+			return null;
+		}
+	}
 
     /**
      * convert the product template to BookingModel
