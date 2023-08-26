@@ -257,7 +257,7 @@ class BookingService
 //        $realKey = $this->productRepository->get_product_key( $productTemplate->getProductId(), $bookingDate );
 
             $bookingProductTemplate = new ProductTemplate($productTemplate);
-//        $bookingProductTemplate->setKey($realKey);
+
             // loop upto iterate the cols, identify the rowIndex and the colIndex
             foreach ( $bookingProductTemplate->getTemplate()->getRows() as $rowKey => $row )
             {
@@ -278,11 +278,11 @@ class BookingService
 
                         // set all new values
                         $col->setBook( $totalBook );
-                        $bookingProductTemplate->getTemplate()->getRows()[$rowKey]->getCols()[$colKey]->setBook($totalBook);
+                        // $bookingProductTemplate->getTemplate()->getRows()[$rowKey]->getCols()[$colKey]->setBook($totalBook);
                         $col->setBooked( $totalBooked );
-                        $bookingProductTemplate->getTemplate()->getRows()[$rowKey]->getCols()[$colKey]->setBooked($totalBooked);
+                        // $bookingProductTemplate->getTemplate()->getRows()[$rowKey]->getCols()[$colKey]->setBooked($totalBooked);
                         $col->setAvailableSlots( $availableSlots );
-                        $bookingProductTemplate->getTemplate()->getRows()[$rowKey]->getCols()[$colKey]->setAvailableSlots($availableSlots);
+                        // $bookingProductTemplate->getTemplate()->getRows()[$rowKey]->getCols()[$colKey]->setAvailableSlots($availableSlots);
                     }
                     else {
                         $col->setChecked(false);
@@ -309,7 +309,7 @@ class BookingService
         $date = $this->productRepository->getFormattedDate( $updatedProductTemplate->getKey() );
         $updatedSlot = $updatedProductTemplate->getTemplate();
 
-        foreach ( $updatedProductTemplate->getTemplate()->getRows() as $rowKey => $row )
+        foreach ( $updatedSlot->getRows() as $rowKey => $row )
         {
             foreach ($row->getCols() as $colKey => $col )
             {

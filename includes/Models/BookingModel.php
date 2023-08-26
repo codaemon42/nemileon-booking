@@ -23,7 +23,10 @@ class BookingModel
 
     private array $data = [];
 
-    public function __construct( $data = null )
+	/**
+	 * @throws \ONSBKS_Slots\RestApi\Exceptions\InvalidBookingStatusException
+	 */
+	public function __construct( $data = null )
     {
         $this->setData([
             'id' => 0,
@@ -51,7 +54,7 @@ class BookingModel
             $this->setHeaders( $data->getHeaders() );
             $this->setTopHeader( $data->getTopHeader() );
             $this->setTotalPrice( $data->getTotalPrice() );
-            // $this->se
+            $this->setStatus( $data->getStatus() );
             $this->setTemplate( $data->getData()['template'] );
         }
         else{
@@ -66,6 +69,7 @@ class BookingModel
             $this->setHeaders( $data['headers'] );
             $this->setTopHeader( $data['top_header'] );
             $this->setTotalPrice( $data['total_price'] );
+            $this->setStatus( $data['status'] );
             $this->setTemplate( $data['template'] );
         }
     }

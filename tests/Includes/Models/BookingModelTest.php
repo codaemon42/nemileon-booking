@@ -6,6 +6,7 @@ use ONSBKS_Slots\Includes\Models\BookingModel;
 use ONSBKS_Slots\Includes\Models\Slot;
 use ONSBKS_Slots\Includes\Models\SlotCol;
 use ONSBKS_Slots\Includes\Models\SlotRow;
+use ONSBKS_Slots\Includes\Status\BookingStatus;
 use PHPUnit\Framework\TestCase;
 
 class BookingModelTest extends TestCase
@@ -51,6 +52,7 @@ class BookingModelTest extends TestCase
         $this->bookingModelArg = [
             'id' => 0,
             'user_id' => '',
+            'finger_print' => 'test_finger_print',
             'name' => '',
             'booking_date' => '',
             'seats' => '',
@@ -58,11 +60,15 @@ class BookingModelTest extends TestCase
             'headers' => '',
             'top_header' => '',
             'total_price' => 0,
+            'status' => BookingStatus::PENDING_PAYMENT,
             'template' => $this->slotArg
         ];
     }
 
-    public function test_BookingModelFromArray()
+	/**
+	 * @throws \ONSBKS_Slots\RestApi\Exceptions\InvalidBookingStatusException
+	 */
+	public function test_BookingModelFromArray()
     {
         // GIVEN
         $bookingModel = new BookingModel($this->bookingModelArg);
@@ -80,7 +86,10 @@ class BookingModelTest extends TestCase
 
     }
 
-    public function test_BookingModelFromObject()
+	/**
+	 * @throws \ONSBKS_Slots\RestApi\Exceptions\InvalidBookingStatusException
+	 */
+	public function test_BookingModelFromObject()
     {
         // GIVEN
         $oldBookingModel = new BookingModel($this->bookingModelArg);

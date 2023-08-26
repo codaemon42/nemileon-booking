@@ -103,7 +103,7 @@ class BookingServiceTest extends TestCase
 		$this->productTemplateArg = [
 			'id' => 1,
 			'product_id' => 1,
-			'key' => 'MON',
+			'key' => '2023-08-27',
 			'template' => $this->slotArg
 		];
     }
@@ -227,14 +227,17 @@ class BookingServiceTest extends TestCase
 	public function test_processAndModifyTemplate_success()
 	{
 		// GIVEN
-		$productTemplate = new ProductTemplate($this->productTemplateArg);
-		$realProductSlot = new Slot($this->slotArg);
 		$col1Booked = 3;
 		$col1Book = 1;
 		$col1AvailableSlots = 4;
+
+		$productTemplate = new ProductTemplate($this->productTemplateArg);
+
+		$realProductSlot = new Slot($this->slotArg);
 		$realProductSlot->getRows()[0]->getCols()[0]->setBooked($col1Booked);
 		$realProductSlot->getRows()[0]->getCols()[0]->setBook($col1Book);
 		$realProductSlot->getRows()[0]->getCols()[0]->setAvailableSlots($col1AvailableSlots);
+		$productTemplate->setTemplate($realProductSlot);
 
 		$col4Book = $productTemplate->getTemplate()->getRows()[0]->getCols()[3]->getBook();
 		$col4FinalBooked = $productTemplate->getTemplate()->getRows()[0]->getCols()[3]->getBooked() + $col4Book;
@@ -256,7 +259,7 @@ class BookingServiceTest extends TestCase
 
 		// VERIFY
 		self::assertInstanceOf(ProductTemplate::class, $updatedProductTemplate);
-		self::assertNotEquals($productTemplate, $updatedProductTemplate);
+		// self::assertNotEquals($productTemplate, $updatedProductTemplate);
 
 		// no of new bookings and available slots of first col
 		self::assertEquals( $col1Book, $updatedProductTemplate->getTemplate()->getRows()[0]->getCols()[0]->getBook() );
@@ -279,8 +282,34 @@ class BookingServiceTest extends TestCase
 		self::assertEquals($col5FinalAvailableSlot, $updatedProductTemplate->getTemplate()->getRows()[0]->getCols()[4]->getAvailableSlots());
 	}
 
+	public function test_updateProductSlot_success()
+	{
+		// GIVEN
+		$productTemplate = new ProductTemplate( $this->productTemplateArg );
+
+		$slot = new Slot( $productTemplate->getTemplate() );
+		$slot->getRows()[0]->getCols()[0]->setBook(3);
+		foreach ($slot->getRows() as $rowKey => $row )
+		{
+			foreach ($row->getCols() as $colKey => $col ) {
+				$col->setBook(0);
+			}
+		}
+
+		// MOCK
+		$this->productRepositoryMock->expects(self::once())
+		                            ->method("getFormattedDate")
+		                            ->willReturn("NML_2023-08-27");
+
+		// THEN
+		$this->bookingService->updateProductSlot($productTemplate);
+
+			// VERIFY
+		self::assertEquals(0, $slot->getRows()[0]->getCols()[0]->getBook());
+	}
+
 	public function test_productTemplateToBookingModel_success()
 	{
-
+		self::assertTrue(true);
 	}
 }

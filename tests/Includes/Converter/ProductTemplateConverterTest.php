@@ -5,6 +5,7 @@ namespace Includes\Converter;
 use ONSBKS_Slots\Includes\Converter\ProductTemplateConverter;
 use ONSBKS_Slots\Includes\Models\BookingModel;
 use ONSBKS_Slots\Includes\Models\ProductTemplate;
+use ONSBKS_Slots\Includes\Status\BookingStatus;
 use ONSBKS_Slots\Includes\WooCommerce\BookingSlotProduct;
 use PHPUnit\Framework\TestCase;
 
@@ -90,6 +91,7 @@ class ProductTemplateConverterTest extends TestCase
         $this->bookingModelArg = [
             'id' => 0,
             'user_id' => '',
+            'finger_print' => '',
             'name' => $this->productName,
             'booking_date' => '2023-11-11',
             'seats' => $this->book + $this->book2 + $this->book2,
@@ -97,12 +99,16 @@ class ProductTemplateConverterTest extends TestCase
             'headers' => "$this->header, $this->header2",
             'top_header' => $this->header,
             'total_price' => $this->productPrice * ($this->book + $this->book2 + $this->book2),
+	        'status' => BookingStatus::PENDING_PAYMENT,
             'template' => $this->slotArg
         ];
     }
 
 
-    public function test_ToBookingModel()
+	/**
+	 * @throws \ONSBKS_Slots\RestApi\Exceptions\ConversionException
+	 */
+	public function test_ToBookingModel()
     {
         // GIVEN
         $productTemplate = new ProductTemplate($this->productTemplateArg);
