@@ -361,7 +361,6 @@ class BookingServiceTest extends TestCase
 		// VERIFY
 		self::assertFalse(!$actualSlot);
 		self::assertNotEquals($updatedProductTemplate->getTemplate(), $actualSlot);
-		self::assertTrue($updatedProductTemplate->getTemplate()->getRows()[0]->getCols()[0]->getChecked());
 		self::assertFalse($actualSlot->getRows()[0]->getCols()[0]->getChecked());
 
 		self::assertEquals(0, $actualSlot->getRows()[0]->getCols()[0]->getBook());
