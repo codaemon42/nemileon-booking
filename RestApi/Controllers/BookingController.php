@@ -94,7 +94,7 @@ class BookingController
     {
         try {
             $fingerPrint = $req->get_header('fingerprint');
-            $userId = $req->get_header('user_id');
+            $userId = $req->get_header('user_id') ?: 0;
             $productTemplate = new ProductTemplate( $req->get_json_params() );
 
             $booking = $this->bookingService->createBooking( $productTemplate, $userId, $fingerPrint );

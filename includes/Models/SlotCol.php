@@ -28,7 +28,7 @@ class SlotCol
 
     public function __construct( $data = null )
     {
-        if($data instanceof self){
+        if($data instanceof SlotCol){
             $this->setProductId( $data->getProductId() );
             $this->setContent( $data->getContent() );
             $this->setShow( $data->getShow() );
@@ -63,7 +63,7 @@ class SlotCol
         array_shift($arr);
         if(count($initialValue)){
             foreach ($initialValue as $iv){
-                $arr[] = new self($iv);
+                $arr[] = new SlotCol($iv);
             }
         }
         return $arr;

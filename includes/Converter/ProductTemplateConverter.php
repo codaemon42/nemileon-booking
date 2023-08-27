@@ -28,15 +28,19 @@ class ProductTemplateConverter
             $product = $this->getProduct($productTemplate->getProductId());
 
             foreach ($productTemplate->getTemplate()->getRows() as $row) {
-                foreach ($row->getCols() as $col) {
+                foreach ($row->getCols() as $colKey => $col) {
+                    error_log("productTemplate :: Col : $colKey :: book : " . $col->getBook() . ", booked: ". $col->getBooked() . ", checked : " . $col->getChecked());
                     if($col->getBook() > 0){
                         $bookedHeaders[] = $row->getHeader();
+                        // error_log("Header : " . $row->getHeader());
                         $seats = $seats + $col->getBook();
                         $totalPrice = $totalPrice + (intval($product->get_price()) * $col->getBook());
                     }
                 }
             }
+            error_log("Headers : " . implode(", ", $bookedHeaders));
             $headerCounts = array_count_values($bookedHeaders);
+            error_log("headerCounts : " . implode(", ", $bookedHeaders));
             $maxCount = max($headerCounts);
             $topHeader = array_search($maxCount, $headerCounts);
             $uniqueBookedHeaders = array_unique($bookedHeaders);

@@ -21,16 +21,12 @@ class SlotRow
         ]);
 
         if($data instanceof self){
-//            echo "HEADER OBJECT : " . $data->getHeader();
-//            var_dump($data);
             $this->setHeader( $data->getHeader() );
             $this->setDescription( $data->getDescription() );
             $this->setShowToolTip( $data->isShowToolTip() );
             $this->setCols( $data->getData()['cols'] );
         } else {
             if($data == null) $data = $this->data;
-//            echo "HEADER ARRAY : " . $data['header'];
-//            var_dump($data);
             $this->setHeader( $data['header'] );
             $this->setDescription( $data['description'] );
             $this->setShowToolTip( $data['showToolTip'] );
