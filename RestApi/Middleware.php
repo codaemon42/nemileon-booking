@@ -34,6 +34,7 @@ class Middleware
     public static function Admin(WP_REST_Request $request): bool
     {
         $token = $request->get_header('jwt');
+        if($token == null) return false;
 
         $result = onsbks_decode_jwt($token);
 
@@ -54,6 +55,7 @@ class Middleware
     public static function Editor(WP_REST_Request $request): bool
     {
         $token = $request->get_header('jwt');
+        if($token == null) return false;
 
         $result = onsbks_decode_jwt($token);
 
@@ -74,6 +76,7 @@ class Middleware
     public static function User(WP_REST_Request $request): bool
     {
         $token = $request->get_header('jwt');
+        if($token == null) return false;
 
         $result = onsbks_decode_jwt($token);
 

@@ -8,7 +8,9 @@ use ONSBKS_Slots\Includes\Models\ProductTemplate;
 use ONSBKS_Slots\Includes\Models\Slot;
 use ONSBKS_Slots\Includes\Models\SlotCol;
 use ONSBKS_Slots\Includes\Models\SlotRow;
+use ONSBKS_Slots\Includes\Status\BookingStatus;
 use ONSBKS_Slots\Includes\WooCommerce\BookingSlotProduct;
+use ONSBKS_Slots\RestApi\Exceptions\BookingCancelException;
 use ONSBKS_Slots\RestApi\Exceptions\BookingCreateException;
 use ONSBKS_Slots\RestApi\Exceptions\BookingFailedException;
 use ONSBKS_Slots\RestApi\Exceptions\BookingNotAllowedException;
@@ -68,6 +70,12 @@ class BookingService
     public function findAllByUserIdOrFingerPrint(int $userId, string $fingerPrint, int $per_page, int $paged): array
     {
         return $this->bookingRepository->findAllByUserIdOrFingerPrint($userId, $fingerPrint, $per_page, $paged);
+    }
+
+
+    public function countAllByUserIdOrFingerPrint(int $userId, string $fingerPrint): int
+    {
+        return $this->bookingRepository->countAllByUserIdOrFingerPrint($userId, $fingerPrint);
     }
 
 
@@ -152,6 +160,34 @@ class BookingService
          $bookingModel->setId($insertId);
 
         return $bookingModel;
+    }
+
+
+    /**
+     * @throws BookingNotFound
+     * @throws \ONSBKS_Slots\RestApi\Exceptions\InvalidBookingStatusException
+     * @throws BookingProcessException
+     * @throws BookingFailedException
+     * @throws BookingCancelException
+     */
+    public function cancelBookingByBookingIdAndUserIdOrFingerPrint(string $bookingId, int $userId, string $fingerPrint): Slot
+    {
+        // find the booking by bookingId and userid or fingerprint
+        $bookingModel = $this->bookingRepository->findBookingByBookingIdAndUserIdOrFingerPrint($bookingId, $userId, $fingerPrint, true);
+        // change the status of the booking
+        $bookingModel->setStatus(BookingStatus::CANCELLED);
+        // update the booking
+        $this->bookingRepository->update($bookingId, $bookingModel->getData());
+
+        // fetch the product slot
+        $slot = $this->productRepository->get_product_slot($bookingModel->getProductId(), $bookingModel->getBookingDate());
+        // increase the available count, decrease the booked count
+        // TODO
+        $updatedSlot = $this->rollbackBookings($bookingModel->getTemplate(), $slot, true);
+        // update the slot
+        $this->updateProductSlotByProductIdAndDate($bookingModel->getProductId(), $bookingModel->getBookingDate(), $updatedSlot, true);
+
+        return $bookingModel->getTemplate();
     }
 
     /**
@@ -335,6 +371,21 @@ class BookingService
         return $success;
     }
 
+
+    /**
+     * @throws BookingFailedException
+     */
+    public function updateProductSlotByProductIdAndDate($productId, $date, Slot $slot, bool $throwable = false): bool
+    {
+        $date = $this->productRepository->getFormattedDate( $date );
+
+        $success = update_post_meta($productId, $date, $slot->getData());
+
+        if(!$success && $throwable) throw new BookingFailedException("Booking Failed, Please Contact Support");
+
+        return $success;
+    }
+
 	/**
 	 * @throws BookingSlotRecyclingException
 	 */
@@ -404,4 +455,38 @@ class BookingService
             throw new BookingCreateException();
         }
 	}
+
+    /**
+     * @throws BookingCancelException
+     */
+    public function rollbackBookings(Slot $bookingSlot, Slot $productSlot, bool $throwable = false): ?Slot
+    {
+        $updatedSlot = new Slot($productSlot->getData());
+        try {
+
+            $newRows = SlotRow::List();
+            foreach ( $updatedSlot->getRows() as $rowKey => $row )
+            {
+                $newRow = new SlotRow($row);
+                $newCols = SlotCol::List();
+                foreach ($row->getCols() as $colKey => $col )
+                {
+                    // prepare the template for next orders.
+                    $book = $bookingSlot->getRows()[$rowKey]->getCols()[$colKey]->getBook();
+                    $col->setBooked($col->getBooked() - $book);
+                    $col->setAvailableSlots($col->getAvailableSlots() + $book);
+                    $newCols[] = $col->getData();
+                }
+                $newRow->setCols($newCols);
+                $newRows[] = $newRow->getData();
+            }
+            $updatedSlot->setRows($newRows);
+
+            return $updatedSlot;
+        }
+        catch (\Exception $e){
+            if($throwable) throw new BookingCancelException();
+            return null;
+        }
+    }
 }

@@ -64,6 +64,20 @@ class BookingController
             wp_send_json(prepare_result(false, $e->getMessage(), false), $e->getCode());
         }
     }
+    public function countAllBookingsByUserIdOrFingerPrint(WP_REST_Request $req): void
+    {
+        try{
+            $fingerPrint = strval($req->get_header('finger_print'));
+            $userId = $req->get_header('user_id');
+
+            $bookings = $this->bookingService->countAllByUserIdOrFingerPrint($userId, $fingerPrint);
+
+            wp_send_json(prepare_result($bookings));
+        }
+        catch (\Exception $e) {
+            wp_send_json(prepare_result(false, $e->getMessage(), false), $e->getCode());
+        }
+    }
 
     /**
      * Find By Booking Id
@@ -114,6 +128,22 @@ class BookingController
             $data = $req->get_body_params();
             $booking = $this->bookingService->updateBookingByBookingId($bookingId, $data);
             wp_send_json(prepare_result($booking->getData()));
+        }
+        catch (\Exception $e) {
+            wp_send_json(prepare_result(false, $e->getMessage(), false), 500);
+        }
+    }
+
+
+    public function cancelBookingByBookingId(WP_REST_Request $req): void
+    {
+        try{
+            $fingerPrint = strval($req->get_header('fingerprint'));
+            $userId = $req->get_header('user_id') ?: 0;
+            $bookingId = strval($req->get_param("id"));
+
+            $updatedSlot = $this->bookingService->cancelBookingByBookingIdAndUserIdOrFingerPrint($bookingId, $userId, $fingerPrint);
+            wp_send_json(prepare_result($updatedSlot->getData()));
         }
         catch (\Exception $e) {
             wp_send_json(prepare_result(false, $e->getMessage(), false), 500);

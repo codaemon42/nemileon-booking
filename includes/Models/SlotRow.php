@@ -63,8 +63,9 @@ class SlotRow
     /**
      * @param string $header
      */
-    public function setHeader(string $header): void
+    public function setHeader(?string $header): void
     {
+        $header = $header ?: '';
         $this->data['header'] = $header;
         $this->header = $header;
     }
@@ -82,6 +83,7 @@ class SlotRow
      */
     public function setDescription(string $description): void
     {
+        $description = $description ?: '';
         $this->data['description'] = $description;
         $this->description = $description;
     }

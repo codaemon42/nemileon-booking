@@ -46,7 +46,7 @@ function onsbks_create_jwt(): string
     return $token;
 }
 
-function onsbks_decode_jwt($token): array
+function onsbks_decode_jwt(string $token): array
 {
     $secret_key = onsbks_get_jwt_secret();
     $result = array();

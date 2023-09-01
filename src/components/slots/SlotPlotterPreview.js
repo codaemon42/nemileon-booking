@@ -5,7 +5,7 @@ import { SlotCol } from './types/SlotCol.type';
 import { SlotRow } from './types/SlotRow.type';
 import { EllipsisOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 
-const SlotPlotter = ({style, defaultSlot = new Slot(), disableIncrement=false}) => {
+const SlotPlotterPreview = ({style, defaultSlot = new Slot(), disableIncrement=false}) => {
 
     const [slot, setSlot] = useState(defaultSlot)
 
@@ -109,7 +109,7 @@ const SlotPlotter = ({style, defaultSlot = new Slot(), disableIncrement=false}) 
     const setSlotColClass = (addtionalClass = '', colData = new SlotCol()) => {
         let className = addtionalClass;
         if(!colData.show) className += ' hidden-slot ';
-        if(!colData.available_slots) className += ' not-available-slot ';
+        if(!colData.available_slots || !colData.book) className += ' not-available-slot ';
         return className;
     }
 
@@ -154,10 +154,10 @@ const SlotPlotter = ({style, defaultSlot = new Slot(), disableIncrement=false}) 
                         rowData.cols.map((colData, colInd) =>(
                             <Col key={`${rowInd}__${colInd}`} span={24 / (rowData.cols.length+1)} >
                                 {console.log({colData})}
-                                <Badge className='onsbks_counter' showZero={false} count={colData.book}>
                                     <div className={setSlotColClass('playground_div', colData)} >
                                         <div>
-                                            <div >{colData.content}</div>
+                                            <div>{colData.content}</div>
+                                            <div>Booked</div>
                                             <div 
                                                 style={{
                                                     fontSize: 16,
@@ -165,7 +165,7 @@ const SlotPlotter = ({style, defaultSlot = new Slot(), disableIncrement=false}) 
                                                     textShadow: '1px 1px 1px #3333'
                                                 }}
                                             >
-                                                {colData.available_slots}
+                                                {colData.book}
                                             </div>
                                         </div>
                                         {
@@ -198,7 +198,6 @@ const SlotPlotter = ({style, defaultSlot = new Slot(), disableIncrement=false}) 
                                             : <></>
                                         }
                                     </div>
-                                </Badge>
                             </Col>
                         ))
                         }
@@ -209,4 +208,4 @@ const SlotPlotter = ({style, defaultSlot = new Slot(), disableIncrement=false}) 
     )
 }
 
-export default SlotPlotter
+export default SlotPlotterPreview

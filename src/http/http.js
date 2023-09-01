@@ -19,6 +19,11 @@ http.interceptors.request.use(request => {
         // request.headers.common.Authorization = `Bearer ${token}`;
     // }
     request.headers['jwt'] = `${token}`;
+
+    if(request.url.includes('bookings')){
+        request.headers['fingerprint'] = `${localStorage.getItem('fingerprint')}`;
+    }
+
     return request;
 });
   
