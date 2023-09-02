@@ -110,14 +110,25 @@ class BookingRepository extends BookingsEntity
         $offset = ($paged - 1) * $per_page;
 
         // Prepare the query to retrieve the entry by ID
-        $query =
-            $this->_wpdb->prepare(
-                "SELECT * FROM $this->table_name WHERE user_id = %d OR finger_print = %s  ORDER BY id DESC LIMIT %d OFFSET %d;",
-                $userId,
-                $fingerPrint,
-                $per_page,
-                $offset
-            );
+        $query = "";
+        if(!$userId) {
+            $query =
+                $this->_wpdb->prepare(
+                    "SELECT * FROM $this->table_name WHERE finger_print = %s  ORDER BY id DESC LIMIT %d OFFSET %d;",
+                    $fingerPrint,
+                    $per_page,
+                    $offset
+                );
+        } else {
+            $query =
+                $this->_wpdb->prepare(
+                    "SELECT * FROM $this->table_name WHERE user_id = %d  OR finger_print = %s  ORDER BY id DESC LIMIT %d OFFSET %d;",
+                    $userId,
+                    $fingerPrint,
+                    $per_page,
+                    $offset
+                );
+        }
 
         // Retrieve the entry from the table
         $bookings = $this->_wpdb->get_results($query, ARRAY_A);

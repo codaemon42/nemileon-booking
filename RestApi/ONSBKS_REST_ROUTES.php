@@ -31,7 +31,7 @@ use ONSBKS_Slots\RestApi\Controllers\Info;
 
  $bookingController = new BookingController();
  $ROUTER->GET('/bookings', [$bookingController, 'findAllBookings'] ,$ROUTER->AUTH['Test']);
- $ROUTER->GET('/bookings/users/(?P<id>\d+)', [$bookingController, 'findAllBookingsByUserIdOrFingerPrint'] ,$ROUTER->AUTH['User']);
+ $ROUTER->GET('/bookings/users/(?P<id>\d+)', [$bookingController, 'findAllBookingsByUserIdOrFingerPrint'] ,$ROUTER->AUTH['Anonymous']);
  $ROUTER->GET('/bookings/users/count', [$bookingController, 'countAllBookingsByUserIdOrFingerPrint'] ,$ROUTER->AUTH['User']);
  $ROUTER->DELETE('/bookings/(?P<id>\d+)', [$bookingController, 'cancelBookingByBookingId'] ,$ROUTER->AUTH['User']);
  $ROUTER->POST('/bookings', [$bookingController, 'createBooking'] ,$ROUTER->AUTH['Anonymous']);

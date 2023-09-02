@@ -34,7 +34,14 @@ http.interceptors.response.use(
     //   }
       return response;
     },
-    errorInterceptor => console.log({errorInterceptor})
+    errorInterceptor => {
+        errorInterceptor.response.data.success = false;
+        console.log({errorInterceptor})
+        if(errorInterceptor.response.status === 401){
+            errorInterceptor.response.data.result = null;
+        }
+        return errorInterceptor.response;
+    }
 );
 
 export { http, prepareUrl };

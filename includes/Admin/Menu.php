@@ -25,13 +25,20 @@ class Menu {
      * @since 1.0.0
      */
       function admin_menu() {
-            $parent_slug = 'sports-booking-slot';
+            $parent_slug = 'nml-sports-booking-slot';
+            $bookings_slug = 'nml-bookings';
+            $slot_templates_slug = 'nml-slot-templates';
+            $product_templates_slug = 'nml-product-templates';
             $capability = 'manage_options';
 
-            add_menu_page( 'booking slot page', 'Sports Booking', $capability, $parent_slug, [ $this, 'slotbook_page' ], 'dashicons-buddicons-groups', 71 );
-            add_submenu_page( $parent_slug, 'Booking Slot Lists', 'Booking Slot Lists', $capability, $parent_slug, [ $this, 'slotbook_page' ], 10 );
-            add_submenu_page( $parent_slug, 'Add New Slot', 'Add New Slot', $capability, "{$parent_slug}&action=new", [ $this, 'add_new_slot_page' ], 10 );
-            add_submenu_page( $parent_slug, 'Slot Templates', 'Slot Templates', $capability, "{$parent_slug}&action=templates", [ $this, 'add_new_slot_page' ], 15 );
+            add_menu_page( 'booking slot page', 'Sports Booking', $capability, $parent_slug, [ $this, 'render_slot_templates_page' ], 'dashicons-buddicons-groups', 71 );
+            add_submenu_page( $parent_slug, 'Booking Slot Lists', 'Booking Slot Lists', $capability, $parent_slug, [ $this, 'render_slot_templates_page' ], 10 );
+
+            add_submenu_page( $parent_slug, 'Add Product Template', 'Add Product Template', $capability, $product_templates_slug, [ $this, 'render_slot_templates_page' ], 10 );
+
+            add_submenu_page( $parent_slug, 'Slot Templates', 'Slot Templates', $capability, $slot_templates_slug, [ $this, 'render_slot_templates_page' ], 15 );
+
+            add_submenu_page( $parent_slug, 'Bookings', 'Bookings', $capability, "$bookings_slug", [ $this, 'render_bookings_page' ], 20 );
       }
 
       /**
@@ -57,4 +64,20 @@ class Menu {
             $add_new_page = new SlotBookPage();
             $add_new_page->plugin_page();
       }
+
+      public function render_bookings_page()
+      {
+          wp_enqueue_script('sbks-frontend-react-script');
+          wp_enqueue_style('sbks-frontend-react-style');
+          $add_new_page = new SlotBookPage();
+          $add_new_page->base_react_page();
+      }
+
+    public function render_slot_templates_page()
+    {
+        wp_enqueue_script('sbks-frontend-react-script');
+        wp_enqueue_style('sbks-frontend-react-style');
+        $add_new_page = new SlotBookPage();
+        $add_new_page->base_react_page();
+    }
 }

@@ -38,6 +38,15 @@ class SlotBookPage {
             }
       }
 
+    public function base_react_page() {
+
+        $template = __DIR__ . '/views/address-new.php';
+
+        if ( file_exists( $template ) ) {
+            include "$template";
+        }
+    }
+
     /**
      * fetch all product ids and titles
      *

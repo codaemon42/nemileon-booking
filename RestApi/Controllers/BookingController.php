@@ -49,8 +49,8 @@ class BookingController
     public function findAllBookingsByUserIdOrFingerPrint(WP_REST_Request $req): void
     {
         try{
-            $fingerPrint = strval($req->get_header('finger_print'));
-            $userId = $req->get_header('user_id');
+            $fingerPrint = strval($req->get_header('fingerprint'));
+            $userId = intval($req->get_header('user_id'));
 
             $queryParams = $req->get_query_params();
             $paged = $queryParams['paged'] ?? 1;
@@ -68,7 +68,7 @@ class BookingController
     {
         try{
             $fingerPrint = strval($req->get_header('finger_print'));
-            $userId = $req->get_header('user_id');
+            $userId = intval($req->get_header('user_id'));
 
             $bookings = $this->bookingService->countAllByUserIdOrFingerPrint($userId, $fingerPrint);
 
@@ -108,7 +108,7 @@ class BookingController
     {
         try {
             $fingerPrint = $req->get_header('fingerprint');
-            $userId = $req->get_header('user_id') ?: 0;
+            $userId = intval($req->get_header('user_id'));
             $productTemplate = new ProductTemplate( $req->get_json_params() );
 
             $booking = $this->bookingService->createBooking( $productTemplate, $userId, $fingerPrint );
