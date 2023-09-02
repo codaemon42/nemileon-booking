@@ -1,4 +1,6 @@
 <?php
+
+use ONSBKS_Slots\RestApi\Controllers\AnalyticsController;
 use ONSBKS_Slots\RestApi\Router;
 
 use ONSBKS_Slots\RestApi\Controllers\BookingController;
@@ -6,6 +8,8 @@ use ONSBKS_Slots\RestApi\Controllers\SlotTemplates;
 use ONSBKS_Slots\RestApi\Controllers\Options;
 use ONSBKS_Slots\RestApi\Controllers\ProductController;
 use ONSBKS_Slots\RestApi\Controllers\Info;
+
+$repo = new \ONSBKS_Slots\RestApi\Repositories();
 
  $ROUTER = new Router();
  $ROUTER->set_auth('Test', '__return_true');
@@ -37,3 +41,9 @@ use ONSBKS_Slots\RestApi\Controllers\Info;
  $ROUTER->POST('/bookings', [$bookingController, 'createBooking'] ,$ROUTER->AUTH['Anonymous']);
  $ROUTER->PUT('/bookings/(?P<id>\d+)', [$bookingController, 'createBooking'] ,$ROUTER->AUTH['Test']);
  $ROUTER->GET('/bookings/(?P<id>\d+)', [$bookingController, 'findBookingByBookingId'] ,$ROUTER->AUTH['Test']);
+
+ $analyticsRepository = new \ONSBKS_Slots\RestApi\Repositories\AnalyticsRepository();
+ $analyticsService = new \ONSBKS_Slots\RestApi\Services\AnalyticsService($analyticsRepository);
+ $analyticsController = new AnalyticsController($analyticsService);
+ $ROUTER->GET('/analytics', [$analyticsController, 'findBookingAnalyticsByDate'] ,$ROUTER->AUTH['Test']);
+ $ROUTER->GET('/analytics-status', [$analyticsController, 'findBookingAnalyticsByDateAndStatus'] ,$ROUTER->AUTH['Test']);

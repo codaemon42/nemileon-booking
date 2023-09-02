@@ -1,11 +1,10 @@
-import {useState, useEffect} from 'react'
-import { Column, G2 } from '@ant-design/plots';
+import { blue, cyan, red } from '@ant-design/colors';
+import { Line, G2 } from '@ant-design/plots';
 import useAnalytics from './useAnalytics';
-import { blue, cyan, gold, green, lime, magenta, orange, purple, red } from '@ant-design/colors';
 
-const BarChart = () => {
+const LineChart = () => {
 
-    const {BookingSeatAnalyticsByDate} = useAnalytics();
+    const {BookingSeatAnalyticsByDateAndStatus} = useAnalytics();
 
     const { registerTheme } = G2;
     registerTheme('custom-theme', {
@@ -16,20 +15,18 @@ const BarChart = () => {
     });
 
     const config = {
-      data: BookingSeatAnalyticsByDate,
+      data: BookingSeatAnalyticsByDateAndStatus,
+      isGroup: true,
+      isStack: true,
       xField: 'xAxis',
       yField: 'yAxis',
-      seriesField: 'mockType',
-      isGroup: true,
-      legend: {
-        position: 'top-left',
-        title: {
-            text: "Date VS Bookings",
-            spacing: 16
-        }
-      },
+      seriesField: 'type',
       label: {
         position: 'middle',
+        style: {
+          fill: '#FFFFFF',
+          opacity: 0.6,
+        },
       },
       xAxis: {
         label: {
@@ -49,10 +46,10 @@ const BarChart = () => {
           alias: 'Seats',
         },
       },
-      // theme: 'custom-theme',
+      theme: 'custom-theme',
     };
   
-    return <Column {...config} />;
+    return <Line {...config} />;
 }
 
-export default BarChart
+export default LineChart
