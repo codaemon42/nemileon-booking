@@ -2,6 +2,7 @@
 
 namespace ONSBKS_Slots\RestApi\Repositories;
 
+use Cassandra\Date;
 use ONSBKS_Slots\Includes\Entities\BookingsEntity;
 use ONSBKS_Slots\Includes\Models\BookingModel;
 use ONSBKS_Slots\RestApi\Exceptions\BookingCreateException;

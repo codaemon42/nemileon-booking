@@ -117,10 +117,10 @@ const SlotBuilderSteps = ({stepStyle}) => {
       <div style={stepStyle}>
         <Steps current={current} items={items} />
       </div>
-      <Divider orientation='left' plain>
+      {/* <Divider orientation='left' plain>
         <h3>{steps[current].title}</h3>
-      </Divider>
-      <div style={{marginRight: 20}} >{steps[current].content}</div>
+      </Divider> */}
+      <div style={{marginRight: 20, marginTop: 20}} >{steps[current].content}</div>
       <div
         style={{
           marginTop: 20,

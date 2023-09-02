@@ -14,7 +14,7 @@ const BoxCalendar = ({isFrontend = true, productTemplates = ProductTemplateType.
 
   const { size } = useWindowSize();
 
-  const [type, setType] = useState('week');
+  const [type, setType] = useState('date');
 
   const todayDate = dayjs();
 
@@ -174,10 +174,10 @@ const BoxCalendar = ({isFrontend = true, productTemplates = ProductTemplateType.
           !isFrontend
           ?
           <Divider style={{borderBlockStart: '0 rgba(5, 5, 5, 0)'}}>
-            <Radio.Group value={type} onChange={(e) => setType(e.target.value)}>
+            <Radio.Group buttonStyle="solid" value={type} onChange={(e) => setType(e.target.value)}>
               <Radio.Button value="date">DATE</Radio.Button>
               <Radio.Button value="week">WEEK</Radio.Button>
-              <Radio.Button value="month">Month</Radio.Button>
+              {/* <Radio.Button value="month">Month</Radio.Button> */}
             </Radio.Group>
           </Divider>
           : <></>

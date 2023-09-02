@@ -70,6 +70,7 @@ final class ONSBKS_Slots {
           new ONSBKS_Slots\Includes\Orders();
           new ONSBKS_Slots\Includes\Assets();
           new ONSBKS_Slots\Includes\Ajax();
+          new \ONSBKS_Slots\RestApi\Repositories();
 
           new ONSBKS_Slots\Includes\WooCommerce();
           if( is_admin() ) {
