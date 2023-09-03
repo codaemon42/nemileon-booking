@@ -5,15 +5,19 @@ import { Booking } from "../components/bookings/Booking.type";
 
 class BookingApi {
 
-    static async createBooking({productId, slots}){
+    static async createPayment({bookingId}){
         let body = {
-            action: 'onsbks_cart_action',
+            action: 'onsbks_add_to_cart',
             _wpnonce: reactObj.nonce,
-            product_id: productId || 0,
-            slots: slots || "test"
+            bookingId: bookingId || 0
         }
         const bookingRes = await ajax.post(reactObj.ajax_url, {...body});
         return new HttpResponseData(bookingRes.data);
+    }
+
+    static async createBooking( data  ) {
+        const bookingsResponse = await http.post(prepareUrl(`/bookings`), data);
+        return new BookingsResponseData(bookingsResponse.data);
     }
 
     static async getBookingsByUserId( userId, paged, per_page ) {

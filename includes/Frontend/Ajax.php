@@ -2,6 +2,9 @@
 
 namespace ONSBKS_Slots\Includes\Frontend;
 
+use ONSBKS_Slots\RestApi\Repositories\BookingRepository;
+use PHPUnit\Exception;
+
 /**
  * Class Ajax
  * @package ONSBKS_Slots\Includes\Frontend
@@ -24,22 +27,31 @@ class Ajax {
      */
     public $date_time_collector = array();
 
+
+    public int $bookingId = 0;
+
     /**
      * initialize the class and ajax action hooks
      *
      * @since 1.0.0
      */
     public function __construct() {
-        add_action( 'wp_ajax_sbks_select_action', [ $this, 'sbks_select_action' ] );
-        add_action( 'wp_ajax_nopriv_sbks_select_action', [ $this, 'sbks_select_action' ] );
+//        add_action( 'wp_ajax_sbks_select_action', [ $this, 'sbks_select_action' ] );
+//        add_action( 'wp_ajax_nopriv_sbks_select_action', [ $this, 'sbks_select_action' ] );
+        add_action( 'wp_ajax_onsbks_add_to_cart', [ $this, 'onsbks_add_to_cart' ] );
+        add_action( 'wp_ajax_nopriv_onsbks_add_to_cart', [ $this, 'onsbks_add_to_cart' ] );
 
-        add_action( 'wp_ajax_onsbks_cart_action', [ $this, 'onsbks_cart_action' ] );
-        add_action( 'wp_ajax_nopriv_onsbks_cart_action', [ $this, 'onsbks_cart_action' ] );
-        add_filter( 'woocommerce_add_cart_item_data', [ $this, 'add_booked_slots'], 1, 3 );
+//        add_action( 'wp_ajax_onsbks_cart_action', [ $this, 'onsbks_cart_action' ] );
+//        add_action( 'wp_ajax_nopriv_onsbks_cart_action', [ $this, 'onsbks_cart_action' ] );
+//        add_filter( 'woocommerce_add_cart_item_data', [ $this, 'add_booked_slots'], 1, 3 );
 
-        add_filter( 'woocommerce_add_cart_item_data', [ $this, 'sbks_add_cart_item_data'], 1, 3 );
-        add_filter( 'woocommerce_get_item_data', [ $this, 'sbks_get_item_data'], 1, 3 );
-        add_action( 'woocommerce_checkout_create_order_line_item', [ $this, 'sbks_checkout_create_order_line_item'], 10, 4 );
+//        add_filter( 'woocommerce_add_cart_item_data', [ $this, 'sbks_add_cart_item_data'], 1, 3 );
+        add_filter( 'woocommerce_add_cart_item_data', [ $this, 'onsbks_add_cart_item_data'], 1, 3 );
+//        add_filter( 'woocommerce_get_item_data', [ $this, 'sbks_get_item_data'], 1, 3 );
+        add_filter( 'woocommerce_get_item_data', [ $this, 'onsbks_show_cart_item_data'], 1, 3 );
+
+//        add_action( 'woocommerce_checkout_create_order_line_item', [ $this, 'sbks_checkout_create_order_line_item'], 10, 4 );
+        add_action( 'woocommerce_checkout_create_order_line_item', [ $this, 'onsbks_checkout_create_order_line_item'], 10, 4 );
     }
 
 
@@ -140,6 +152,54 @@ class Ajax {
         }
     }
 
+
+    /**
+     * adds cart-items and cart-itemmeta by ajax
+     *
+     * @since 1.3.1
+     */
+    public function onsbks_add_to_cart() {
+        if( ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'onsbks_react_nonce' ) ) {
+            wp_send_json_error( array(
+                'message' => "nonce verification failed",
+                'result'  => null,
+                'success' => false
+            ), 401 );
+        }
+
+        if( isset( $_REQUEST['bookingId']) ) {
+            try{
+                $bookingId = $_REQUEST['bookingId'];
+
+                $bookingRepo = new BookingRepository();
+                $booking = $bookingRepo->findById($bookingId);
+
+                WC()->cart->empty_cart();
+                $this->bookingId = $bookingId;
+                WC()->cart->add_to_cart( $booking->getProductId(), $booking->getSeats());
+
+
+                wp_send_json_success( array(
+                    'message' => "slots are saved for cart successfully",
+                    'result'  => wc_get_checkout_url(),
+                    'success' => true
+                ) );
+            } catch (\Exception $e) {
+                wp_send_json_error( array(
+                    'message' => 'something went wrong',
+                    'result'  => null,
+                    'success' => false
+                ), 500 );
+            }
+        } else {
+            wp_send_json_error( array(
+                'message' => 'bookingId is not valid',
+                'result'  => null,
+                'success' => false
+            ), 400 );
+        }
+    }
+
     /**
      * add meta data to cart item
      *
@@ -154,6 +214,12 @@ class Ajax {
     public function sbks_add_cart_item_data( $cart_item_data, $product_id, $variation_id ): array {
         $value = $this->get_date_time();
         $cart_item_data['date_time'] =  $value;
+        return $cart_item_data;
+    }
+
+
+    public function onsbks_add_cart_item_data( $cart_item_data, $product_id, $variation_id ): array {
+        $cart_item_data['BookingId'] =  $this->bookingId;
         return $cart_item_data;
     }
 
@@ -178,6 +244,26 @@ class Ajax {
     }
 
     /**
+     * get meta data of cart item
+     *
+     * @since 1.3.1
+     *
+     * @param $item_data
+     * @param $cart_item_data
+     *
+     * @return mixed
+     */
+    public function onsbks_show_cart_item_data( $item_data, $cart_item_data ) {
+        if( isset( $cart_item_data['BookingId'] ) ) {
+            $item_data[] = array(
+                'key' => 'BookingId',
+                'value' => wc_clean( $cart_item_data['BookingId'] )
+            );
+        }
+        return $item_data;
+    }
+
+    /**
      * creates per item meta data for orders
      *
      * @since 1.0.0
@@ -194,4 +280,23 @@ class Ajax {
             true
         );
     }
+
+    /**
+     * creates per item meta data for orders
+     *
+     * @since 1.3.1
+     *
+     * @param $item
+     * @param $cart_item_key
+     * @param $values
+     * @param $order
+     */
+    public function onsbks_checkout_create_order_line_item( $item, $cart_item_key, $values, $order ) {
+        $item->add_meta_data(
+            'BookingId',
+            $values['BookingId'],
+            true
+        );
+    }
+
 }

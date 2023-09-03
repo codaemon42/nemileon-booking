@@ -74,9 +74,11 @@ const useBookings = () => {
     console.timeEnd("HANDLE_BOOKING");
   };
 
-  const handlePayment = (record, index) => {
+  const handlePayment = async (record, index) => {
     console.log({ record, index });
     setSelectedBooking(new Booking(record));
+    const paymentRes = await BookingApi.createPayment({bookingId: record.id});
+    console.log({paymentRes});
   };
 
   const handleCancelBooking = (record, index) => {
