@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import jwt_decode from "jwt-decode";
 import { Context } from './Context';
+import getBrowserFingerprint from 'get-browser-fingerprint';
 
 
 const AppContext = ({children}) => {

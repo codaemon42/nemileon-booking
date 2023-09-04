@@ -32,7 +32,7 @@ class Menu {
             $capability = 'manage_options';
 
             add_menu_page( 'booking slot page', 'Sports Booking', $capability, $parent_slug, [ $this, 'render_slot_templates_page' ], 'dashicons-buddicons-groups', 71 );
-            add_submenu_page( $parent_slug, 'Booking Slot Lists', 'Booking Slot Lists', $capability, $parent_slug, [ $this, 'render_slot_templates_page' ], 10 );
+            add_submenu_page( $parent_slug, 'Dashboard', 'Dashboard', $capability, $parent_slug, [ $this, 'render_slot_templates_page' ], 10 );
 
             add_submenu_page( $parent_slug, 'Add Product Template', 'Add Product Template', $capability, $product_templates_slug, [ $this, 'render_slot_templates_page' ], 10 );
 
