@@ -5,9 +5,7 @@ use WC_Product_Simple;
 
 class BookingSlotProduct extends WC_Product_Simple
 {
-
-    public static $PRODUCT_TYPE = "booking_slot";
-
+    
     public $meta_prefix = 'NML_';
 
     /**
