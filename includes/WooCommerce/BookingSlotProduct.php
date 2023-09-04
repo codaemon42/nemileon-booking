@@ -5,7 +5,7 @@ use WC_Product_Simple;
 
 class BookingSlotProduct extends WC_Product_Simple
 {
-
+    
     public $meta_prefix = 'NML_';
 
     /**

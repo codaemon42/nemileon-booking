@@ -1,7 +1,10 @@
 <?php
 namespace ONSBKS_Slots\Includes;
 
+use ONSBKS_Slots\Includes\WooCommerce\BookingSlotProduct;
+use ONSBKS_Slots\RestApi\Exceptions\InvalidBookingStatusException;
 use ONSBKS_Slots\RestApi\Repositories\BookingRepository;
+use PHPUnit\Exception;
 
 /**
  * Class Orders
@@ -16,101 +19,66 @@ class Orders {
      * initialize the Orders class
      *
      * @since 1.0.0
+     * @modified 1.3.1
      */
     function __construct() {
-//        add_action('woocommerce_after_checkout_validation', [$this, 'sbks_checkout_validation']);
-        add_action('woocommerce_after_checkout_validation', [$this, 'onsbks_checkout_validation']);
-        add_action('woocommerce_admin_order_data_after_order_details', [$this, 'custom_order_data_section']);
-//        add_action('woocommerce_order_status_completed', [$this, 'sbks_update_product_meta_data'], 10, 1);
+        add_action('woocommerce_after_checkout_validation', [$this, 'validateBeforeOrder']);
+
+        add_action('woocommerce_before_order_item_line_item_html', [$this, 'insertPreviewInOrderDetail'], 10, 3);
     }
 
-
-
-    function custom_order_data_section($order) {
-        // Your custom data goes here
-        $custom_data = get_post_meta($order->get_id(), 'BookingId', true);
-
-        // Output your custom section
-        echo '<div class="form-field form-field-wide">';
-        echo '<h4>' . __('Custom Data', 'your-text-domain') . '</h4>';
-        echo '<p>' . __('Custom Field:', 'your-text-domain') . ' ' . esc_html($custom_data) . '</p>';
-        echo '</div>';
-    }
 
     /**
-     * validate slots are available before order process
+     * Insert the React App for booking preview before order line item
      *
-     * @since 1.0.0
+     * @since 1.3.1
+     * @author Naim-Ul-Hassan
+     *
+     * @param $item_id
+     * @param $item
+     * @param $order
+     * @return void
      */
-    public function sbks_checkout_validation() {
-        $cart_items = WC()->cart->get_cart();
-        foreach ( $cart_items as $cart_item_data) {
-            $date_time = $cart_item_data['date_time'];
-            $product_id = $cart_item_data['product_id'];
-            $quantity = $cart_item_data['quantity'];
-
-            $meta = explode('__', $date_time); // 2021-03-24__02:00_am
-            $time = $meta[1];  // 02:00_am
-            $meta_key = 'sbks_product_date' . $meta[0];  // sbks_product_date2021-03-24
-            $meta_value = get_post_meta($product_id, $meta_key, true);
-
-            if ($meta_value[$time] < $quantity) {
-                if ($meta_value[$time] == 0) {
-                    wc_add_notice(__("Sorry !!! Slot: {$date_time} has already being booked.", 'woocommerce'), 'error');
-                } else {
-                    wc_add_notice(__("Hurry !!! Only {$meta_value[$time]} slots left for {$date_time}  ", 'woocommerce'), 'error');
-                }
+    public function insertPreviewInOrderDetail($item_id, $item, $order): void
+    {
+            $bookingId = $item->get_meta("BookingId", true);
+            if($bookingId){
+                wp_enqueue_script('sbks-frontend-react-script');
+                wp_enqueue_style('sbks-frontend-react-style');
+                echo '<div style="padding: 10px 20px 20px 20px">';
+                echo '<div id="ONSBKS_BOOKING_SECTION" data-booking-id="'.$bookingId.'"></div>';
+                echo '</div>';
             }
-        }
+
     }
+
     /**
-     * validate slots are available before order process
+     * validate slots are not corrupted in cart before Order
      *
-     * @since 1.0.0
+     * @since 1.3.1
+     * @author Naim-Ul-Hassan
+     *
+     * @return void
      */
-    public function onsbks_checkout_validation() {
+    public function validateBeforeOrder(): void
+    {
         $cart_items = WC()->cart->get_cart();
         foreach ( $cart_items as $cart_item_data) {
             if(isset($cart_item_data['BookingId'])){
                 $BookingId = $cart_item_data['BookingId'];
-                $product_id = $cart_item_data['product_id'];
                 $quantity = $cart_item_data['quantity'];
 
                 $bookingRepo = new BookingRepository();
-                $booking = $bookingRepo->findById($BookingId);
 
-                if ($booking->getSeats() != $quantity) {
-                    wc_add_notice(__("Booking Seats mismatched ", 'woocommerce'), 'error');
+                try {
+                    $booking = $bookingRepo->findById($BookingId);
+                    if ($booking->getSeats() != $quantity) {
+                        wc_add_notice("Booking Seats mismatched ", 'error');
+                    }
+                } catch (\Exception $e) {
+                    wc_add_notice("Booking Error Occurred", 'error');
                 }
             }
-        }
-    }
-
-    /**
-     * update sbks_product_date%2021-03-24% meta data
-     *
-     * @param $order_id
-     *
-     * @return void
-     * @since 1.0.0
-     *
-     */
-    function sbks_update_product_meta_data($order_id) {
-        $order = wc_get_order($order_id);
-        foreach ($order->get_items() as $item) {
-            $item_data = $item->get_data();
-            $product_id = $item_data['product_id'];
-            $quantity = $item_data['quantity'];
-            $dateTime = $item->get_meta('Your slot');
-
-            $meta = explode('__', $dateTime); // 2021-03-24__02:00_am
-            $time = $meta[1];  // 02:00_am
-            $meta_key = 'sbks_product_date' . $meta[0];  // sbks_product_date2021-03-24
-            $meta_value = get_post_meta($product_id, $meta_key, true);
-
-            $meta_value[$time] = $meta_value[$time] - $quantity;
-
-            update_post_meta($product_id, $meta_key, $meta_value);
         }
     }
 }

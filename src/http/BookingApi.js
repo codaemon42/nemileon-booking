@@ -25,6 +25,11 @@ class BookingApi {
         return new BookingsResponseData(bookingsResponse.data);
     }
 
+    static async getBookingById( id ) {
+        const bookingResponse = await http.get(prepareUrl(`/bookings/${id}`));
+        return new BookingResponseData(bookingResponse.data);
+    }
+
     static async countBookingsByUserId() {
         const bookingsCountResponse = await http.get(prepareUrl(`/bookings/users/count`));
         return new HttpResponseData(bookingsCountResponse.data);
@@ -36,6 +41,13 @@ class BookingsResponseData extends HttpResponseData{
     constructor(data=null){
         super(data);
         this.result = Booking.List(this.result);
+    }
+}
+
+class BookingResponseData extends HttpResponseData{
+    constructor(data=null){
+        super(data);
+        this.result = new Booking(this.result);
     }
 }
 
