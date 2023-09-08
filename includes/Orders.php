@@ -1,10 +1,8 @@
 <?php
+
 namespace ONSBKS_Slots\Includes;
 
-use ONSBKS_Slots\Includes\WooCommerce\BookingSlotProduct;
-use ONSBKS_Slots\RestApi\Exceptions\InvalidBookingStatusException;
 use ONSBKS_Slots\RestApi\Repositories\BookingRepository;
-use PHPUnit\Exception;
 
 /**
  * Class Orders
@@ -21,7 +19,7 @@ class Orders {
      * @since 1.0.0
      * @modified 1.3.1
      */
-    function __construct() {
+    public function __construct() {
         add_action('woocommerce_after_checkout_validation', [$this, 'validateBeforeOrder']);
 
         add_action('woocommerce_before_order_item_line_item_html', [$this, 'insertPreviewInOrderDetail'], 10, 3);
@@ -65,13 +63,13 @@ class Orders {
         $cart_items = WC()->cart->get_cart();
         foreach ( $cart_items as $cart_item_data) {
             if(isset($cart_item_data['BookingId'])){
-                $BookingId = $cart_item_data['BookingId'];
+                $bookingId = $cart_item_data['BookingId'];
                 $quantity = $cart_item_data['quantity'];
 
                 $bookingRepo = new BookingRepository();
 
                 try {
-                    $booking = $bookingRepo->findById($BookingId);
+                    $booking = $bookingRepo->findById($bookingId);
                     if ($booking->getSeats() != $quantity) {
                         wc_add_notice("Booking Seats mismatched ", 'error');
                     }

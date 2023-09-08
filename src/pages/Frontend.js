@@ -1,8 +1,8 @@
 import { CalendarFilled, CalendarOutlined, CustomerServiceOutlined } from '@ant-design/icons';
 import { Divider, FloatButton, Radio, Space } from 'antd';
 import React, { useState } from 'react';
-import BookingsTable from './components/bookings/BookingsTable';
-import SlotBooking from './components/slots/SlotBooking';
+import BookingsTable from '../components/bookings/BookingsTable';
+import SlotBooking from '../components/slots/SlotBooking';
 
 
 const Frontend = () => {

@@ -5,11 +5,14 @@ use ONSBKS_Slots\RestApi\Router;
 
 use ONSBKS_Slots\RestApi\Controllers\BookingController;
 use ONSBKS_Slots\RestApi\Controllers\SlotTemplates;
-use ONSBKS_Slots\RestApi\Controllers\Options;
+use ONSBKS_Slots\RestApi\Controllers\OptionsController;
 use ONSBKS_Slots\RestApi\Controllers\ProductController;
 use ONSBKS_Slots\RestApi\Controllers\Info;
+use ONSBKS_Slots\RestApi\Repositories\AnalyticsRepository;
+use ONSBKS_Slots\RestApi\Services\AnalyticsService;
+use ONSBKS_Slots\RestApi\Repositories;
 
-$repo = new \ONSBKS_Slots\RestApi\Repositories();
+$repo = new Repositories();
 
  $ROUTER = new Router();
  $ROUTER->set_auth('Test', '__return_true');
@@ -23,9 +26,11 @@ $repo = new \ONSBKS_Slots\RestApi\Repositories();
  $ROUTER->POST('/products/template', array($productController, 'set_booking_template'), $ROUTER->AUTH['Anonymous']);
  $ROUTER->GET('/products/templates', array($productController, 'get_booking_templates'), $ROUTER->AUTH['Anonymous']);
 
- $optionsController = new Options();
- $ROUTER->GET('/options', array($optionsController, 'get_option'), $ROUTER->AUTH['Anonymous']);
- $ROUTER->POST('/options', array($optionsController, 'set_option'), $ROUTER->AUTH['Anonymous']);
+ $optionsController = new OptionsController();
+ $ROUTER->GET('/options', array($optionsController, 'getOption'), $ROUTER->AUTH['Admin']);
+ $ROUTER->POST('/options', array($optionsController, 'setOption'), $ROUTER->AUTH['Admin']);
+ $ROUTER->GET('/settings', array($optionsController, 'findSettings'), $ROUTER->AUTH['Admin']);
+ $ROUTER->POST('/settings', array($optionsController, 'saveSettings'), $ROUTER->AUTH['Admin']);
 
  $slotTemplateController = new SlotTemplates();
  $ROUTER->GET('/templates', [$slotTemplateController, 'find_all'], $ROUTER->AUTH['Anonymous']);
@@ -42,8 +47,8 @@ $repo = new \ONSBKS_Slots\RestApi\Repositories();
  $ROUTER->PUT('/bookings/(?P<id>\d+)', [$bookingController, 'createBooking'] ,$ROUTER->AUTH['Test']);
  $ROUTER->GET('/bookings/(?P<id>\d+)', [$bookingController, 'findBookingByBookingId'] ,$ROUTER->AUTH['Test']);
 
- $analyticsRepository = new \ONSBKS_Slots\RestApi\Repositories\AnalyticsRepository();
- $analyticsService = new \ONSBKS_Slots\RestApi\Services\AnalyticsService($analyticsRepository);
+ $analyticsRepository = new AnalyticsRepository();
+ $analyticsService = new AnalyticsService($analyticsRepository);
  $analyticsController = new AnalyticsController($analyticsService);
  $ROUTER->GET('/analytics', [$analyticsController, 'findBookingAnalyticsByDate'] ,$ROUTER->AUTH['Test']);
  $ROUTER->GET('/analytics-status', [$analyticsController, 'findBookingAnalyticsByDateAndStatus'] ,$ROUTER->AUTH['Test']);

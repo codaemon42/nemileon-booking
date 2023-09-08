@@ -1,6 +1,6 @@
 import { Col, Divider, Row } from 'antd';
 import React from 'react';
-import SlotBuilderSteps from './components/slots/SlotBuilderSteps';
+import SlotBuilderSteps from '../components/slots/SlotBuilderSteps';
 
 
 

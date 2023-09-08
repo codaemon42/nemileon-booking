@@ -1,0 +1,6 @@
+export class SettingsKeys {
+    static ENABLE_AUTO_CANCEL = 'ENABLE_AUTO_CANCEL';
+    static TIME_PERIOD = 'TIME_PERIOD';
+    static PAY_NOW_BUTTON_TEXT = 'PAY_NOW_BUTTON_TEXT'
+    static BOOKING_ORDER_STATUS = 'BOOKING_ORDER_STATUS'
+}

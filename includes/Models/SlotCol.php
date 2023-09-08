@@ -39,7 +39,9 @@ class SlotCol
             $this->setBook( $data->getBook() );
         }
         else {
-            if($data == null) $data = $this->data;
+            if($data == null) {
+                $data = $this->data;
+            }
             $this->setProductId( $data['product_id'] );
             $this->setContent( $data['content'] );
             $this->setShow( $data['show'] );

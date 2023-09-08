@@ -14,7 +14,7 @@ class Ajax {
      * initialize the Ajax
      * @since 1.0.0
      */
-    function __construct() {
+    public function __construct() {
         $this->initAjax();
     }
 
@@ -22,7 +22,8 @@ class Ajax {
      * enqueue the admin and frontend ajax
      * @since 1.0.0
      */
-    public function initAjax() {
+    public function initAjax(): void
+    {
         new Frontend\Ajax();
         new Admin\Ajax();
     }

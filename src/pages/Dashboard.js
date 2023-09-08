@@ -1,7 +1,7 @@
 import { Col, Divider, Row } from 'antd'
 import React from 'react'
-import BarChart from './components/charts/BarChart'
-import BarStackChart from './components/charts/BarStackChart'
+import BarChart from '../components/charts/BarChart'
+import BarStackChart from '../components/charts/BarStackChart'
 
 const Dashboard = (props) => {
   return (
