@@ -10,6 +10,8 @@
  * License URI:   https://gnu.org/licenses/gpl-2.0.html
  */
 
+use ONSBKS_Slots\Includes\Cron;
+
 if ( ! defined( 'ABSPATH' ) ) {
       exit;
 }
@@ -71,6 +73,9 @@ final class ONSBKS_Slots {
           new ONSBKS_Slots\Includes\Assets();
           new ONSBKS_Slots\Includes\Ajax();
           new \ONSBKS_Slots\RestApi\Repositories();
+
+          $cron = new Cron();
+          $cron->initAllCronJobs();
 
           new ONSBKS_Slots\Includes\WooCommerce();
           if( is_admin() ) {
