@@ -1,14 +1,14 @@
 import { ArrowLeftOutlined, CloudUploadOutlined, CopyOutlined, DeleteOutlined, EditOutlined, MonitorOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Divider, message, Modal, Popconfirm, Space, Table, Tooltip } from 'antd';
 import {useEffect, useState} from 'react';
-import SlotBuilder from './components/slots/SlotBuilder';
-import SlotPlotter from './components/slots/SlotPlotter';
-import { Slot } from './components/slots/types/Slot.type';
-import { SlotCol } from './components/slots/types/SlotCol.type';
-import { SlotTemplateType } from './components/slots/types/SlotTemplateType.type';
-import { alphabeticSort } from './helper/alphabeticSort';
-import { countAvailableSlots } from './helper/countAvailableSlots';
-import { SlotTemplateApi } from './http/SlotTemplateApi';
+import SlotBuilder from '../components/slots/SlotBuilder';
+import SlotPlotter from '../components/slots/SlotPlotter';
+import { Slot } from '../components/slots/types/Slot.type';
+import { SlotCol } from '../components/slots/types/SlotCol.type';
+import { SlotTemplateType } from '../components/slots/types/SlotTemplateType.type';
+import { alphabeticSort } from '../helper/alphabeticSort';
+import { countAvailableSlots } from '../helper/countAvailableSlots';
+import { SlotTemplateApi } from '../http/SlotTemplateApi';
 
 
 const SlotTemplate = ({...props}) => {

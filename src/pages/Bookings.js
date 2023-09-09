@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons'
 import { Button, Divider, Space } from 'antd'
 import React from 'react'
-import BookingsTable from './components/bookings/BookingsTable'
+import BookingsTable from '../components/bookings/BookingsTable'
 
 const Bookings = (props) => {
   return (

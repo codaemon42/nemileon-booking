@@ -1,7 +1,6 @@
 <?php
 use \Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use JetBrains\PhpStorm\ArrayShape;
 
 function onsbks_get_products(): array
 {

@@ -17,10 +17,11 @@ class Installer {
      * @modified
      * @since 1.3.1
      */
-    public function run() {
-        $this->add_version();
-        $this->create_page_by_path('Booking Slots', 'booking-slot', do_shortcode("[booking_shortcode]"));
-        $this->init_db();
+    public function run(): void
+    {
+        $this->addVersion();
+        $this->createPageByPath('Booking Slots', 'booking-slot', do_shortcode("[booking_shortcode]"));
+        $this->initDb();
     }
 
     /**
@@ -28,7 +29,8 @@ class Installer {
      *
      * @since 1.0.0
      */
-    public function add_version() {
+    public function addVersion(): void
+    {
         $installed = get_option( 'sbks_installed' );
         if ( !$installed ) {
             update_option( 'sbks_installed', time() );
@@ -46,7 +48,8 @@ class Installer {
      * @param $content
      * @param null $parent_id
      */
-    public function create_page( $title_of_the_page, $content, $parent_id = NULL ) {
+    public function createPage($title_of_the_page, $content, $parent_id = null ): void
+    {
         $page = get_page_by_title( $title_of_the_page, 'OBJECT', 'page' );
         if ( ! empty( $page ) ) {
             return;
@@ -69,13 +72,14 @@ class Installer {
     /**
      * create page while installing
      *
-     * @since 1.3.1
-     *
      * @param $title_of_the_page
+     * @param $slug
      * @param $content
      * @param null $parent_id
+     * @since 1.3.1
+     *
      */
-    public function create_page_by_path( $title_of_the_page, $slug, $content, $parent_id = NULL ): void
+    public function createPageByPath($title_of_the_page, $slug, $content, $parent_id = null ): void
     {
         $page = get_page_by_path( $slug, 'OBJECT', 'page' );
         if ( ! empty( $page ) ) {
@@ -96,7 +100,7 @@ class Installer {
         );
     }
 
-    public function init_db(): void
+    public function initDb(): void
     {
         new Entities();
     }
