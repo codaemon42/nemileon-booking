@@ -11,7 +11,7 @@ class Entities
     public function __construct()
     {
         new SlotTemplates();
-        new BookingsEntity();
+        new BookingsEntity(true);
     }
 
 }
