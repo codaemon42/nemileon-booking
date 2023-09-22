@@ -2,6 +2,7 @@
 
 namespace ONSBKS_Slots\Includes\Frontend;
 
+use ONSBKS_Slots\Includes\Constants;
 use ONSBKS_Slots\RestApi\Repositories\BookingRepository;
 use Exception;
 /**
@@ -47,9 +48,9 @@ class Ajax {
             ), 401 );
         }
 
-        if( isset( $_REQUEST['bookingId']) ) {
+        if( isset( $_REQUEST[Constants::BOOKING_ID_KEY]) ) {
             try{
-                $bookingId = $_REQUEST['bookingId'];
+                $bookingId = $_REQUEST[Constants::BOOKING_ID_KEY];
 
                 $bookingRepo = new BookingRepository();
                 $booking = $bookingRepo->findById($bookingId);
@@ -83,7 +84,7 @@ class Ajax {
 
     public function addCartItemData($cart_item_data, $product_id, $variation_id ): array
     {
-        $cart_item_data['BookingId'] =  $this->bookingId;
+        $cart_item_data[Constants::BOOKING_ID_KEY] =  $this->bookingId;
         return $cart_item_data;
     }
 
@@ -97,12 +98,12 @@ class Ajax {
      *
      * @return mixed
      */
-    public function showCartItemData($item_data, $cart_item_data ): mixed
+    public function showCartItemData($item_data, $cart_item_data ): array
     {
-        if( isset( $cart_item_data['BookingId'] ) ) {
+        if( isset( $cart_item_data[Constants::BOOKING_ID_KEY] ) ) {
             $item_data[] = array(
-                'key' => 'BookingId',
-                'value' => wc_clean( $cart_item_data['BookingId'] )
+                'key' => Constants::BOOKING_ID_KEY,
+                'value' => wc_clean( $cart_item_data[Constants::BOOKING_ID_KEY] )
             );
         }
         return $item_data;
@@ -121,8 +122,8 @@ class Ajax {
     public function checkoutCreateOrderLineItem($item, $cart_item_key, $values, $order ): void
     {
         $item->add_meta_data(
-            'BookingId',
-            $values['BookingId'],
+            Constants::BOOKING_ID_KEY,
+            $values[Constants::BOOKING_ID_KEY],
             true
         );
     }

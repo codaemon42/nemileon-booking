@@ -20,7 +20,7 @@ http.interceptors.request.use(request => {
     // }
     request.headers['jwt'] = `${token}`;
 
-    if(request.url.includes('bookings')){
+    if(request.url.includes('bookings') || request.url.includes('tickets/find')){
         request.headers['fingerprint'] = `${localStorage.getItem('fingerprint')}`;
     }
 

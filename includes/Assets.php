@@ -96,8 +96,48 @@ class Assets {
             'error'     => 'something went wrong, request denied...',
             'is_admin'  => is_admin(),
             'order_status'=> wc_get_order_statuses(),
-            'page'      => is_admin() ? $_GET["page"] ?? $_SERVER['REQUEST_URI'] : $_SERVER['REQUEST_URI'],
+            'page'      => $this->getReactPageName(),
             'action'    => is_admin() ? $_GET["action"] ?? $_SERVER['REQUEST_URI'] : $_SERVER['REQUEST_URI'],
+            'ticket'    => $this->getTicketNumber(),
+            'logoUrl'   => get_custom_logo(),
+            'site_title'=> get_bloginfo(),
+            'currency_symbol'=> get_woocommerce_currency_symbol()
         ) );
+    }
+
+    public function getReactPageName(): string
+    {
+        $page = '';
+        if(is_admin()) {
+            if(isset($_GET["page"])) {
+                $page = $_GET["page"];
+            } else {
+                $page = $_SERVER['REQUEST_URI'];
+            }
+        } else {
+            if(isset($_GET[Constants::BOOKING_TICKET_PAGE_KEY])) {
+                $page = Constants::BOOKING_TICKET_PAGE_KEY;
+            }
+            elseif(isset($_GET[Constants::VERIFY_TICKET_PAGE_KEY])){
+                $page = Constants::VERIFY_TICKET_PAGE_KEY;
+            }
+            else {
+                $page = "booking_slot";
+            }
+        }
+        return $page;
+    }
+
+    public function getTicketNumber(): string
+    {
+        $ticketId = 0;
+        if(isset($_GET[Constants::BOOKING_TICKET_PAGE_KEY])){
+            $ticketId = $_GET[Constants::BOOKING_TICKET_PAGE_KEY];
+        }
+        elseif(isset($_GET[Constants::VERIFY_TICKET_PAGE_KEY])) {
+            $ticketId = $_GET[Constants::VERIFY_TICKET_PAGE_KEY];
+        }
+
+        return $ticketId;
     }
 }

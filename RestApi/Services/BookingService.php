@@ -5,9 +5,11 @@ namespace ONSBKS_Slots\RestApi\Services;
 use ONSBKS_Slots\Includes\Converter\ProductTemplateConverter;
 use ONSBKS_Slots\Includes\Models\BookingModel;
 use ONSBKS_Slots\Includes\Models\ProductTemplate;
+use ONSBKS_Slots\Includes\Models\Settings;
 use ONSBKS_Slots\Includes\Models\Slot;
 use ONSBKS_Slots\Includes\Models\SlotCol;
 use ONSBKS_Slots\Includes\Models\SlotRow;
+use ONSBKS_Slots\Includes\State;
 use ONSBKS_Slots\Includes\Status\BookingStatus;
 use ONSBKS_Slots\Includes\WooCommerce\BookingSlotProduct;
 use ONSBKS_Slots\RestApi\Exceptions\BookingCancelException;
@@ -18,6 +20,7 @@ use ONSBKS_Slots\RestApi\Exceptions\BookingNotFound;
 use ONSBKS_Slots\RestApi\Exceptions\BookingProcessException;
 use ONSBKS_Slots\RestApi\Exceptions\BookingSlotRecyclingException;
 use ONSBKS_Slots\RestApi\Exceptions\ConversionException;
+use ONSBKS_Slots\RestApi\Exceptions\InvalidBookingStatusException;
 use ONSBKS_Slots\RestApi\Exceptions\NoFingerPrintException;
 use ONSBKS_Slots\RestApi\Exceptions\NotBookableException;
 use ONSBKS_Slots\RestApi\Exceptions\NotValidBookingTemplate;
@@ -98,12 +101,11 @@ class BookingService
     /**
      * @throws BookingNotFound
      */
-    public function updateBookingByBookingId(mixed $bookingId, array $data): void
+    public function updateBookingByBookingId(mixed $bookingId, array $data): ?BookingModel
     {
-        $booking = $this->findBookingByBookingId($bookingId, true);
-        $modifyBooking = array_merge($booking->getData(), $data);
-
         //  make possibilities to change the booking from here
+        // TODO: Update Logic
+        return $this->findBookingByBookingId($bookingId, true);
     }
 
 
@@ -122,7 +124,6 @@ class BookingService
     {
         $insertId     = 0;
         $bookingDate  = $productTemplate->getKey();
-        $productId    = $productTemplate->getProductId();
 
         // validate finger print
         $this->isValidFingerPrint( $fingerPrint, true );
@@ -148,16 +149,21 @@ class BookingService
 	    $recycledSlot = $this->recycleSlot( $slot, true );
 
         // update the product meta slot after above calculation is done.
-         $this->updateProductSlot($updatedProductTemplate, $recycledSlot, true);
+        $this->updateProductSlot($updatedProductTemplate, $recycledSlot, true);
+
+        // calc booking expiration time
+        $expires_in = $this->getExpirationTimeStamp();
 
         // setting booking model properties
-         $bookingModel = $this->productTemplateToBookingModel($productTemplate);
-         $bookingModel->setUserId($userId);
-         $bookingModel->setFingerPrint($fingerPrint);
+        $bookingModel = $this->productTemplateToBookingModel($productTemplate);
+        $bookingModel->setUserId($userId);
+        $bookingModel->setFingerPrint($fingerPrint);
+        $bookingModel->setExpired(false);
+        $bookingModel->setExpiresIn($expires_in);
 
         // create booking in database
-         $insertId = $this->createBookingInDB($bookingModel);
-         $bookingModel->setId($insertId);
+        $insertId = $this->createBookingInDB($bookingModel);
+        $bookingModel->setId($insertId);
 
         return $bookingModel;
     }
@@ -165,7 +171,7 @@ class BookingService
 
     /**
      * @throws BookingNotFound
-     * @throws \ONSBKS_Slots\RestApi\Exceptions\InvalidBookingStatusException
+     * @throws InvalidBookingStatusException
      * @throws BookingProcessException
      * @throws BookingFailedException
      * @throws BookingCancelException
@@ -182,7 +188,6 @@ class BookingService
         // fetch the product slot
         $slot = $this->productRepository->get_product_slot($bookingModel->getProductId(), $bookingModel->getBookingDate());
         // increase the available count, decrease the booked count
-        // TODO
         $updatedSlot = $this->rollbackBookings($bookingModel->getTemplate(), $slot, true);
         // update the slot
         $this->updateProductSlotByProductIdAndDate($bookingModel->getProductId(), $bookingModel->getBookingDate(), $updatedSlot, true);
@@ -231,10 +236,6 @@ class BookingService
         return false;
     }
 
-    private function crossBookingValidation( Slot $template ): Slot
-    {
-        return $template;
-    }
 
     /**
      * Invalid Past date
@@ -326,11 +327,8 @@ class BookingService
 
                         // set all new values
                         $col->setChecked(true);
-                        // $bookingProductTemplate->getTemplate()->getRows()[$rowKey]->getCols()[$colKey]->setChecked(true);
                         $col->setBook( $totalBook );
-                        // $bookingProductTemplate->getTemplate()->getRows()[$rowKey]->getCols()[$colKey]->setBook($totalBook);
                         $col->setBooked( $totalBooked );
-                        // $bookingProductTemplate->getTemplate()->getRows()[$rowKey]->getCols()[$colKey]->setBooked($totalBooked);
                         $col->setAvailableSlots( $availableSlots );
                     }
                     else {
@@ -395,11 +393,11 @@ class BookingService
 			$recycledSlot = new Slot($slot->getData());
 
             $newRows = SlotRow::List();
-			foreach ( $slot->getRows() as $rowKey => $row )
+			foreach ( $slot->getRows() as $row )
 			{
                 $newRow = new SlotRow($row);
                 $newCols = SlotCol::List();
-				foreach ($row->getCols() as $colKey => $col )
+				foreach ($row->getCols() as $col )
 				{
 					// prepare the template for next orders.
 					$col->setChecked(false);
@@ -488,5 +486,64 @@ class BookingService
             if($throwable) throw new BookingCancelException();
             return null;
         }
+    }
+
+    /**
+     * @throws InvalidBookingStatusException
+     * @throws BookingProcessException
+     */
+    public function autoCancelBookings($per_page = 100, $paged = 1): void
+    {
+        $hasNextBatch = true;
+        $page = $paged;
+
+        while ( $hasNextBatch )
+        {
+            $bookings = $this->bookingRepository->findAllByStatusPendingPayment($per_page, $page);
+
+            if( count($bookings) <= 0 ) {
+                $hasNextBatch = false;
+            } else {
+                $page++;
+            }
+
+            foreach ($bookings as $booking){
+                $booking['template'] = maybe_unserialize($booking['template']);
+                $bookingModel = new BookingModel($booking);
+                $bookingModel->setStatus(BookingStatus::CANCELLED);
+                $bookingModel->setExpired(true);
+
+                // update the booking in db
+                $this->bookingRepository->update($bookingModel->getId(), $bookingModel->getData());
+
+                // free up the product template for next users
+                $slot = $this->productRepository->get_product_slot($bookingModel->getProductId(), $bookingModel->getBookingDate());
+                if( !$slot ) return;
+
+                // increase the available count, decrease the booked count
+                $updatedSlot = $this->rollbackBookings($bookingModel->getTemplate(), $slot);
+                if( !$updatedSlot ) return;
+
+                // update the slot
+                $this->updateProductSlotByProductIdAndDate($bookingModel->getProductId(), $bookingModel->getBookingDate(), $updatedSlot);
+
+            }
+        }
+    }
+
+    /**
+     * Derive the future Mysql Timestamp for setting booking expires_in
+     * @return string
+     */
+    private function getExpirationTimeStamp(): string
+    {
+        $settings = new Settings(State::$SETTINGS);
+        $durationInSeconds = $settings->getAutoCancelPeriod();
+
+        // Calculate the future timestamp
+        $futureTimestamp = current_time('timestamp') + $durationInSeconds;
+
+        // Format the future timestamp as a MySQL datetime string
+        return date("Y-m-d H:i:s", $futureTimestamp);
     }
 }

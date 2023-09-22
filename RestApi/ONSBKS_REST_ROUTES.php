@@ -1,6 +1,7 @@
 <?php
 
 use ONSBKS_Slots\RestApi\Controllers\AnalyticsController;
+use ONSBKS_Slots\RestApi\Controllers\TicketController;
 use ONSBKS_Slots\RestApi\Router;
 
 use ONSBKS_Slots\RestApi\Controllers\BookingController;
@@ -47,7 +48,11 @@ $repo = new Repositories();
  $ROUTER->PUT('/bookings/(?P<id>\d+)', [$bookingController, 'createBooking'] ,$ROUTER->AUTH['Test']);
  $ROUTER->GET('/bookings/(?P<id>\d+)', [$bookingController, 'findBookingByBookingId'] ,$ROUTER->AUTH['Test']);
 
- $analyticsRepository = new AnalyticsRepository();
+ $ticketController = new TicketController();
+$ROUTER->GET('/tickets/find/(?P<id>\d+)', [$ticketController, 'findTicket'] ,$ROUTER->AUTH['User']);
+$ROUTER->GET('/tickets/verify/(?P<id>\d+)', [$ticketController, 'verifyTicket'] ,$ROUTER->AUTH['Anonymous']);
+
+$analyticsRepository = new AnalyticsRepository();
  $analyticsService = new AnalyticsService($analyticsRepository);
  $analyticsController = new AnalyticsController($analyticsService);
  $ROUTER->GET('/analytics', [$analyticsController, 'findBookingAnalyticsByDate'] ,$ROUTER->AUTH['Test']);
