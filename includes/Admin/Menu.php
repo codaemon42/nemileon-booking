@@ -10,7 +10,9 @@ namespace ONSBKS_Slots\Includes\Admin;
  * @modified 1.3.1
  */
 class Menu {
-      /**
+
+
+    /**
        * initialize the admin_menu hook
        *
        * @since 1.0.0
@@ -41,7 +43,7 @@ class Menu {
                 'Sports Booking',
                 $capability, $parent_slug,
                 [ $this, 'renderReactApp' ],
-                'dashicons-buddicons-groups',
+                ONSBKS_ASSETS . "/nemileon-icon-dark-bg.png",
                 71
             );
 

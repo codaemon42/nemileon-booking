@@ -1,5 +1,5 @@
 import { CloudDownloadOutlined, PrinterOutlined, QrcodeOutlined } from '@ant-design/icons'
-import { Card, Col, Divider, QRCode, Row, Space, Tooltip } from 'antd'
+import { Card, Col, Divider, Image, QRCode, Row, Space, Tooltip } from 'antd'
 import React from 'react'
 import { usePDF } from 'react-to-pdf'
 import { useReactToPrint } from 'react-to-print'
@@ -43,7 +43,8 @@ const Ticket = () => {
 
           <div id='nmlbookingticket'  ref={targetRef} style={{padding: 20}}>
             <Divider>
-            <div dangerouslySetInnerHTML={{__html: reactObj.logoUrl}}></div>
+            {/* <div dangerouslySetInnerHTML={{__html: reactObj.logoUrl}}></div> */}
+            <Image preview={false} width={100} height={100} src={reactObj.logoUrl} alt={reactObj.site_title}/>
             </Divider>
             <Row >
               <Col span={8}>

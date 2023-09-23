@@ -1,9 +1,12 @@
+import { useContext } from 'react';
 import { CloseOutlined, ExpandOutlined, FileTextOutlined, ShoppingOutlined } from '@ant-design/icons';
 import { Button, Space, Tooltip, Popconfirm } from 'antd'
+import { Context } from '../../contexts/Context';
 import BookingStatus from './BookingStatus';
 
 
 const BookingButtonGroup = ({record, index, onView=()=>{}, onBook=()=>{}, onCancel=()=>{}}) => {
+    const { context } = useContext(Context)
     return (
         <Space>
             <Tooltip placement="leftBottom" title='View'>
@@ -23,7 +26,7 @@ const BookingButtonGroup = ({record, index, onView=()=>{}, onBook=()=>{}, onCanc
             {
                 record.status === BookingStatus.COMPLETED ? 
                 <Tooltip placement="bottom" title='View Ticket'>
-                    <Button className='onsbks-success' target='_blank' href={window.location.href+'/?booking_ticket='+record.id} type="primary" icon={<FileTextOutlined />}/>
+                    <Button className='onsbks-success' target='_blank' href={context.base_url+'/booking-slot/?booking_ticket='+record.id} type="primary" icon={<FileTextOutlined />}/>
                 </Tooltip>
                 : 
                 <Tooltip placement="bottom" title='View Ticket'>

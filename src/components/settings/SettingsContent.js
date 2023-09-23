@@ -1,10 +1,10 @@
-import { Input, Select, Switch, TimePicker } from 'antd'
-import useSettings from './useSettings'
-import * as dayjs from 'dayjs'
-import SettingsInputWrapper from './SettingsInputWrapper'
-import SettingsInputTitle from './SettingsInputTitle'
-import { SettingsKeys } from './SettingsKeys'
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
+import { Input, Select, Switch, TimePicker } from 'antd'
+import * as dayjs from 'dayjs'
+import SettingsInputTitle from './SettingsInputTitle'
+import SettingsInputWrapper from './SettingsInputWrapper'
+import { SettingsKeys } from './SettingsKeys'
+import useSettings from './useSettings'
 
 const SettingsContent = () => {
 
