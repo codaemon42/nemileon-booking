@@ -7,6 +7,8 @@ import Frontend from './pages/Frontend';
 import OrderEdit from './pages/OrderEdit';
 import SlotTemplate from './pages/SlotTemplate';
 import Settings from './pages/Settings';
+import VerifyTicket from './pages/VerifyTicket';
+import Ticket from './pages/Ticket';
 
 const App = () => {
 
@@ -23,6 +25,8 @@ const App = () => {
             : context.page === 'nml-settings' ? <Settings style={{ marginRight: 5}} />
             : context.action === "edit" ? <OrderEdit />
             : <></>
+        : context.page === 'verify_ticket' ? <VerifyTicket /> 
+        : context.page === 'booking_ticket' ? <Ticket /> 
         : <Frontend />
         
      );

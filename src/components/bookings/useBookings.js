@@ -3,6 +3,7 @@ import { useState, useEffect, useContext } from "react";
 import { Context } from "../../contexts/Context";
 import { BookingApi } from "../../http/BookingApi";
 import { Booking } from "./Booking.type";
+import BookingStatus from "./BookingStatus";
 
 const useBookings = () => {
   const { context, user } = useContext(Context)
@@ -90,6 +91,13 @@ const useBookings = () => {
     setOpenModal(false);
   };
 
+  const handleFinishCountDown = (record, index) => {
+    const newBookings = [...bookings];
+    newBookings[index].expired = true;
+    newBookings[index].status = BookingStatus.CANCELLED;
+    setBookings(newBookings)
+  }
+
   return {
     bookings,
     selectedBooking,
@@ -103,6 +111,7 @@ const useBookings = () => {
     handlePayment,
     handleCancelBooking,
     handleCloseModal,
+    handleFinishCountDown
   };
 };
 

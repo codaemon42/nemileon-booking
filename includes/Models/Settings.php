@@ -5,7 +5,7 @@ namespace ONSBKS_Slots\Includes\Models;
 class Settings
 {
     private string $enableAutoCancel;
-    private string $autoCancelPeriod;
+    private int $autoCancelPeriod;
     private string $payNowButtonText;
     private string $bookingOrderPaidStatuses;
 
@@ -71,9 +71,9 @@ class Settings
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getAutoCancelPeriod(): string
+    public function getAutoCancelPeriod(): int
     {
         return $this->autoCancelPeriod;
     }

@@ -31,13 +31,15 @@ class BookingsEntity extends Entity
             total_price INT,
             status VARCHAR(255),
             template LONGTEXT,
+            expired BOOLEAN NOT NULL DEFAULT FALSE,
+            expires_in TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id)
         );";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta( $sql );
 
-        $this->alterTables();
+        // $this->alterTables();
     }
 
     private function alterTables(): void

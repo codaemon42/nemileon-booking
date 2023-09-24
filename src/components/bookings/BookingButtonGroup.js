@@ -1,4 +1,4 @@
-import { CloseOutlined, ExpandOutlined, ShoppingOutlined } from '@ant-design/icons';
+import { CloseOutlined, ExpandOutlined, FileTextOutlined, ShoppingOutlined } from '@ant-design/icons';
 import { Button, Space, Tooltip, Popconfirm } from 'antd'
 import BookingStatus from './BookingStatus';
 
@@ -18,6 +18,16 @@ const BookingButtonGroup = ({record, index, onView=()=>{}, onBook=()=>{}, onCanc
                 : 
                 <Tooltip placement="bottom" title='paid'>
                     <Button disabled  icon={<ShoppingOutlined />}/>
+                </Tooltip>
+            }
+            {
+                record.status === BookingStatus.COMPLETED ? 
+                <Tooltip placement="bottom" title='View Ticket'>
+                    <Button className='onsbks-success' target='_blank' href={window.location.href+'/?booking_ticket='+record.id} type="primary" icon={<FileTextOutlined />}/>
+                </Tooltip>
+                : 
+                <Tooltip placement="bottom" title='View Ticket'>
+                    <Button disabled  icon={<FileTextOutlined />}/>
                 </Tooltip>
             }
             <Popconfirm

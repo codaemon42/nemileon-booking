@@ -4,27 +4,8 @@ import { Slot } from '../slots/types/Slot.type';
 import { SlotCol } from '../slots/types/SlotCol.type';
 import { BookingApi } from '../../http/BookingApi';
 
-const OrderSlotPlotterPreview = ({style, bookingId}) => {
-
-    const [slot, setSlot] = useState(new Slot())
-    const [loading, setLoading] = useState(false);
-
-
-    useEffect(() => {
-        getBooking();
-    }, [])
-
-
-    const getBooking = async () => {
-        if(bookingId) {
-            setLoading(true);
-            const bookingRes = await BookingApi.getBookingById(bookingId);
-            setLoading(false);
-            if(bookingRes.success){
-                setSlot(bookingRes.result.template);
-            }
-        }
-    }
+const TicketSlotPlotterPreview = ({style, slot=new Slot(), loading=false}) => {
+ 
 
     const setSlotColClass = (addtionalClass = '', colData = new SlotCol()) => {
         let className = addtionalClass;
@@ -76,4 +57,4 @@ const OrderSlotPlotterPreview = ({style, bookingId}) => {
     )
 }
 
-export default OrderSlotPlotterPreview
+export default TicketSlotPlotterPreview

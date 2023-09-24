@@ -1,12 +1,14 @@
-import { Divider, Modal, Table} from 'antd'
+import { Divider, Modal, Table, Statistic } from 'antd';
 import React from 'react'
 import BookingButtonGroup from './BookingButtonGroup';
 import useBookings from './useBookings';
 import SlotPlotterPreview from '../slots/SlotPlotterPreview';
+import * as dayjs from 'dayjs';
+const { Countdown } = Statistic;
 
 const BookingsTable = () => {
 
-    const { bookings, selectedBooking, page, pageSize, totalPages, openModal, loading: bookingLoading, handleViewBooking, handlePayment, handleCancelBooking, handleCloseModal, onPageChange } = useBookings();
+    const { bookings, selectedBooking, page, pageSize, totalPages, openModal, loading: bookingLoading, handleViewBooking, handlePayment, handleCancelBooking, handleCloseModal, onPageChange, handleFinishCountDown } = useBookings();
   
   
     const columns = [
@@ -34,6 +36,17 @@ const BookingsTable = () => {
             title: "Status",
             dataIndex: "status",
             key: "status"
+        },
+        {
+            title: "CountDown",
+            key: "countDown",
+            render: (_, record, index) => (
+               <Countdown
+                    title="Remains"
+                    value={dayjs(record.expires_in)}
+                    onFinish={() => handleFinishCountDown(record, index)}
+               />
+            ),
         },
         {
             title: "Action",

@@ -9,7 +9,7 @@ class BookingApi {
         let body = {
             action: 'onsbks_add_to_cart',
             _wpnonce: reactObj.nonce,
-            bookingId: bookingId || 0
+            BookingId: bookingId || 0
         }
         const bookingRes = await ajax.post(reactObj.ajax_url, {...body});
         return new HttpResponseData(bookingRes.data);

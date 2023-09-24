@@ -1,41 +1,29 @@
 import { Slot } from "../slots/types/Slot.type";
-import BookingStatus from "./BookingStatus";
 
-export class Booking {
+export class TicketType {
     #default = {
         id: 0,
-        user_id: '',
-        finger_print: '',
-        name: '',
+        name: '', // issuer name
+        email: '',
+        phone: '',
         booking_date: '',
-        seats: '',
-        product_id: 0,
-        headers: '',
-        top_header: '',
+        seats: 0,
         total_price: 0,
-        status: BookingStatus.PENDING_PAYMENT,
-        expired: false,
-        expires_in: '',
+        product_name: '', // name of booking
         template: new Slot()
     }
 
     constructor(data=null) {
         if(!data) data = this.#default;
         this.id = data?.id;
-        this.user_id = data?.user_id;
-        this.finger_print = data?.finger_print;
         this.name = data?.name;
+        this.email = data?.email;
+        this.phone = data?.phone;
         this.booking_date = data?.booking_date;
         this.seats = data?.seats;
-        this.product_id = data?.product_id;
-        this.headers = data?.headers;
-        this.top_header = data?.top_header;
         this.total_price = data?.total_price;
-        this.status = data?.status;
-        this.expired = data?.expired;
-        this.expires_in = data?.expires_in;
+        this.product_name = data?.product_name;
         this.template = new Slot(data?.template);
-
     }
 
 

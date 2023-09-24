@@ -59,6 +59,8 @@ class BookingModel
             $this->setTopHeader( $data->getTopHeader() );
             $this->setTotalPrice( $data->getTotalPrice() );
             $this->setStatus( $data->getStatus() );
+            $this->setExpired( $data->isExpired() );
+            $this->setExpiresIn( $data->getExpiresIn() );
             $this->setTemplate( $data->getData()['template'] );
         }
         else{
@@ -76,6 +78,8 @@ class BookingModel
             $this->setTopHeader( $data['top_header'] );
             $this->setTotalPrice( $data['total_price'] );
             $this->setStatus( $data['status'] );
+            $this->setExpired( $data['expired'] );
+            $this->setExpiresIn( $data['expires_in'] );
             $this->setTemplate( $data['template'] );
         }
     }
@@ -335,7 +339,7 @@ class BookingModel
      */
     public function setExpiresIn(?string $expiresIn): void
     {
-        $this->data['expiresIn'] = $expiresIn;
+        $this->data['expires_in'] = $expiresIn;
         $this->expiresIn = $expiresIn;
     }
 
