@@ -6,7 +6,7 @@ import { TicketType } from '../tickets/Ticket.type';
 const useTicket = ({verify = false}) => {
 
     const { context }  = useContext(Context);
-    const {ticket: bookingId, currency_symbol: currency, site_title: siteTitle } = context;
+    const {ticket: bookingId, currency_symbol: currency, site_title: siteTitle, logoUrl } = context;
 
     const [ticket, setTicket] = useState(new TicketType());
     const [loading, setLoading] = useState(false);
@@ -34,7 +34,8 @@ const useTicket = ({verify = false}) => {
         ticket,
         currency,
         siteTitle,
-        loading
+        loading,
+        logoUrl
     }
 }
 

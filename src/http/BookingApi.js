@@ -12,7 +12,7 @@ class BookingApi {
             BookingId: bookingId || 0
         }
         const bookingRes = await ajax.post(reactObj.ajax_url, {...body});
-        return new HttpResponseData(bookingRes.data);
+        return new HttpResponseData(bookingRes.data.data);
     }
 
     static async createBooking( data  ) {

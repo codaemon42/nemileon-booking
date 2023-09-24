@@ -13,7 +13,7 @@ class AutoCancelCronJob extends CronJob
 
     public function __construct()
     {
-        parent::__construct('onsbks_auto_cancel_cron', Cron::MINUTE);
+        parent::__construct('onsbks_auto_cancel_cron', Cron::QUARTER);
         add_action($this->cronHook, [$this, 'autoCancelCronHandler']);
 
         $this->bookingService = new BookingService();

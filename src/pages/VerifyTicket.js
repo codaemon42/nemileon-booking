@@ -1,11 +1,11 @@
 import { green, grey } from '@ant-design/colors'
 import { SafetyCertificateFilled } from '@ant-design/icons'
-import { Card, Col, Divider, QRCode, Row, Space, Watermark } from 'antd'
+import { Card, Col, Divider, Image, QRCode, Row, Space, Watermark } from 'antd'
 import React from 'react'
 import useTicket from '../components/tickets/useTicket'
 
 const VerifyTicket = () => {
-  const { ticket, currency, siteTitle } = useTicket({verify: true});
+  const { ticket, currency, siteTitle, logoUrl } = useTicket({verify: true});
 
   return (
     <Space style={{width: '100%'}} size="large" direction="vertical">
@@ -23,7 +23,8 @@ const VerifyTicket = () => {
 
           <div id='nmlbookingticket' style={{padding: 20}}>
             <Divider>
-            <div dangerouslySetInnerHTML={{__html: reactObj.logoUrl}}></div>
+            {/* <div dangerouslySetInnerHTML={{__html: reactObj.logoUrl}}></div> */}
+            <Image preview={false} width={100} height={100} src={reactObj.logoUrl} alt={reactObj.site_title}/>
             </Divider>
             <Row >
               <Col span={8}>

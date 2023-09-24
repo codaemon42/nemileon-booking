@@ -99,10 +99,16 @@ class Assets {
             'page'      => $this->getReactPageName(),
             'action'    => is_admin() ? $_GET["action"] ?? $_SERVER['REQUEST_URI'] : $_SERVER['REQUEST_URI'],
             'ticket'    => $this->getTicketNumber(),
-            'logoUrl'   => get_custom_logo(),
+            'logoUrl'   => get_site_icon_url(),
             'site_title'=> get_bloginfo(),
-            'currency_symbol'=> get_woocommerce_currency_symbol()
+            'currency_symbol'=> get_woocommerce_currency_symbol(),
+            'limg' => $this->get_custom_logo_url()
         ) );
+    }
+    function get_custom_logo_url() {
+        $custom_logo_id = get_theme_mod('custom_logo');
+        $logo_url = wp_get_attachment_image_src($custom_logo_id, 'full');
+        return $logo_url[0];
     }
 
     public function getReactPageName(): string

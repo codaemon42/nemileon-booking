@@ -79,7 +79,10 @@ const useBookings = () => {
     console.log({ record, index });
     setSelectedBooking(new Booking(record));
     const paymentRes = await BookingApi.createPayment({bookingId: record.id});
-    console.log({paymentRes});
+    if(paymentRes) {
+      console.log('REDIRECTING TO CHECKOUT');
+      window.location.replace(paymentRes.result);
+    }
   };
 
   const handleCancelBooking = (record, index) => {

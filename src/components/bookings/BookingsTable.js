@@ -4,6 +4,8 @@ import BookingButtonGroup from './BookingButtonGroup';
 import useBookings from './useBookings';
 import SlotPlotterPreview from '../slots/SlotPlotterPreview';
 import * as dayjs from 'dayjs';
+import BookingStatus from './BookingStatus';
+import { SmileTwoTone } from '@ant-design/icons';
 const { Countdown } = Statistic;
 
 const BookingsTable = () => {
@@ -41,11 +43,19 @@ const BookingsTable = () => {
             title: "CountDown",
             key: "countDown",
             render: (_, record, index) => (
-               <Countdown
-                    title="Remains"
-                    value={dayjs(record.expires_in)}
-                    onFinish={() => handleFinishCountDown(record, index)}
-               />
+                <>
+                    {
+                        record.status === BookingStatus.COMPLETED ?
+                        <SmileTwoTone style={{fontSize: 36}} twoToneColor="#52c41a" />
+                        : dayjs(record.expires_in).isBefore(dayjs()) ? <SmileTwoTone rotate={180} style={{fontSize: 36}} twoToneColor="#eb2f96" />
+                        :
+                        <Countdown
+                                title="Remains"
+                                value={dayjs(record.expires_in)}
+                                onFinish={() => handleFinishCountDown(record, index)}
+                        />
+                    }
+                </>
             ),
         },
         {

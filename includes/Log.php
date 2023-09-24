@@ -10,19 +10,19 @@ class Log
         Log::parse(sprintf("[INFO] $message", ...$arg));
     }
 
-    public static function debug(string $message): void
+    public static function debug(string $message, ...$arg): void
     {
-        Log::parse("[DEBUG] $message");
+        Log::parse("[DEBUG] $message", ...$arg);
     }
 
-    public static function warn(string $message): void
+    public static function warn(string $message, ...$arg): void
     {
-        Log::parse("[WARN] $message");
+        Log::parse("[WARN] $message", ...$arg);
     }
 
-    public static function error(string $message): void
+    public static function error(string $message, ...$arg): void
     {
-        Log::parse("[ERROR] $message");
+        Log::parse("[ERROR] $message", ...$arg);
     }
 
     public static function parse(string $message): void
