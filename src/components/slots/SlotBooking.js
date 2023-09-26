@@ -73,7 +73,7 @@ const SlotBooking = ({stepStyle}) => {
       disabled: true
     },
     {
-      title: 'Start BookingsEntity',
+      title: 'Start Booking',
       content: <SlotPlotter key={SelectedProductTemplate?.key || 0} style={{paddingTop: '13px'}} defaultSlot={SelectedProductTemplate?.template || new Slot()} />,
       status: 'wait',
       disabled: true
@@ -116,7 +116,7 @@ const SlotBooking = ({stepStyle}) => {
     if(!SelectedProductTemplate.id) message.error('please Select slots')
 
     // add to cart the items
-    const bookingRes = await BookingApi.createBooking({productId: selectedProduct.id, slots: SelectedProductTemplate.template})
+    const bookingRes = await BookingApi.createBooking({...SelectedProductTemplate, key: selectedDate});
     if(bookingRes.success) message.success(bookingRes.message);
     else message.error(bookingRes.message);
   }

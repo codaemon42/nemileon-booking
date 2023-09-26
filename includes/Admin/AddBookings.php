@@ -24,7 +24,7 @@ class AddBookings {
         }
 
         if ( ! current_user_can('manage_options') ) {
-              wp_die( 'Are you cheating ?' );     
+              wp_die( 'Are you cheating ?' );
         }
         $time_hours = $this->get_time_hour();
         $product_id = $_POST['sbks_product_id'];

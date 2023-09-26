@@ -14,25 +14,20 @@ class Assets {
      * enqueue scripts
      * @since 1.0.0
      */
-    function __construct() {
-        add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ] );
-        add_action( 'admin_enqueue_scripts', [ $this, 'register_scripts' ] );
+    public function __construct() {
+        add_action( 'wp_enqueue_scripts', [ $this, 'registerScript'] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'registerScript'] );
     }
 
     /**
      * Prepare script to be registered
      *
      * @since 1.0.0
-     * 
      * @return array
      */
-    public function prepare_script(): array {
+    public function prepareScript(): array
+    {
         return array(
-                'sbks-frontend-script' => array(
-                    'src'   => ONSBKS_ASSETS . '/js/frontend.js',
-                    'ver'   => ONSBKS_DIR . '/assets/js/frontend.js',
-                    'deps'  => array('jquery')
-                ),
                 'sbks-admin-ajax-script' => array(
                     'src'   => ONSBKS_ASSETS . '/js/admin-ajax-script.js',
                     'ver'   => ONSBKS_DIR . '/assets/js/admin-ajax-script.js',
@@ -50,10 +45,10 @@ class Assets {
      * Prepare styles to be registered
      *
      * @since 1.0.0
-     * 
      * @return array
      */
-    public function prepare_style(): array {
+    public function prepareStyle(): array
+    {
         return array(
             'sbks-frontend-style' => array(
                 'src'   => ONSBKS_ASSETS . '/css/frontend.css',
@@ -77,36 +72,19 @@ class Assets {
      * Register all Scripts
      *
      * @since 1.0.0
-     * 
      * @return void
      */
-    public function register_scripts() {
-        $scripts = $this->prepare_script();
+    public function registerScript(): void
+    {
+        $scripts = $this->prepareScript();
         foreach ( $scripts as $handler => $script ) {
             wp_register_script( $handler, $script['src'], $script['deps'], filemtime($script['ver']), true );
         }
 
-        $styles = $this->prepare_style();
+        $styles = $this->prepareStyle();
         foreach ( $styles as $handler => $style ) {
             wp_register_style( $handler, $style['src'], $style['deps'], filemtime($style['ver']) );
         }
-
-        wp_localize_script( 'sbks-frontend-script', 'sbksAjaxObj', array(
-            'ajax_url'  => admin_url( 'admin-ajax.php' ),
-            'nonce'     => wp_create_nonce( 'sbks_select_nonce' ),
-            'select'    => 'successfully selected...',
-            'approve'   => 'successfully approved...',
-            'error'     => 'something went wrong, request denied...'
-        ) );
-
-        wp_localize_script( 'sbks-admin-ajax-script', 'bkAjaxObj', array(
-            'ajax_url'  => admin_url( 'admin-ajax.php' ),
-            'nonce'     => wp_create_nonce( 'sbks_admin_slot_list' ),
-            'unonce'     => wp_create_nonce( 'sbks_admin_update_list' ),
-            'select'    => 'successfully selected...',
-            'approve'   => 'successfully approved...',
-            'error'     => 'something went wrong, request denied...'
-        ) );
 
         wp_localize_script( 'sbks-frontend-react-script', 'reactObj', array(
             'base_url'  => site_url(),
@@ -117,8 +95,55 @@ class Assets {
             'approve'   => 'successfully approved...',
             'error'     => 'something went wrong, request denied...',
             'is_admin'  => is_admin(),
-            'page'      => is_admin() ? $_GET["page"] ?? $_SERVER['REQUEST_URI'] : $_SERVER['REQUEST_URI'],
+            'order_status'=> wc_get_order_statuses(),
+            'page'      => $this->getReactPageName(),
             'action'    => is_admin() ? $_GET["action"] ?? $_SERVER['REQUEST_URI'] : $_SERVER['REQUEST_URI'],
+            'ticket'    => $this->getTicketNumber(),
+            'logoUrl'   => get_site_icon_url(),
+            'site_title'=> get_bloginfo(),
+            'currency_symbol'=> get_woocommerce_currency_symbol(),
+            'limg' => $this->get_custom_logo_url()
         ) );
+    }
+    function get_custom_logo_url() {
+        $custom_logo_id = get_theme_mod('custom_logo');
+        $logo_url = wp_get_attachment_image_src($custom_logo_id, 'full');
+        return $logo_url[0];
+    }
+
+    public function getReactPageName(): string
+    {
+        $page = '';
+        if(is_admin()) {
+            if(isset($_GET["page"])) {
+                $page = $_GET["page"];
+            } else {
+                $page = $_SERVER['REQUEST_URI'];
+            }
+        } else {
+            if(isset($_GET[Constants::BOOKING_TICKET_PAGE_KEY])) {
+                $page = Constants::BOOKING_TICKET_PAGE_KEY;
+            }
+            elseif(isset($_GET[Constants::VERIFY_TICKET_PAGE_KEY])){
+                $page = Constants::VERIFY_TICKET_PAGE_KEY;
+            }
+            else {
+                $page = "booking_slot";
+            }
+        }
+        return $page;
+    }
+
+    public function getTicketNumber(): string
+    {
+        $ticketId = 0;
+        if(isset($_GET[Constants::BOOKING_TICKET_PAGE_KEY])){
+            $ticketId = $_GET[Constants::BOOKING_TICKET_PAGE_KEY];
+        }
+        elseif(isset($_GET[Constants::VERIFY_TICKET_PAGE_KEY])) {
+            $ticketId = $_GET[Constants::VERIFY_TICKET_PAGE_KEY];
+        }
+
+        return $ticketId;
     }
 }

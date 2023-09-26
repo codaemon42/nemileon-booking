@@ -5,7 +5,7 @@ import { SlotCol } from './types/SlotCol.type';
 import { SlotRow } from './types/SlotRow.type';
 import { EllipsisOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 
-const SlotPlotter = ({style, defaultSlot = new Slot()}) => {
+const SlotPlotter = ({style, defaultSlot = new Slot(), disableIncrement=false}) => {
 
     const [slot, setSlot] = useState(defaultSlot)
 
@@ -169,7 +169,7 @@ const SlotPlotter = ({style, defaultSlot = new Slot()}) => {
                                             </div>
                                         </div>
                                         {
-                                            colData.show && (colData.available_slots || colData.checked) ?
+                                            colData.show && (colData.available_slots || colData.checked) && !disableIncrement ?
                                             <FloatButton.Group
                                                 key={`${rowInd}__${colInd}`}
                                                 trigger="click"

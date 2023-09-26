@@ -2,8 +2,6 @@
 namespace ONSBKS_Slots\Includes\Entities;
 
 
-use ONSBKS_Slots\Includes\Models\BookingModel;
-
 class BookingsEntity extends Entity
 {
 
@@ -33,12 +31,24 @@ class BookingsEntity extends Entity
             total_price INT,
             status VARCHAR(255),
             template LONGTEXT,
+            expired BOOLEAN NOT NULL DEFAULT FALSE,
+            expires_in TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id)
         );";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta( $sql );
+
+        // $this->alterTables();
     }
 
+    private function alterTables(): void
+    {
+        $colExpired = "ALTER TABLE $this->table_name ADD `expired` BOOLEAN NOT NULL DEFAULT FALSE AFTER `template`; ";
+        $this->getWpdb()->query($colExpired);
 
+        $colExpiresIn = "ALTER TABLE $this->table_name ADD `expires_in` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `expired`; ";
+        $this->getWpdb()->query($colExpiresIn);
+    }
+    
 }

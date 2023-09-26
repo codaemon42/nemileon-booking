@@ -1,21 +1,34 @@
-import getBrowserFingerprint from 'get-browser-fingerprint';
-import React from 'react';
-import Admin from './Admin';
-import Frontend from './Frontend';
-import SlotTemplate from './SlotTemplate';
+import React, { useContext } from 'react';
+import Admin from './pages/Admin';
+import Bookings from './pages/Bookings';
+import { Context } from './contexts/Context';
+import Dashboard from './pages/Dashboard';
+import Frontend from './pages/Frontend';
+import OrderEdit from './pages/OrderEdit';
+import SlotTemplate from './pages/SlotTemplate';
+import Settings from './pages/Settings';
+import VerifyTicket from './pages/VerifyTicket';
+import Ticket from './pages/Ticket';
 
 const App = () => {
-    console.log({sbks_react_nonce: reactObj.nonce});
-    console.log(reactObj.is_admin);
-    const fingerprint = getBrowserFingerprint({enableWebgl: true, hardwareOnly: true});
-    console.log({fingerprint});
+
+    const { context, user } = useContext(Context);
+
+    console.log({context, user})
     
     return (
-        reactObj.is_admin 
-        ? reactObj.action === 'new' ? <Admin style={{paddingTop: 35}} /> 
-            : reactObj.action === 'templates' ? <SlotTemplate style={{marginTop: '35px', marginRight: 5}} />
+        context.is_admin 
+        ? context.page === 'nml-sports-booking-slot' ? <Dashboard style={{paddingTop: 35}} /> 
+            : context.page === 'nml-product-templates' ? <Admin style={{paddingTop: 20}} />
+            : context.page === 'nml-slot-templates' ? <SlotTemplate style={{marginTop: '35px', marginRight: 5}} />
+            : context.page === 'nml-bookings' ? <Bookings style={{paddingTop: 35, marginRight: 5}} />
+            : context.page === 'nml-settings' ? <Settings style={{ marginRight: 5}} />
+            : context.action === "edit" ? <OrderEdit />
             : <></>
+        : context.page === 'verify_ticket' ? <VerifyTicket /> 
+        : context.page === 'booking_ticket' ? <Ticket /> 
         : <Frontend />
+        
      );
 }
 

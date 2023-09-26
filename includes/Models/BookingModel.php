@@ -2,8 +2,8 @@
 
 namespace ONSBKS_Slots\Includes\Models;
 
-
 use ONSBKS_Slots\Includes\Status\BookingStatus;
+use ONSBKS_Slots\RestApi\Exceptions\InvalidBookingStatusException;
 
 class BookingModel
 {
@@ -20,11 +20,13 @@ class BookingModel
     private int $total_price;
     private string $status; // pending-payment | active | completed | cancelled
     private Slot $template;
+    private bool $expired;
+    private ?string $expiresIn;
 
     private array $data = [];
 
 	/**
-	 * @throws \ONSBKS_Slots\RestApi\Exceptions\InvalidBookingStatusException
+	 * @throws InvalidBookingStatusException
 	 */
 	public function __construct( $data = null )
     {
@@ -40,7 +42,9 @@ class BookingModel
             'top_header' => '',
             'total_price' => 0,
             'status' => BookingStatus::PENDING_PAYMENT,
-            'template' => new Slot()
+            'template' => new Slot(),
+            'expired' => false,
+            'expires_in' => null
         ]);
 
         if($data instanceof self){
@@ -55,10 +59,14 @@ class BookingModel
             $this->setTopHeader( $data->getTopHeader() );
             $this->setTotalPrice( $data->getTotalPrice() );
             $this->setStatus( $data->getStatus() );
+            $this->setExpired( $data->isExpired() );
+            $this->setExpiresIn( $data->getExpiresIn() );
             $this->setTemplate( $data->getData()['template'] );
         }
         else{
-            if($data == null) $data = $this->data;
+            if($data == null) {
+                $data = $this->data;
+            }
             $this->setId( $data['id'] );
             $this->setUserId( $data['user_id'] );
             $this->setFingerPrint( $data['finger_print'] );
@@ -70,14 +78,18 @@ class BookingModel
             $this->setTopHeader( $data['top_header'] );
             $this->setTotalPrice( $data['total_price'] );
             $this->setStatus( $data['status'] );
+            $this->setExpired( $data['expired'] );
+            $this->setExpiresIn( $data['expires_in'] );
             $this->setTemplate( $data['template'] );
         }
     }
 
 
     /**
+     * List of BookingModel Object
      * @param array $initialValue
      * @return Slot[]
+     * @throws InvalidBookingStatusException
      */
     public static function List(array $initialValue = []): array
     {
@@ -271,7 +283,7 @@ class BookingModel
 
     /**
      * @param string $status
-     * @throws \ONSBKS_Slots\RestApi\Exceptions\InvalidBookingStatusException
+     * @throws InvalidBookingStatusException
      */
     public function setStatus(string $status): void
     {
@@ -295,6 +307,40 @@ class BookingModel
     {
         $this->data['template'] = $template instanceof Slot ? $template->getData() : $template;
         $this->template = new Slot($template);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExpired(): bool
+    {
+        return $this->expired;
+    }
+
+    /**
+     * @param bool $expired
+     */
+    public function setExpired(bool $expired): void
+    {
+        $this->data['expired'] = $expired;
+        $this->expired = $expired;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getExpiresIn(): ?string
+    {
+        return $this->expiresIn;
+    }
+
+    /**
+     * @param string|null $expiresIn
+     */
+    public function setExpiresIn(?string $expiresIn): void
+    {
+        $this->data['expires_in'] = $expiresIn;
+        $this->expiresIn = $expiresIn;
     }
 
     /**

@@ -2,7 +2,6 @@
 
 namespace ONSBKS_Slots\Includes;
 
-
 /**
  * Class Admin
  * @package ONSBKS_Slots\Includes
@@ -15,11 +14,13 @@ class Admin {
        * Initialize the admin classes
        * @since 1.0.0
        */
-      function __construct() {
+      public function __construct() {
           new Admin\Requirements();
           new Admin\Menu();
-          $addBookings = new Admin\AddBookings();
-            add_action( 'admin_init', [$addBookings, 'add_new_booking'] );
+
+          // TODO need to to clean up below code
+           $addBookings = new Admin\AddBookings();
+           add_action( 'admin_init', [$addBookings, 'add_new_booking'] );
       }
 
 }

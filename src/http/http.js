@@ -19,6 +19,11 @@ http.interceptors.request.use(request => {
         // request.headers.common.Authorization = `Bearer ${token}`;
     // }
     request.headers['jwt'] = `${token}`;
+
+    if(request.url.includes('bookings') || request.url.includes('tickets/find')){
+        request.headers['fingerprint'] = `${localStorage.getItem('fingerprint')}`;
+    }
+
     return request;
 });
   
@@ -29,7 +34,14 @@ http.interceptors.response.use(
     //   }
       return response;
     },
-    errorInterceptor => console.log({errorInterceptor})
+    errorInterceptor => {
+        errorInterceptor.response.data.success = false;
+        console.log({errorInterceptor})
+        if(errorInterceptor.response.status === 401){
+            errorInterceptor.response.data.result = null;
+        }
+        return errorInterceptor.response;
+    }
 );
 
 export { http, prepareUrl };
