@@ -13,9 +13,9 @@ class SlotTemplates
 //            $body = $request->get_json_params();
 //            $template = $body["template"];
             $slot_template = new \ONSBKS_Slots\Includes\Entities\SlotTemplates(false);
-            wp_send_json(prepare_result($slot_template->find_all()));
+            wp_send_json(onsbks_prepare_result($slot_template->find_all()));
         } catch (\Error $error) {
-            wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $error->getMessage(), false), 500);
         }
     }
 
@@ -26,9 +26,9 @@ class SlotTemplates
             $name = $body["name"];
             $template = $body["template"];
             $slot_template = new \ONSBKS_Slots\Includes\Entities\SlotTemplates(false);
-            wp_send_json(prepare_result($slot_template->create($template, $name)));
+            wp_send_json(onsbks_prepare_result($slot_template->create($template, $name)));
         } catch (\Error $error) {
-            wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $error->getMessage(), false), 500);
         }
     }
 
@@ -41,9 +41,9 @@ class SlotTemplates
             $name = $body["name"];
             $template = $body["template"];
             $slot_template = new \ONSBKS_Slots\Includes\Entities\SlotTemplates(false);
-            wp_send_json(prepare_result($slot_template->update($id, $name, $template)));
+            wp_send_json(onsbks_prepare_result($slot_template->update($id, $name, $template)));
         } catch (\Error $error) {
-            wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $error->getMessage(), false), 500);
         }
     }
 
@@ -53,9 +53,9 @@ class SlotTemplates
             $query_params= $request->get_query_params();
             $id = $query_params["id"];
             $slot_template = new \ONSBKS_Slots\Includes\Entities\SlotTemplates(false);
-            wp_send_json(prepare_result($slot_template->delete($id)));
+            wp_send_json(onsbks_prepare_result($slot_template->delete($id)));
         } catch (\Error $error) {
-            wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $error->getMessage(), false), 500);
         }
     }
 }

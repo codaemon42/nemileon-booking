@@ -35,9 +35,9 @@ class ProductController
                 }
                 $products[] = $p;
             }
-            wp_send_json(prepare_result($products));
+            wp_send_json(onsbks_prepare_result($products));
         } catch (\Error $error) {
-            wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $error->getMessage(), false), 500);
         }
     }
 
@@ -48,11 +48,11 @@ class ProductController
             $productId = $query_params['product_id'];
             $key = $query_params['key'];
             $slot = $this->productService->findProductTemplate($productId, $key, true);
-            wp_send_json(prepare_result($slot->getData()));
+            wp_send_json(onsbks_prepare_result($slot->getData()));
         } catch (\Error $error) {
-            wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $error->getMessage(), false), 500);
         } catch (\Exception $e) {
-            wp_send_json(prepare_result(false, $e->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $e->getMessage(), false), 500);
         }
     }
 
@@ -72,9 +72,9 @@ class ProductController
 //                array_push($ns, $n);
 //            }
 
-            wp_send_json(prepare_result($results));
+            wp_send_json(onsbks_prepare_result($results));
         } catch (\Error $error) {
-            wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $error->getMessage(), false), 500);
         }
     }
 
@@ -104,9 +104,9 @@ class ProductController
                 $result[$key] = $savedTemplate;
             }
 
-            wp_send_json(prepare_result($result));
+            wp_send_json(onsbks_prepare_result($result));
         } catch (\Error $error) {
-            wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $error->getMessage(), false), 500);
         }
     }
 }

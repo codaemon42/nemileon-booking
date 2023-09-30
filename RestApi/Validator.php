@@ -15,7 +15,7 @@ class Validator
             }
         }
         if(count($result) > 0) {
-            wp_send_json(prepare_result($result, implode(", ", $result), false), 400);
+            wp_send_json(onsbks_prepare_result($result, implode(", ", $result), false), 400);
         }
     }
 }

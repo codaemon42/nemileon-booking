@@ -1,10 +1,10 @@
 <?php
 /**
- * Plugin Name:   Sports Bookings Slot
- * Description:   This plugin allow users to book different available slots of sports venues.
- * Plugin URI:    https://woopearl.com/
+ * Plugin Name:   Nemileon Booking For WooCommerce
+ * Description:   An amazing live Booking slot builder with wooCommerce that sells anything in the world of booking.
+ * Plugin URI:    https://nemileon.com/
  * Author:        Naim-Ul-Hassan
- * Author URI:    https://github.com/codaemon42
+ * Author URI:    https://www.linkedin.com/in/naim-ul-hassan
  * Version:       1.3.1
  * License:       GPLv2 or later
  * License URI:   https://gnu.org/licenses/gpl-2.0.html

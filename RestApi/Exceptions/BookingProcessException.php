@@ -6,6 +6,6 @@ class BookingProcessException extends RestException
 {
     public function __construct($message = "Error occurred while processing booking")
     {
-        parent::__construct($message, 'BOOKING', prepare_result(false, $message, false), 500);
+        parent::__construct($message, 'BOOKING', onsbks_prepare_result(false, $message, false), 500);
     }
 }

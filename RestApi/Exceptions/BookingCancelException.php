@@ -6,6 +6,6 @@ class BookingCancelException extends RestException
 {
     public function __construct($message = "Failed to cancel booking, contact support")
     {
-        parent::__construct($message, 'BOOKING', prepare_result(false, $message, false), 500);
+        parent::__construct($message, 'BOOKING', onsbks_prepare_result(false, $message, false), 500);
     }
 }

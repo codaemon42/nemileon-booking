@@ -1,3 +1,4 @@
+import { message } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import { Context } from '../../contexts/Context';
 import { TicketApi } from '../../http/TicketApi';
@@ -21,6 +22,9 @@ const useTicket = ({verify = false}) => {
         let sTicket;
         if(!verify){
             sTicket = await TicketApi.getTicketById(bookingId);
+            if(sTicket && !sTicket.success && sTicket.message === "Sorry, you are not allowed to do that."){
+                message.error("Please log in or use the same browser you booked the ticket from")
+            }
         } else {
             sTicket = await TicketApi.verifyTicketById(bookingId);
         }

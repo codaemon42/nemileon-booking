@@ -29,7 +29,7 @@ class TicketController
         $bookingId = strval($req->get_param("id"));
         $ticket = $this->tickerService->verifyTicket($bookingId);
 
-        wp_send_json(prepare_result($ticket->getData()));
+        wp_send_json(onsbks_prepare_result($ticket->getData()));
     }
 
     /**
@@ -43,6 +43,6 @@ class TicketController
         $bookingId = strval($req->get_param("id"));
 
         $ticket = $this->tickerService->findTicket($bookingId, $userId, $fingerPrint);
-        wp_send_json(prepare_result($ticket->getData()));
+        wp_send_json(onsbks_prepare_result($ticket->getData()));
     }
 }

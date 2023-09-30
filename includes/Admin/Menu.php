@@ -40,11 +40,11 @@ class Menu {
 
             add_menu_page(
                 'booking slot page',
-                'Sports Booking',
+                'Nemileon Booking',
                 $capability, $parent_slug,
                 [ $this, 'renderReactApp' ],
                 ONSBKS_ASSETS . "/nemileon-icon-dark-bg.png",
-                71
+                58
             );
 
             // Analytics Dashboard
