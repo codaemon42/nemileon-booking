@@ -18,10 +18,10 @@ class AnalyticsController
     {
         try{
             $analytics = $this->analyticsService->bookingsSeatAnalyticsGroupedByDate();
-            wp_send_json(prepare_result($analytics));
+            wp_send_json(onsbks_prepare_result($analytics));
         }
         catch (\Exception $e) {
-            wp_send_json(prepare_result(false, $e->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $e->getMessage(), false), 500);
         }
     }
 
@@ -29,10 +29,10 @@ class AnalyticsController
     {
         try{
             $analytics = $this->analyticsService->bookingsSeatAnalyticsGroupedByDateAndStatus();
-            wp_send_json(prepare_result($analytics));
+            wp_send_json(onsbks_prepare_result($analytics));
         }
         catch (\Exception $e) {
-            wp_send_json(prepare_result(false, $e->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $e->getMessage(), false), 500);
         }
     }
 

@@ -26,10 +26,10 @@ class BookingController
         try{
             $query = $req->get_query_params();
             $bookings = $this->bookingService->findAll($query);
-            wp_send_json(prepare_result($bookings));
+            wp_send_json(onsbks_prepare_result($bookings));
         }
         catch (\Exception $e) {
-            wp_send_json(prepare_result(false, $e->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $e->getMessage(), false), 500);
         }
     }
 
@@ -58,10 +58,10 @@ class BookingController
 
             $bookings = $this->bookingService->findAllByUserIdOrFingerPrint($userId, $fingerPrint, $perPage, $paged);
 
-            wp_send_json(prepare_result($bookings));
+            wp_send_json(onsbks_prepare_result($bookings));
         }
         catch (\Exception $e) {
-            wp_send_json(prepare_result(false, $e->getMessage(), false), $e->getCode());
+            wp_send_json(onsbks_prepare_result(false, $e->getMessage(), false), $e->getCode());
         }
     }
     public function countAllBookingsByUserIdOrFingerPrint(WP_REST_Request $req): void
@@ -72,10 +72,10 @@ class BookingController
 
             $bookings = $this->bookingService->countAllByUserIdOrFingerPrint($userId, $fingerPrint);
 
-            wp_send_json(prepare_result($bookings));
+            wp_send_json(onsbks_prepare_result($bookings));
         }
         catch (\Exception $e) {
-            wp_send_json(prepare_result(false, $e->getMessage(), false), $e->getCode());
+            wp_send_json(onsbks_prepare_result(false, $e->getMessage(), false), $e->getCode());
         }
     }
 
@@ -91,10 +91,10 @@ class BookingController
         try{
             $bookingId = $req->get_param("id");
             $booking = $this->bookingService->findBookingByBookingId($bookingId, true);
-            wp_send_json(prepare_result($booking->getData()));
+            wp_send_json(onsbks_prepare_result($booking->getData()));
         }
         catch (\Exception $e) {
-            wp_send_json(prepare_result(false, $e->getMessage(), false), $e->getCode());
+            wp_send_json(onsbks_prepare_result(false, $e->getMessage(), false), $e->getCode());
         }
     }
 
@@ -112,10 +112,10 @@ class BookingController
             $productTemplate = new ProductTemplate( $req->get_json_params() );
 
             $booking = $this->bookingService->createBooking( $productTemplate, $userId, $fingerPrint );
-            wp_send_json(prepare_result($booking->getData()));
+            wp_send_json(onsbks_prepare_result($booking->getData()));
         }
         catch (\Exception $e) {
-            wp_send_json(prepare_result(false, $e->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $e->getMessage(), false), 500);
         }
     }
 
@@ -127,10 +127,10 @@ class BookingController
             $bookingId = $req->get_param("id");
             $data = $req->get_body_params();
             $booking = $this->bookingService->updateBookingByBookingId($bookingId, $data);
-            wp_send_json(prepare_result($booking->getData()));
+            wp_send_json(onsbks_prepare_result($booking->getData()));
         }
         catch (\Exception $e) {
-            wp_send_json(prepare_result(false, $e->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $e->getMessage(), false), 500);
         }
     }
 
@@ -143,10 +143,10 @@ class BookingController
             $bookingId = strval($req->get_param("id"));
 
             $updatedSlot = $this->bookingService->cancelBookingByBookingIdAndUserIdOrFingerPrint($bookingId, $userId, $fingerPrint);
-            wp_send_json(prepare_result($updatedSlot->getData()));
+            wp_send_json(onsbks_prepare_result($updatedSlot->getData()));
         }
         catch (\Exception $e) {
-            wp_send_json(prepare_result(false, $e->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $e->getMessage(), false), 500);
         }
     }
 }

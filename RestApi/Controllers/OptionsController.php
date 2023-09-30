@@ -24,9 +24,9 @@ class OptionsController
             $option_name = $body["key"];
             $option_value = $body['value'];
             $response = $this->optionsService->updateOption($option_name, $option_value);
-            wp_send_json(prepare_result($response));
+            wp_send_json(onsbks_prepare_result($response));
         } catch (Exception $error) {
-            wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $error->getMessage(), false), 500);
         }
     }
 
@@ -36,9 +36,9 @@ class OptionsController
             $key = 'key';
             $query_params = $request->get_query_params();
             $response = $this->optionsService->getOption($query_params[$key]);
-            wp_send_json(prepare_result($response));
+            wp_send_json(onsbks_prepare_result($response));
         } catch (Exception $error) {
-            wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $error->getMessage(), false), 500);
         }
     }
 
@@ -46,9 +46,9 @@ class OptionsController
     {
         try {
             $response = $this->optionsService->getSettings();
-            wp_send_json(prepare_result($response));
+            wp_send_json(onsbks_prepare_result($response));
         } catch (Exception $error) {
-            wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $error->getMessage(), false), 500);
         }
     }
 
@@ -57,9 +57,9 @@ class OptionsController
         try {
             $settings = $request->get_json_params();
             $response = $this->optionsService->saveSettings($settings);
-            wp_send_json(prepare_result($response));
+            wp_send_json(onsbks_prepare_result($response));
         } catch (Exception $error) {
-            wp_send_json(prepare_result(false, $error->getMessage(), false), 500);
+            wp_send_json(onsbks_prepare_result(false, $error->getMessage(), false), 500);
         }
     }
 }

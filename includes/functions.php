@@ -16,7 +16,7 @@ function onsbks_get_products(): array
 
 
 //#[ArrayShape(['success' => "bool|mixed", 'result' => "", 'message' => "mixed|string"])]
-function prepare_result($data, $message = 'Successfully Done', $success = true): array
+function onsbks_prepare_result($data, $message = 'Successfully Done', $success = true): array
 {
     return array(
         'success' => $success,

@@ -6,6 +6,6 @@ class BookingFailedException extends RestException
 {
     public function __construct($message = "Booking Failed")
     {
-        parent::__construct($message, 'BOOKING', prepare_result(false, $message, false), 500);
+        parent::__construct($message, 'BOOKING', onsbks_prepare_result(false, $message, false), 500);
     }
 }
