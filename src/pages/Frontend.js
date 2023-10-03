@@ -24,7 +24,7 @@ const Frontend = () => {
           {/* <VerifyTicket /> */}
       </Space>
       : 
-      <Space style={{width: '100%'}} size="large" direction="vertical">
+      <Space style={{width: '100%', marginBottom: 20}} size="large" direction="vertical">
           <Divider orientation="center" >
             <Radio.Group buttonStyle="solid" value={type} onChange={(e) => setType(e.target.value)}>
               <Radio.Button icon={<CalendarOutlined />} value="SlotBuilder">New Booking</Radio.Button>
@@ -33,7 +33,7 @@ const Frontend = () => {
           </Divider>
           {
             type === "SlotBuilder"
-            ? <SlotBooking stepStyle={{maxWidth: 800, margin: 'auto', marginBottom: 35}} />
+            ? <SlotBooking onSwitch={()=>setType("BookingsTable")} stepStyle={{maxWidth: 800, margin: 'auto', marginBottom: 35}} />
             : type === "BookingsTable" ? <BookingsTable />
             :  <></>
           }

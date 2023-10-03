@@ -225,7 +225,8 @@ const SlotBuilder = ({initialTemplate = new SlotTemplateType(), onSlotChange, on
     newSlot.rows.forEach((row, index) => {
       if(colCounts[position] > newSlot.rows[index].cols.length){ // increased
         for(let i = newSlot.rows[index].cols.length; i < colCounts[position]; i++ ){
-          newSlot.rows[index].cols.push(newCol);
+          // newSlot.rows[index].cols.push(newCol);
+          newSlot.rows[index].cols[i] = {...newCol};
         }
       } else if(colCounts[position] < newSlot.rows[index].cols.length){ // decreased
         newSlot.rows[index].cols.splice(colCounts[position]);

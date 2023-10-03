@@ -1,14 +1,11 @@
-import {useState} from 'react'
-import dayjs from 'dayjs'
-import { Badge, Calendar, DatePicker, Divider, Progress, Radio } from 'antd';
-import WeekPicker from './WeekPicker';
-import './BoxCalendar.scss';
-import { green, gold, volcano, red, cyan, blue } from '@ant-design/colors';
-import { FrownFilled, SmileTwoTone } from '@ant-design/icons';
+import { blue, cyan, gold, green, red, volcano } from '@ant-design/colors';
+import { Calendar, Divider, Progress, Radio } from 'antd';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
 import useWindowSize from '../../hooks/useWindowSize';
 import { ProductTemplateType } from '../products/ProductTemplate.type';
-import { useEffect } from 'react'
-// dayjs.extend()
+import './BoxCalendar.scss';
+import WeekPicker from './WeekPicker';
 
 const BoxCalendar = ({isFrontend = true, productTemplates = ProductTemplateType.List([]), onSelect = (value) => {}}) => {
 
@@ -26,15 +23,12 @@ const BoxCalendar = ({isFrontend = true, productTemplates = ProductTemplateType.
   
   
   const handleDateSelectFrontend = (calendarType, value) => {
-      // console.log({data})
-      // console.log(data.$d.toISOString())
       const date = value.format("YYYY-MM-DD");
       const day = value.format("ddd").toLowerCase()
       let selectedProductTemplate = null;
       productTemplates.forEach((pt, pti )=> {
         if(pt.id){
           const dateOrDay = pt.key.split('_')[1];
-          // console.log({dateOrDay, date, day})
           if(dateOrDay ===  date || dateOrDay.toLowerCase() === day){
             selectedProductTemplate = {...pt};
           }
@@ -68,14 +62,12 @@ const BoxCalendar = ({isFrontend = true, productTemplates = ProductTemplateType.
       }
     })
     if(value.isBefore(todayDate.subtract(1, 'day')) || !isValid) {
-      // console.log({diabledDate: date, isBefore: value.isBefore(todayDate.add(1, 'day')), isValid})
       return true;
     }
     return false;
   };
 
   const getPercentData = (value) => {
-    // console.log({value, date: value.format("YYYY-MM-DD")})
     const date = value.format("YYYY-MM-DD");
     const day = value.format("ddd").toLowerCase()
     let percent = 0;
@@ -88,18 +80,16 @@ const BoxCalendar = ({isFrontend = true, productTemplates = ProductTemplateType.
           let booked = 0;
           pt.template.rows.forEach(t => {
             t.cols.forEach(c => {
-              // console.log({c})
               total += c.available_slots + c.booked;
               booked += c.booked;
             })
           })
           percent = Math.round((booked*100)/total);
-          // console.log({total, booked, percent, pti, dateOrDay})
           return percent;
         }
       }
     })
-    // console.log({percent2: percent})
+
     return percent;
   };
 
@@ -111,7 +101,7 @@ const BoxCalendar = ({isFrontend = true, productTemplates = ProductTemplateType.
     productTemplates.forEach((pt, pti )=> {
       if(pt.id){
         const dateOrDay = pt.key.split('_')[1];
-        // console.log({dateOrDay, date, day})
+
         if(dateOrDay ===  date || dateOrDay.toLowerCase() === day){
           isValid = true;
         }
@@ -130,8 +120,6 @@ const BoxCalendar = ({isFrontend = true, productTemplates = ProductTemplateType.
         {
           isDisabled || !isValid
           ? <></>
-          // <><span style={{ marginRight: 5, width: 14, height: 14, borderRadius: '50%', background: red[4]}}></span> <span>Not Available</span></>
-          // <FrownFilled style={{color: red[2], fontSize: 36}} />
           : 
           size === 'lg' || size === 'md' 
           ? <Progress 
@@ -151,13 +139,6 @@ const BoxCalendar = ({isFrontend = true, productTemplates = ProductTemplateType.
               showInfo={false}
               size={[1, 10]} 
               strokeColor={[green[3], green[5], gold[5], volcano[5], red[5]]} 
-              // strokeColor={{
-              //   '0%':  green[3],
-              //   '25%':  green[5],
-              //   '50%':  gold[5],
-              //   '75%':  volcano[5],
-              //   '100%': red[5],
-              // }}
               style={{
                 fontSize: 10
               }}
@@ -167,7 +148,17 @@ const BoxCalendar = ({isFrontend = true, productTemplates = ProductTemplateType.
     );
   };
 
-  // return <Calendar mode="month" cellRender={cellRender} onSelect={handleDateSelect} />;
+  const getDefaultSelectedDate = () => {
+    if(productTemplates && productTemplates.length > 0) {
+      const dateOrDay = productTemplates[0].key.split('_')[1];
+      onSelect({
+        date: dateOrDay.format("YYYY-MM-DD"), 
+        selectedProductTemplate: {...productTemplates[0], key: dateOrDay.format("YYYY-MM-DD")},
+        calendarType: 'random'
+      });
+    }
+  }
+
   return (
       <>
         {
@@ -177,7 +168,6 @@ const BoxCalendar = ({isFrontend = true, productTemplates = ProductTemplateType.
             <Radio.Group buttonStyle="solid" value={type} onChange={(e) => setType(e.target.value)}>
               <Radio.Button value="date">DATE</Radio.Button>
               <Radio.Button value="week">WEEK</Radio.Button>
-              {/* <Radio.Button value="month">Month</Radio.Button> */}
             </Radio.Group>
           </Divider>
           : <></>
@@ -186,7 +176,7 @@ const BoxCalendar = ({isFrontend = true, productTemplates = ProductTemplateType.
           isFrontend
           ? <Calendar 
               className='onsbks-round-box' 
-              fullscreen={true} 
+              fullscreen={true}
               mode='month'
               dateCellRender={dateCellRender}  
               onSelect={(dateObj) => handleDateSelectFrontend('random', dateObj)}
