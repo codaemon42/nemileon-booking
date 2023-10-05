@@ -1,5 +1,5 @@
-import { CheckOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
-import { Button, Col, Divider, message, Row, Steps } from 'antd';
+import { BarsOutlined, CheckOutlined, ExportOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { Button, Col, Divider, message, Row, Space, Steps } from 'antd';
 import { useState, useEffect } from 'react'
 import { ProductApi } from '../../http/ProductApi';
 import BoxCalendar from '../calendar/BoxCalendar';
@@ -13,7 +13,7 @@ import dayjs from 'dayjs';
 import { Slot } from './types/Slot.type';
 import { BookingApi } from '../../http/BookingApi';
 
-const SlotBooking = ({stepStyle}) => {
+const SlotBooking = ({stepStyle, onSwitch=()=>{}}) => {
   message.config({top: 50});
   const { size } = useWindowSize();
 
@@ -34,6 +34,7 @@ const SlotBooking = ({stepStyle}) => {
       setProductTemplates(productTemplateRes.result);
     }
     setProductTableLoading(false);
+    next();
   }
 
   const onSelectDate = ({date, selectedProductTemplate}) => {
@@ -95,6 +96,7 @@ const SlotBooking = ({stepStyle}) => {
       setCurrent(current + 1);
     }
   };
+
   const prev = () => {
     setCurrent(current - 1);
   };
@@ -110,6 +112,7 @@ const SlotBooking = ({stepStyle}) => {
 
 
   const submitHandler = async () => {
+    message.loading("Creating Booking ... ");
     console.log({selectedProduct, selectedDate, SelectedProductTemplate});
     if(!selectedProduct.id) message.error('please Select a product')
     if(!selectedDate) message.error('please Select a Date')
@@ -117,7 +120,18 @@ const SlotBooking = ({stepStyle}) => {
 
     // add to cart the items
     const bookingRes = await BookingApi.createBooking({...SelectedProductTemplate, key: selectedDate});
-    if(bookingRes.success) message.success(bookingRes.message);
+    message.destroy();
+    if(bookingRes.success) {
+      message.success(<>
+         <Space> 
+           <span>{bookingRes.message}</span>
+           <Button className='onsbks_success' icon={<ExportOutlined />} type="primary" onClick={()=>{
+             onSwitch();
+             message.destroy()
+           }} > View </Button>
+          </Space>
+      </>, 5000);
+    }
     else message.error(bookingRes.message);
   }
 
@@ -153,7 +167,7 @@ const SlotBooking = ({stepStyle}) => {
           {current === steps.length-1 
           ? 
           <Button className='onsbks-success' icon={<CheckOutlined />} type="primary" onClick={() => submitHandler()}>
-              PUBLISH 
+              BOOK 
           </Button>
           :
           <Button type="primary" onClick={() => next()}>
