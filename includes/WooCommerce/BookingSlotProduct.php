@@ -16,7 +16,7 @@ class BookingSlotProduct extends WC_Product_Simple
     public function __construct($product = 0)
     {
 //        $this->supports[] = 'ajax_add_to_cart';
-        $this->product_type = 'booking_slot';
+//        $this->product_type = 'booking_slot';
         parent::__construct($product);
 
 

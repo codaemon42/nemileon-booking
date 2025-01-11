@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react'
-import { Column, G2 } from '@ant-design/plots';
+// import { Column, G2 } from '@ant-design/plots';
+import { Column} from '@ant-design/plots';
 import useAnalytics from './useAnalytics';
 import { blue, cyan, gold, green, lime, magenta, orange, purple, red } from '@ant-design/colors';
 
@@ -7,13 +8,13 @@ const BarStackChart = () => {
 
     const {BookingSeatAnalyticsByDateAndStatus} = useAnalytics();
 
-    const { registerTheme } = G2;
-    registerTheme('custom-theme', {
-      colors10: [cyan[3], red[2], blue[5], blue[6], '#BE408C', '#BE408C'],
+    // const { registerTheme } = G2;
+    // registerTheme('custom-theme', {
+    //   colors10: [cyan[3], red[2], blue[5], blue[6], '#BE408C', '#BE408C'],
   
-      // /** 20色板 */
-      // colors20: [red[6], green[6], orange[6], '#E85285', '#BE408C', '#BE408C', '#942D93'],
-    });
+    //   // /** 20色板 */
+    //   // colors20: [red[6], green[6], orange[6], '#E85285', '#BE408C', '#BE408C', '#942D93'],
+    // });
 
     const config = {
       data: BookingSeatAnalyticsByDateAndStatus,
@@ -65,7 +66,7 @@ const BarStackChart = () => {
           alias: 'Seats',
         },
       },
-      theme: 'custom-theme',
+      // theme: 'custom-theme',
     };
   
     return <Column {...config} />;

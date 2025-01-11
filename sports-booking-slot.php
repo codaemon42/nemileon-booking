@@ -69,8 +69,11 @@ final class ONSBKS_Slots {
        * @return void
        */
       public function init_plugin() {
-          new \ONSBKS_Slots\Includes\State();
+          $requirements = new ONSBKS_Slots\Includes\Requirements();
+          if(!$requirements->verify()) return;
 
+          new ONSBKS_Slots\Includes\WooCommerce();
+          new \ONSBKS_Slots\Includes\State();
           new ONSBKS_Slots\Includes\Orders();
           new ONSBKS_Slots\Includes\Assets();
           new ONSBKS_Slots\Includes\Ajax();
@@ -79,7 +82,6 @@ final class ONSBKS_Slots {
            $cron = new Cron();
            $cron->initAllCronJobs();
 
-          new ONSBKS_Slots\Includes\WooCommerce();
           if( is_admin() ) {
                   new ONSBKS_Slots\Includes\Admin();
             } else {
@@ -111,7 +113,8 @@ final class ONSBKS_Slots {
        *
        * @return void
        */
-      public function activate() {
+      public function activate(): void
+      {
             $installer = new ONSBKS_Slots\Includes\Installer();
             $installer->run();
       }

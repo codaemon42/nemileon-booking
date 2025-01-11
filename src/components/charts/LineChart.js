@@ -1,18 +1,19 @@
 import { blue, cyan, red } from '@ant-design/colors';
-import { Line, G2 } from '@ant-design/plots';
+// import { Line, G2 } from '@ant-design/plots';
+import { Line } from '@ant-design/plots';
 import useAnalytics from './useAnalytics';
 
 const LineChart = () => {
 
     const {BookingSeatAnalyticsByDateAndStatus} = useAnalytics();
 
-    const { registerTheme } = G2;
-    registerTheme('custom-theme', {
-      colors10: [cyan[3], red[2], blue[5], blue[6], '#BE408C', '#BE408C'],
+    // const { registerTheme } = G2;
+    // registerTheme('custom-theme', {
+    //   colors10: [cyan[3], red[2], blue[5], blue[6], '#BE408C', '#BE408C'],
   
-      // /** 20色板 */
-      // colors20: [red[6], green[6], orange[6], '#E85285', '#BE408C', '#BE408C', '#942D93'],
-    });
+    //   // /** 20色板 */
+    //   // colors20: [red[6], green[6], orange[6], '#E85285', '#BE408C', '#BE408C', '#942D93'],
+    // });
 
     const config = {
       data: BookingSeatAnalyticsByDateAndStatus,
@@ -46,7 +47,7 @@ const LineChart = () => {
           alias: 'Seats',
         },
       },
-      theme: 'custom-theme',
+      // theme: 'custom-theme',
     };
   
     return <Line {...config} />;

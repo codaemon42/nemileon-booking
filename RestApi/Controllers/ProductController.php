@@ -60,17 +60,11 @@ class ProductController
         try{
             $query_params = $request->get_query_params();
 
-            Validator::validate_query_parmas($query_params, ['product_id']);
+            Validator::validateQueryParams($query_params, ['product_id']);
 
             $product_id = $query_params['product_id'];
             $product = new BookingSlotProduct($product_id);
             $results = $product->get_booking_templates();
-//            $ns = $results;
-//            foreach ($results as $result) {
-//                $n = $result;
-//                $n['template'] = unserialize($result['template']);
-//                array_push($ns, $n);
-//            }
 
             wp_send_json(onsbks_prepare_result($results));
         } catch (\Error $error) {
@@ -89,7 +83,7 @@ class ProductController
         try{
             $query_params = $request->get_json_params();
 
-            Validator::validate_query_parmas($query_params, ['product_id', 'key', 'template']);
+             Validator::validateQueryParams($query_params, ['product_id', 'key', 'template']);
 
             $product_id = $query_params['product_id'];
             $keys = $query_params['key'];

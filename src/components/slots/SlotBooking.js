@@ -24,16 +24,18 @@ const SlotBooking = ({stepStyle, onSwitch=()=>{}}) => {
 
   const onSelectProduct =  async (product, index) => {
     console.log({product})
-    setSelectedProduct(product);
-    setPInd(index);
-
     // fetch meta api and set a new use state
     setProductTableLoading(true)
     const productTemplateRes = await ProductApi.getProductTemplates(product.id);
     if(productTemplateRes.success) {
-      setProductTemplates(productTemplateRes.result);
-    }
-    setProductTableLoading(false);
+      setProductTableLoading(false);
+      if(productTemplateRes.result.length > 0) {
+        setSelectedProduct(product);
+        setPInd(index);
+        setProductTemplates(productTemplateRes.result);
+      } 
+    } 
+
     next();
   }
 
@@ -46,6 +48,11 @@ const SlotBooking = ({stepStyle, onSwitch=()=>{}}) => {
 
   const [products, setProducts] = useState(Product.List([]));
   const [pInd, setPInd] = useState(null);
+
+  const [current, setCurrent] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState(new Product());
+
+  const [selectedDate, setSelectedDate] = useState(dayjs().format("YYYY-MM-DD"));
 
   useEffect(() => {
       getProducts();
@@ -63,13 +70,13 @@ const SlotBooking = ({stepStyle, onSwitch=()=>{}}) => {
   const steps = [
     {
       title: 'Choose Product',
-      content: <ProductsTable key={1} loading={ProductTableLoading} products={products} selectedIndex={pInd} type='select' buttonText='SELECT' onSelect={onSelectProduct} />,
+      content: <ProductsTable key={pInd} loading={ProductTableLoading} products={products} selectedIndex={pInd} type='select' buttonText='SELECT' onSelect={onSelectProduct} />,
       status: 'process',
       disabled: false
     },
     {
       title: 'Choose Date',
-      content: <BoxCalendar onSelect={onSelectDate} productTemplates={ProductTemplates} />,
+      content: <BoxCalendar key={selectedDate || 0} onSelect={onSelectDate} productTemplates={ProductTemplates} />,
       status: 'wait',
       disabled: true
     },
@@ -83,15 +90,13 @@ const SlotBooking = ({stepStyle, onSwitch=()=>{}}) => {
 
 
   // const { token } = theme.useToken();
-  const [current, setCurrent] = useState(0);
-  const [selectedProduct, setSelectedProduct] = useState(new Product());
-
-  const [selectedDate, setSelectedDate] = useState(dayjs().format("YYYY-MM-DD"));
 
 
   const next = () => {
     if(current === 1 && !SelectedProductTemplate){ // box calendar
       message.warning('Please Select a valid date');
+    } else if(current === 0 && !selectedProduct?.id) {
+      message.warning('There is no booking slots available right now !');
     } else{
       setCurrent(current + 1);
     }
@@ -102,7 +107,7 @@ const SlotBooking = ({stepStyle, onSwitch=()=>{}}) => {
   };
 
   const items = steps.map((item, index) => ({
-    key: item.title,
+    key: item.key ?? item.title,
     title: item.title,
     disabled: current < index ? true : false,
     status: current > index ? 'finish' : current == index ? 'process' : 'wait'

@@ -16,6 +16,9 @@ class WooInitializer
         add_action('woocommerce_process_product_meta_booking_slot', [$this, 'wc_save_booking_slot_custom_fields']);
 
         add_action('woocommerce_product_query', [$this, 'hide_specific_product_type_from_shop_page']);
+
+        // woocommerce single page
+        add_action("woocommerce_booking_slot_add_to_cart", [$this, 'add_to_cart_button_single_product']);
     }
 
     /**
@@ -164,6 +167,11 @@ class WooInitializer
             'operator' => 'NOT IN',
         );
         $q->set('tax_query', $tax_query);
+    }
+
+    public function add_to_cart_button_single_product()
+    {
+        echo "<a class='button wp-element-button' href=" . site_url('booking-slot') . ">Start Booking Now</a>";
     }
 
 }

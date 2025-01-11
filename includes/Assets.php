@@ -108,7 +108,7 @@ class Assets {
     function get_custom_logo_url() {
         $custom_logo_id = get_theme_mod('custom_logo');
         $logo_url = wp_get_attachment_image_src($custom_logo_id, 'full');
-        return $logo_url[0];
+        return $logo_url[0] ?? "";
     }
 
     public function getReactPageName(): string

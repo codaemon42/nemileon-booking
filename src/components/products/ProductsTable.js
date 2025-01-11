@@ -2,10 +2,7 @@ import { Button, Image, Table } from "antd";
 import fallbackImage from "./../../assets/images/fallback.png";
 import { alphabeticSort } from "./../../helper/alphabeticSort";
 import { useState, useEffect } from "react";
-import { ProductApi } from "../../http/ProductApi";
-import { Product } from "./Product.type";
 import { CheckOutlined } from "@ant-design/icons";
-import { ProductTemplateType } from "./ProductTemplate.type";
 
 const ProductsTable = ({ loading = false, products, selectedIndex = null, type = "booking", buttonText = "book", onSelect=(record, index)=> {} }) => {
 
@@ -112,7 +109,7 @@ const ProductsTable = ({ loading = false, products, selectedIndex = null, type =
             loading={Loading}
             columns={columns}
             dataSource={products}
-            pagination={{ pageSize: 2 }}
+            pagination={{ pageSize: 10 }}
             onRow={onRow}
         />
     );
