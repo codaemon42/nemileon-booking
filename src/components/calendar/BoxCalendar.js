@@ -39,12 +39,15 @@ const BoxCalendar = ({isFrontend = true, productTemplates = ProductTemplateType.
 
   const handleDateSelect = (calendarType, value) => {
     let selectedProductTemplate = null;
+    console.log('TESTING DATE SELECT', {calendarType, value})
     if(calendarType === 'week'){
       onSelect({date: value.join(","), selectedProductTemplate, calendarType})
     } else if( calendarType === 'month' ){
       onSelect({date: value.format("YYYY-MM-DD"), selectedProductTemplate, calendarType})
     } else if( calendarType === 'year'){
       onSelect({date: value.format('MMM'), selectedProductTemplate, calendarType})
+    } else if( calendarType === 'date' ){
+      onSelect({date: value.format("YYYY-MM-DD"), selectedProductTemplate, calendarType})
     }
     
 }

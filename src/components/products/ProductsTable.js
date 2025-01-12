@@ -105,7 +105,7 @@ const ProductsTable = ({ loading = false, products, selectedIndex = null, type =
     }
     return (
         <Table
-            data-testId="product-table"
+            data-testid="product-table"
             loading={Loading}
             columns={columns}
             dataSource={products}

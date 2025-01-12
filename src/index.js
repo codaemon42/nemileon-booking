@@ -1,4 +1,7 @@
-import { render } from '@wordpress/element';
+"use client"
+// import { render } from '@wordpress/element';
+import domReady from '@wordpress/dom-ready';
+import { createRoot } from '@wordpress/element';
 import App from "./App";
 
 /**
@@ -8,11 +11,22 @@ import './style/main.scss';
 import AppContext from './contexts/AppContext';
 
 // Render the App component into the DOM
-render(
-    <AppContext>
-        <App />
-    </AppContext>,
-    document.getElementById('ONSBKS_BOOKING_SECTION')
-);
+// render(
+    // <AppContext>
+    //     <App />
+    // </AppContext>,
+//     document.getElementById('ONSBKS_BOOKING_SECTION')
+// );
 
 // render(<Admin />, document.getElementById('ONSBKS_BOOKING_ADMIN'));
+// domReady( () => {
+    const root = createRoot(
+        document.getElementById('ONSBKS_BOOKING_SECTION')
+    );
+
+    root.render( 
+        <AppContext>
+            <App />
+        </AppContext>,
+    );
+// } );

@@ -49,7 +49,7 @@ class Entity
     public function findById(string $id)
     {
         // Prepare the query to retrieve the entry by ID
-        $query = $this->_wpdb->prepare("SELECT * FROM $this->table_name WHERE id = %d", $id);
+        $query = $this->_wpdb->prepare("SELECT * FROM $this->table_name WHERE id = %d", intval($id));
 
         // Retrieve the entry from the table
         return $this->_wpdb->get_row($query, ARRAY_A);
@@ -79,7 +79,7 @@ class Entity
     }
 
 
-    public function delete($id): int
+    public function delete(int $id): int
     {
         // Prepare the WHERE clause to identify the row to update
         $where = array('id' => $id);

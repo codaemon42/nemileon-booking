@@ -49,8 +49,10 @@ $repo = new Repositories();
  $ROUTER->GET('/bookings/(?P<id>\d+)', [$bookingController, 'findBookingByBookingId'] ,$ROUTER->AUTH['Test']);
 
  $ticketController = new TicketController();
- $ROUTER->GET('/tickets/find/(?P<id>\d+)', [$ticketController, 'findTicket'] ,$ROUTER->AUTH['User']);
+ $ROUTER->GET('/tickets/find/(?P<id>\d+)', [$ticketController, 'findTicket'] ,$ROUTER->AUTH['Anonymous']);
  $ROUTER->GET('/tickets/verify/(?P<id>\d+)', [$ticketController, 'verifyTicket'] ,$ROUTER->AUTH['Anonymous']);
+//$ROUTER->GET('/tickets/find/(?P<id>\d+)', [$ticketController, 'findTicket'], null);
+//$ROUTER->GET('/tickets/verify/(?P<id>\d+)', [$ticketController, 'verifyTicket'], null);
 
  $analyticsRepository = new AnalyticsRepository();
  $analyticsService = new AnalyticsService($analyticsRepository);

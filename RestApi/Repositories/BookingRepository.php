@@ -4,6 +4,7 @@ namespace ONSBKS_Slots\RestApi\Repositories;
 
 use Cassandra\Date;
 use ONSBKS_Slots\Includes\Entities\BookingsEntity;
+use ONSBKS_Slots\Includes\Log;
 use ONSBKS_Slots\Includes\Models\BookingModel;
 use ONSBKS_Slots\Includes\Status\BookingStatus;
 use ONSBKS_Slots\RestApi\Exceptions\BookingCreateException;
@@ -72,18 +73,46 @@ class BookingRepository extends BookingsEntity
     public function findBookingByBookingIdAndUserIdOrFingerPrint(string $bookingId, int $userId, string $fingerPrint, $throwable = false): ?BookingModel
     {
         // Prepare the query to retrieve the entry by ID
-        $query = $this->_wpdb->prepare(
-            "SELECT * FROM $this->table_name WHERE id = %d AND (user_id = %d OR finger_print = %s)",
-            $bookingId,
+        $sql = sprintf("SELECT * FROM $this->table_name WHERE id = %d AND (user_id = %d OR finger_print = %s)",
+            intval($bookingId),
             $userId,
-            $fingerPrint
-        );
+            $fingerPrint);
+
+        if ($userId == 0) { // Anonymous User; check with fingerPrint only
+            $sql = sprintf("SELECT * FROM $this->table_name WHERE id = %d AND finger_print = %s",
+                intval($bookingId),
+                $fingerPrint);
+        }
+        $query = $this->_wpdb->prepare($sql);
 
         // Retrieve the entry from the table
         $booking = $this->_wpdb->get_row($query, ARRAY_A);
-        $booking['template'] = unserialize($booking['template']);
-        if(!$booking && $throwable) throw new BookingNotFound();
-        if(!$booking) return null;
+        Log::error("Started debug");
+        // Handle null results
+        if (empty($booking)) {
+
+            Log::error("empty booking debug");
+            if ($throwable) {
+
+                Log::error("throwing booking not found debug");
+                throw new BookingNotFound();
+            }
+
+            Log::error("returning null debug");
+            return null;
+        }
+
+        Log::error("checking templates");
+        // Safely unserialize the 'template' column
+        if (isset($booking['template']) && !is_null($booking['template'])) {
+
+            Log::error("template parsing debug");
+            $booking['template'] = unserialize($booking['template']);
+        }
+
+
+        Log::error("Going successfully debug");
+        // Return a new BookingModel object
         return new BookingModel($booking);
     }
 

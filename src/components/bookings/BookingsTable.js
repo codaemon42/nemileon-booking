@@ -77,7 +77,7 @@ const BookingsTable = () => {
     return (
         <>
             <Table
-                data-testId="bookings-user-table"
+                data-testid="bookings-user-table"
                 loading={bookingLoading}
                 columns={columns}
                 dataSource={bookings}

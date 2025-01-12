@@ -24,7 +24,7 @@ class TicketRepository
 
     }
 
-    public  function findOrderByBookingId(int $bookingId): \WC_Order
+    public  function findOrderByBookingId(string $bookingId): \WC_Order
     {
         $query = $this->_wpdb->prepare("
             SELECT orders.*

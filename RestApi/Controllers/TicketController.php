@@ -25,11 +25,16 @@ class TicketController
      */
     public function verifyTicket(\WP_REST_Request $req)
     {
-        Log::info("TicketController::verifyTicket start ticket verification");
-        $bookingId = strval($req->get_param("id"));
-        $ticket = $this->tickerService->verifyTicket($bookingId);
+        try {
+            Log::info("TicketController::verifyTicket start ticket verification");
+            $bookingId = strval($req->get_param("id"));
+            $ticket = $this->tickerService->verifyTicket($bookingId);
 
-        wp_send_json(onsbks_prepare_result($ticket->getData()));
+            wp_send_json(onsbks_prepare_result($ticket->getData()));
+        }
+        catch (\Exception $e) {
+            wp_send_json(onsbks_prepare_result(false, $e->getMessage(), false), $e->getCode());
+        }
     }
 
     /**
@@ -38,11 +43,16 @@ class TicketController
      */
     public function findTicket(\WP_REST_Request $req)
     {
-        $fingerPrint = strval($req->get_header('fingerprint'));
-        $userId = $req->get_header('user_id') ?: 0;
-        $bookingId = strval($req->get_param("id"));
+        try{
+            $fingerPrint = strval($req->get_header('fingerprint'));
+            $userId = $req->get_header('user_id') ?: 0;
+            $bookingId = strval($req->get_param("id"));
 
-        $ticket = $this->tickerService->findTicket($bookingId, $userId, $fingerPrint);
-        wp_send_json(onsbks_prepare_result($ticket->getData()));
+            $ticket = $this->tickerService->findTicket($bookingId, $userId, $fingerPrint);
+            wp_send_json(onsbks_prepare_result($ticket->getData()));
+        }
+        catch (\Exception $e) {
+            wp_send_json(onsbks_prepare_result(false, $e->getMessage(), false), $e->getCode());
+        }
     }
 }
